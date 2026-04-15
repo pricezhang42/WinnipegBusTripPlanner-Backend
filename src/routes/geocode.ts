@@ -1,6 +1,10 @@
 import { Hono } from 'hono';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 export const geocodeRoute = new Hono();
+
+// Tuned for typical app usage with headroom for carrier-grade NAT.
+geocodeRoute.use('*', rateLimit({ windowMs: 60_000, max: 120, label: 'geocode' }));
 
 const MAPBOX_URL = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 

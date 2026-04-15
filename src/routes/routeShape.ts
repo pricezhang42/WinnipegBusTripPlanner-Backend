@@ -1,8 +1,11 @@
 import { Hono } from 'hono';
 import { ensureGtfsIndex, getGtfsIndex } from '../gtfs/loader.js';
 import { matchShape } from '../gtfs/shapes.js';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 export const routeShapeRoute = new Hono();
+
+routeShapeRoute.use('*', rateLimit({ windowMs: 60_000, max: 240, label: 'route-shape' }));
 
 function parseLatLng(s: string | undefined): { lat: number; lng: number } | null {
   if (!s) return null;

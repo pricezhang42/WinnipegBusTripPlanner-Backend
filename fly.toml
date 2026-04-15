@@ -1,0 +1,41 @@
+# fly.toml — Fly.io app configuration
+#
+# Run `fly launch --copy-config --no-deploy` to attach this to a new app
+# (it will prompt for an app name and use the settings below). Then set
+# secrets and deploy:
+#
+#   fly secrets set MAPBOX_TOKEN=... WT_API_KEY=...
+#   fly deploy
+
+app = "bustripplanner-backend"
+primary_region = "ord"   # Chicago — closest Fly region to Winnipeg
+
+[build]
+  # Uses the repo's Dockerfile
+
+[env]
+  PORT = "8787"
+  GTFS_REFRESH_HOURS = "24"
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 8787
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  # min_machines_running = 1 keeps one instance always warm (~$2/mo on shared-cpu-1x)
+  # so users don't hit a 2s cold-start GTFS load. Set to 0 to save money at the cost
+  # of latency on the first request after idle.
+  min_machines_running = 1
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    path = "/healthz"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

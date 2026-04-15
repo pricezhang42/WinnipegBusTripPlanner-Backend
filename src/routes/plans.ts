@@ -1,6 +1,9 @@
 import { Hono } from 'hono';
+import { rateLimit } from '../middleware/rateLimit.js';
 
 export const plansRoute = new Hono();
+
+plansRoute.use('*', rateLimit({ windowMs: 60_000, max: 40, label: 'plans' }));
 
 const TRIP_PLANNER_URL = 'https://api.winnipegtransit.com/v3/trip-planner.json';
 const STOP_FEATURES_URL = (key: string | number) =>
