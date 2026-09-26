@@ -1,20 +1,22 @@
 import { dirname } from 'node:path';
-import { artifactGroups, type Sharded } from './artifactGroups.js';
+import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+// v2 dropped the unresolved-nearby-report rule; v1 artifacts are rejected (risk Unknown).
+export const POLICY_VERSION = 'reported-pattern-v2';
 export type RiskLevel = 'low' | 'medium' | 'high' | 'unknown';
 type Evidence = { level: RiskLevel; recordedVisits: number; distinctDates: number; coverageEnd: string; profiles: Record<string, { reportedVisits: number; reportDates: number }> };
-export type RiskArtifact = Sharded<Evidence> & { schemaVersion: number; coverageEnd: string; policy: { version: string }; sources: { departures: { sha256: string } }; groups: Record<string, Evidence> };
+export type RiskArtifact = Sharded<Evidence> & { grouping?: string; schemaVersion: number; coverageEnd: string; policy: { version: string }; sources: { departures: { sha256: string } }; groups: Record<string, Evidence> };
 export function loadRisk(path: string): RiskArtifact | undefined {
   try {
     const value = JSON.parse(readFileSync(path, 'utf8'));
-    return [1, 2].includes(value?.schemaVersion) && (value.schemaVersion !== 2 || (value.routeFiles && typeof value.routeFiles === 'object')) && value?.policy?.version === 'reported-pattern-v1' && value.groups && typeof value?.sources?.departures?.sha256 === 'string' ? { ...value, rootDirectory: dirname(path) } : undefined;
+    return [1, 2].includes(value?.schemaVersion) && (value.schemaVersion !== 2 || (value.routeFiles && typeof value.routeFiles === 'object')) && value?.policy?.version === POLICY_VERSION && value.groups && typeof value?.sources?.departures?.sha256 === 'string' ? { ...value, rootDirectory: dirname(path) } : undefined;
   } catch { return undefined; }
 }
 const artifact = loadRisk(process.env.PASSUP_RISK_DATA_PATH ?? fileURLToPath(new URL('../data/passup-risk.json', import.meta.url)));
 export function passupRisk(key: string, cutoff: string, departureHash?: string, data = artifact): { level: RiskLevel; basis: string } {
   const unknown = { level: 'unknown' as const, basis: 'insufficient_or_unstable_history' };
-  if (!data || data.coverageEnd !== cutoff || !departureHash || data.sources?.departures?.sha256 !== departureHash) return unknown;
+  if (!data || data.grouping !== GROUPING || data.coverageEnd !== cutoff || !departureHash || data.sources?.departures?.sha256 !== departureHash) return unknown;
   let route: string;
   try { route = String(JSON.parse(key)[0]); } catch { route = ''; }
   const evidence = artifactGroups(data, route)[key];

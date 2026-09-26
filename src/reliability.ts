@@ -1,5 +1,5 @@
 import { dirname } from 'node:path';
-import { artifactGroups, type Sharded } from './artifactGroups.js';
+import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
 import { passupRisk } from './passupRisk.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -10,8 +10,10 @@ export type Statistics = {
   earlyShare: number; withinShare: number; lateShare: number; beforeScheduleShare: number;
   shareIntervals: number[][]; nearbyFullBusReports: number;
 };
-export type Artifact = Sharded<Statistics> & { sources?: { departures?: { sha256?: string } }; schemaVersion: number; coverageEnd: string; groups: Record<string, Statistics>; routes: string[] };
+export type Artifact = Sharded<Statistics> & { grouping?: string; sources?: { departures?: { sha256?: string } }; schemaVersion: number; coverageEnd: string; groups: Record<string, Statistics>; routes: string[] };
 export type Ride = { type?: string; from?: { stop?: { key?: string | number } }; to?: { stop?: { key?: string | number } }; route?: { key?: string | number; name?: string }; variant?: { name?: string }; times?: { start?: string } };
+// Fixed two-hour bins keyed by their even start hour: 16 covers 16:00-17:59.
+export const binStartHour = (hour: number) => hour - hour % 2;
 const unavailable = (reason: string) => ({ status: 'unavailable' as const, reason });
 const DAY = 86400000;
 export function loadArtifact(path: string): Artifact | undefined {
@@ -47,7 +49,7 @@ function validStats(s: Statistics) {
     Array.isArray(s.shareIntervals) && s.shareIntervals.length === 3 && s.shareIntervals.every(v => Array.isArray(v) && v.length === 2 && v[0] >= 0 && v[0] <= v[1] && v[1] <= 1);
 }
 export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact, now = new Date()) {
-  if (!data) return unavailable('data_unavailable');
+  if (!data || data.grouping !== GROUPING) return unavailable('data_unavailable');
   const route = String(ride.route?.key ?? '');
   if (!data.routes.includes(route)) return unavailable('route_without_history');
   const time = winnipegTime(ride.times?.start ?? '');
@@ -65,13 +67,13 @@ export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact,
   if (horizon <= 0) return unavailable('historical_date_unsupported');
   // Conservative exclusion for the pilot's 2026 calendar. Refresh calendar with each new release.
   if (!time.date.startsWith('2026-') || ['01-01','02-16','04-03','05-18','07-01','08-03','09-07','09-30','10-12','11-11','12-25','12-26'].includes(time.date.slice(5))) return unavailable('holiday_calendar_unsupported');
-  const season = [11,12,1,2,3].includes(time.month) ? 'winter' : [6,7,8].includes(time.month) ? 'summer' : 'transition';
   const dayType = time.weekend ? 'weekend' : 'weekday';
-  const groupKey = JSON.stringify([route, String(stop), destination, dayType, season, time.hour]);
+  const hour = binStartHour(time.hour);
+  const groupKey = JSON.stringify([route, String(stop), destination, dayType, hour]);
   const stats = artifactGroups(data, route)[groupKey];
   if (!stats) return unavailable('insufficient_comparable_history');
   if (!validStats(stats) || stats.coverageEnd >= time.date) return unavailable('data_unavailable');
-  return { status: 'available' as const, ...stats, passupRisk: passupRisk(groupKey, data.coverageEnd, data.sources?.departures?.sha256), hour: time.hour, season, dayType, boardingStop: String(stop), destination };
+  return { status: 'available' as const, ...stats, passupRisk: passupRisk(groupKey, data.coverageEnd, data.sources?.departures?.sha256), hour, windowMinutes: 120, dayType, boardingStop: String(stop), destination };
 }
 export function enrichPlans(plans: unknown[], data = artifact, now = new Date()) {
   return plans.map(plan => {
