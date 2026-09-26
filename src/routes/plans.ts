@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { enrichPlans } from '../reliability.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 
 export const plansRoute = new Hono();
@@ -107,5 +108,5 @@ plansRoute.get('/', async (c) => {
   );
   const shelters: Record<string, ShelterType> = Object.fromEntries(shelterEntries);
 
-  return c.json({ plans, shelters });
+  return c.json({ plans: enrichPlans(plans), shelters });
 });

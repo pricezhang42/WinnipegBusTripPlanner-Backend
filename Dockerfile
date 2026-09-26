@@ -15,6 +15,7 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=builder /app/dist ./dist
+COPY data ./data
 
 # Non-root
 RUN addgroup -S app && adduser -S app -G app
