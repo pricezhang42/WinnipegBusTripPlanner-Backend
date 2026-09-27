@@ -8,14 +8,14 @@ Proxy + enrichment layer for the [Winnipeg Bus Trip Planner](https://github.com/
 |---|---|---|
 | GET | `/healthz` | Liveness probe |
 | GET | `/api/geocode?q=<text>` | Mapbox geocoding autocomplete (Canada, biased to Winnipeg) |
-| GET | `/api/plans?origin=&destination=&date=&time=&mode=` | Winnipeg Transit trip-planner + shelter info for every stop in the response, merged into one payload |
-| GET | `/api/route-shape?route=<key>&from=<lat,lng>&to=<lat,lng>` | Polyline for a bus route, sliced to the segment between two stops. Powered by the GTFS `shapes.txt` feed. |
+| GET | `/api/plans?origin=&destination=&date=&time=&mode=` | Winnipeg Transit trip-planner + shelter info for every stop, with each ride's reliability and drawn line (`path`), merged into one payload |
+| GET | `/api/route-shape?route=<key>&from=<lat,lng>&to=<lat,lng>` | **Legacy**, kept for app releases before September 27, 2026. Polyline by nearest-line coordinate matching. The current app uses `path` in `/api/plans` instead. |
 
 ### `/api/plans` response shape
 
 ```json
 {
-  "plans": [ /* unchanged Winnipeg Transit trip-planner plans array */ ],
+  "plans": [ /* Winnipeg Transit trip-planner plans; each ride segment also gets `reliability` and, when matched, `path` */ ],
   "shelters": {
     "10064": "Heated Shelter",
     "10073": "Unsheltered"
@@ -25,7 +25,11 @@ Proxy + enrichment layer for the [Winnipeg Bus Trip Planner](https://github.com/
 
 `shelters` maps `stop.key` → shelter type. One of `Heated Shelter`, `Unheated Shelter`, `Unsheltered`.
 
-### `/api/route-shape` response shape
+Each ride's `path` is `[[lat, lng], ...]` along the route's GTFS line from the boarding stop to the exit stop. The boarding stop is the `to.stop` of the segment before the ride (walk or transfer) and the exit stop is the `from.stop` of the segment after it. GTFS stop IDs are the same keys the Winnipeg Transit API uses, and every GTFS shape has one fixed stop list (from `stop_times.txt`). So the backend picks a shape of that route that serves the boarding stop and then the exit stop, in that order, and cuts its line between them. That determines direction and branch exactly, including loops. If two adjacent stops land on the same line point, the path is a straight line between them. A ride with no match has no `path`, and the app draws a straight line between its stops. Checked on 2,940 sampled stop pairs across every shape: all got a path.
+
+### `/api/route-shape` response shape (legacy)
+
+Still served so older app builds keep drawing routes; remove it once those builds are retired.
 
 Success:
 ```json
@@ -54,7 +58,7 @@ npm run dev
 
 Server runs on `http://localhost:8787` by default.
 
-On startup the GTFS feed (`https://gtfs.winnipegtransit.com/google_transit.zip`, ~4 MB) is downloaded, parsed, and indexed in memory. Indexing takes a few seconds. The feed is re-downloaded every `GTFS_REFRESH_HOURS` (default 24).
+On startup the GTFS feed (`https://gtfs.winnipegtransit.com/google_transit.zip`, ~4 MB) is downloaded, parsed, and indexed in memory: `shapes.txt`, `trips.txt`, `stops.txt`, and `stop_times.txt`. Only one stop list per shape is kept from `stop_times.txt`. Indexing takes about 1.7 s (+0.2 s for the stop lists). Retained memory is ~8 MB, and peak memory during load is ~135 MB (previously ~112 MB), within the 256 MB Fly machine. The feed is re-downloaded every `GTFS_REFRESH_HOURS` (default 24).
 
 ## Connecting the mobile client
 
@@ -76,7 +80,7 @@ Each endpoint has a per-IP budget (60-second sliding window):
 |---|---|---|
 | `/api/geocode` | 120 req/min | High (debounced typing, multiple searches) |
 | `/api/plans` | 40 req/min | Medium (one call per "Go" tap, plus retries) |
-| `/api/route-shape` | 240 req/min | Cheap to serve; called per ride segment |
+| `/api/route-shape` | 240 req/min | Cheap to serve; called per ride segment by older app builds (legacy) |
 
 IPs are taken from `Fly-Client-IP` (Fly.io) or the first hop of `X-Forwarded-For`. Over-limit requests get `429 Too Many Requests` with a `Retry-After` header. Limits are in-memory (per instance) — if you scale out, move the buckets to a shared store.
 

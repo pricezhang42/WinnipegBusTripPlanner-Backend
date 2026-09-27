@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
 import { enrichPlans } from '../reliability.js';
+import { getGtfsIndex } from '../gtfs/loader.js';
+import { attachPaths } from '../gtfs/paths.js';
 import { rateLimit } from '../middleware/rateLimit.js';
 
 export const plansRoute = new Hono();
@@ -108,5 +110,6 @@ plansRoute.get('/', async (c) => {
   );
   const shelters: Record<string, ShelterType> = Object.fromEntries(shelterEntries);
 
-  return c.json({ plans: enrichPlans(plans), shelters });
+  // Each ride gets its drawn line here, so the app needs no separate route-shape request.
+  return c.json({ plans: attachPaths(enrichPlans(plans), getGtfsIndex()), shelters });
 });

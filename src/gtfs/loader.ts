@@ -8,6 +8,10 @@ export type Shape = { id: string; points: Coord[] };
 export interface GtfsIndex {
   /** routeKey (route_id / route_short_name, normalized to string) -> shapes for that route */
   shapesByRoute: Map<string, Shape[]>;
+  /** shapeId -> ordered stop_ids served along that shape (every trip on a shape shares one stop list) */
+  stopsByShape: Map<string, string[]>;
+  /** stop_id -> GTFS stop coordinates */
+  stopCoords: Map<string, Coord>;
   feedDate?: string;
   loadedAt: number;
 }
@@ -49,10 +53,12 @@ async function loadGtfs(): Promise<GtfsIndex> {
     return file.async('string');
   };
 
-  const [routesCsv, tripsCsv, shapesCsv, feedInfoCsv] = await Promise.all([
+  const [routesCsv, tripsCsv, shapesCsv, stopsCsv, stopTimesCsv, feedInfoCsv] = await Promise.all([
     readText('routes.txt'),
     readText('trips.txt'),
     readText('shapes.txt'),
+    readText('stops.txt'),
+    readText('stop_times.txt'),
     zip.file('feed_info.txt')?.async('string') ?? Promise.resolve(''),
   ]);
 
@@ -63,12 +69,18 @@ async function loadGtfs(): Promise<GtfsIndex> {
     if (id) routeIds.add(id);
   }
 
-  // Parse trips → routeId -> set of shapeIds
+  // Parse trips → routeId -> set of shapeIds, plus one representative trip per shape.
   const shapeIdsByRoute = new Map<string, Set<string>>();
+  const shapeByTrip = new Map<string, string>();
+  const representedShapes = new Set<string>();
   for (const row of parseCsv(tripsCsv)) {
     const routeId = row.route_id;
     const shapeId = row.shape_id;
     if (!routeId || !shapeId) continue;
+    if (row.trip_id && !representedShapes.has(shapeId)) {
+      representedShapes.add(shapeId);
+      shapeByTrip.set(row.trip_id, shapeId);
+    }
     let set = shapeIdsByRoute.get(routeId);
     if (!set) {
       set = new Set<string>();
@@ -108,6 +120,14 @@ async function loadGtfs(): Promise<GtfsIndex> {
     if (shapes.length > 0) shapesByRoute.set(routeId, shapes);
   }
 
+  const stopsByShape = stopListsByShape(stopTimesCsv, shapeByTrip);
+  const stopCoords = new Map<string, Coord>();
+  for (const row of parseCsv(stopsCsv)) {
+    const lat = Number(row.stop_lat);
+    const lng = Number(row.stop_lon);
+    if (row.stop_id && Number.isFinite(lat) && Number.isFinite(lng)) stopCoords.set(row.stop_id, { lat, lng });
+  }
+
   let feedDate: string | undefined;
   if (feedInfoCsv) {
     const first = parseCsv(feedInfoCsv)[0];
@@ -115,11 +135,13 @@ async function loadGtfs(): Promise<GtfsIndex> {
   }
 
   console.log(
-    `[gtfs] indexed ${shapesByRoute.size} routes, ${pointsByShape.size} shapes in ${Date.now() - t0} ms`
+    `[gtfs] indexed ${shapesByRoute.size} routes, ${pointsByShape.size} shapes, ${stopsByShape.size} stop lists, ${stopCoords.size} stops in ${Date.now() - t0} ms`
   );
 
   return {
     shapesByRoute,
+    stopsByShape,
+    stopCoords,
     feedDate,
     loadedAt: Date.now(),
   };
@@ -140,6 +162,31 @@ export async function startGtfsRefreshLoop(): Promise<void> {
 
   await refresh();
   setInterval(refresh, intervalMs).unref();
+}
+
+/**
+ * stop_times.txt is the largest file (~15 MB). Scan it line by line and keep only
+ * the representative trip of each shape, instead of building an object per row.
+ * Its columns are plain IDs, times and integers, so no quoted fields are expected.
+ */
+export function stopListsByShape(text: string, shapeByTrip: Map<string, string>): Map<string, string[]> {
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
+  const lines = text.split('\n');
+  const header = lines[0].replace('\r', '').split(',');
+  const [tripCol, stopCol, seqCol] = ['trip_id', 'stop_id', 'stop_sequence'].map((name) => header.indexOf(name));
+  if (tripCol < 0 || stopCol < 0 || seqCol < 0) throw new Error('GTFS stop_times.txt missing required columns');
+  const rows = new Map<string, Array<[number, string]>>();
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].replace('\r', '').split(',');
+    const shapeId = shapeByTrip.get(cells[tripCol]);
+    if (!shapeId) continue;
+    let list = rows.get(shapeId);
+    if (!list) rows.set(shapeId, (list = []));
+    list.push([Number(cells[seqCol]), cells[stopCol]]);
+  }
+  const out = new Map<string, string[]>();
+  for (const [shapeId, list] of rows) out.set(shapeId, list.sort((a, b) => a[0] - b[0]).map(([, stop]) => stop));
+  return out;
 }
 
 /**
