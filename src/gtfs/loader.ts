@@ -1,10 +1,27 @@
+/**
+ * Loads Winnipeg Transit's GTFS feed and keeps a small in-memory index for drawing routes.
+ *
+ * Flow:
+ *   google_transit.zip
+ *     trips.txt       -> which shapes each route uses, and one sample trip per shape
+ *     shapes.txt      -> each shape's line, as ordered lat/lng points
+ *     stop_times.txt  -> the ordered stop list of each sample trip = the shape's stops
+ *     stops.txt       -> where each stop is
+ *   -> GtfsIndex (this file) -> paths.ts cuts a ride's line between its two stops
+ *   -> attached to each ride as `path` in /api/plans.
+ *
+ * The feed is downloaded at startup and re-downloaded every GTFS_REFRESH_HOURS (default 24).
+ * Nothing is written to disk. Timetables in stop_times.txt are not used; only stop order is.
+ */
 import JSZip from 'jszip';
 
 const GTFS_URL = 'https://gtfs.winnipegtransit.com/google_transit.zip';
 
 export type Coord = { lat: number; lng: number };
+/** One drawn line of a route (a direction or branch), points in driving order. */
 export type Shape = { id: string; points: Coord[] };
 
+/** Everything the backend keeps from the feed. Replaced as a whole on each refresh. */
 export interface GtfsIndex {
   /** routeKey (route_id / route_short_name, normalized to string) -> shapes for that route */
   shapesByRoute: Map<string, Shape[]>;
@@ -12,17 +29,22 @@ export interface GtfsIndex {
   stopsByShape: Map<string, string[]>;
   /** stop_id -> GTFS stop coordinates */
   stopCoords: Map<string, Coord>;
+  /** feed_start_date (or feed_version) from feed_info.txt, when present */
   feedDate?: string;
+  /** when this index was built (ms since epoch) */
   loadedAt: number;
 }
 
+// The index in use, and a pending first load so concurrent callers share one download.
 let current: GtfsIndex | null = null;
 let inFlight: Promise<GtfsIndex> | null = null;
 
+/** The loaded index, or null before the first load finishes (callers then skip drawing). */
 export function getGtfsIndex(): GtfsIndex | null {
   return current;
 }
 
+/** The loaded index, loading it first if needed. Used by the legacy /api/route-shape. */
 export async function ensureGtfsIndex(): Promise<GtfsIndex> {
   if (current) return current;
   if (inFlight) return inFlight;
@@ -37,6 +59,7 @@ export async function ensureGtfsIndex(): Promise<GtfsIndex> {
   return inFlight;
 }
 
+/** Download the feed and build a fresh index (about 1.7 s; peak memory ~135 MB, ~8 MB kept). */
 async function loadGtfs(): Promise<GtfsIndex> {
   console.log('[gtfs] downloading', GTFS_URL);
   const t0 = Date.now();
@@ -62,7 +85,7 @@ async function loadGtfs(): Promise<GtfsIndex> {
     zip.file('feed_info.txt')?.async('string') ?? Promise.resolve(''),
   ]);
 
-  // Parse routes (we accept any routeKey that shows up in trips; we mostly read routes.txt for sanity).
+  // Parse routes. Not used below (any route that appears in trips.txt is accepted); kept as a sanity read.
   const routeIds = new Set<string>();
   for (const row of parseCsv(routesCsv)) {
     const id = row.route_id;
@@ -70,6 +93,9 @@ async function loadGtfs(): Promise<GtfsIndex> {
   }
 
   // Parse trips → routeId -> set of shapeIds, plus one representative trip per shape.
+  // Every trip on a shape stops at the same stops in the same order (true for all 294
+  // shapes in the Sept 2026 feed), so one trip per shape is enough to learn its stop list.
+  // Route IDs here (e.g. "BLUE", "F8") match the Winnipeg Transit API's route keys.
   const shapeIdsByRoute = new Map<string, Set<string>>();
   const shapeByTrip = new Map<string, string>();
   const representedShapes = new Set<string>();
@@ -109,6 +135,7 @@ async function loadGtfs(): Promise<GtfsIndex> {
     pts.sort((a, b) => a.seq - b.seq);
   }
 
+  // Group the finished lines by route; shapes with fewer than 2 points can't be drawn.
   const shapesByRoute = new Map<string, Shape[]>();
   for (const [routeId, shapeIds] of shapeIdsByRoute) {
     const shapes: Shape[] = [];
@@ -120,6 +147,7 @@ async function loadGtfs(): Promise<GtfsIndex> {
     if (shapes.length > 0) shapesByRoute.set(routeId, shapes);
   }
 
+  // Stop IDs in these files are the same numbers the trip planner uses for stops (e.g. 10638).
   const stopsByShape = stopListsByShape(stopTimesCsv, shapeByTrip);
   const stopCoords = new Map<string, Coord>();
   for (const row of parseCsv(stopsCsv)) {
@@ -147,6 +175,10 @@ async function loadGtfs(): Promise<GtfsIndex> {
   };
 }
 
+/**
+ * Load the feed now, then reload it every GTFS_REFRESH_HOURS (default 24, minimum 1).
+ * A failed refresh is logged and the previous index keeps serving.
+ */
 export async function startGtfsRefreshLoop(): Promise<void> {
   const hours = Math.max(1, Number(process.env.GTFS_REFRESH_HOURS ?? 24));
   const intervalMs = hours * 60 * 60 * 1000;
@@ -161,13 +193,17 @@ export async function startGtfsRefreshLoop(): Promise<void> {
   };
 
   await refresh();
-  setInterval(refresh, intervalMs).unref();
+  setInterval(refresh, intervalMs).unref(); // unref: the timer alone doesn't keep the process alive
 }
 
 /**
- * stop_times.txt is the largest file (~15 MB). Scan it line by line and keep only
- * the representative trip of each shape, instead of building an object per row.
- * Its columns are plain IDs, times and integers, so no quoted fields are expected.
+ * shapeId -> its stops in order, read from stop_times.txt for the sample trips only.
+ *
+ * stop_times.txt is the largest file (~15 MB, one row per stop per trip). Scan it line by
+ * line and keep only the representative trip of each shape, instead of building an
+ * object per row. Its columns are plain IDs, times and integers, so no quoted fields are
+ * expected. Rows are sorted by stop_sequence because the file isn't guaranteed to be.
+ * Throws if the required columns are missing.
  */
 export function stopListsByShape(text: string, shapeByTrip: Map<string, string>): Map<string, string[]> {
   if (text.charCodeAt(0) === 0xfeff) text = text.slice(1);
