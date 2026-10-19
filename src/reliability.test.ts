@@ -27,7 +27,7 @@ test('real API variant prefix maps only the matching route name', () => {
 });
 test('bad samples and missing artifacts fail open', () => {
   assert.equal(loadArtifact('/does/not/exist'), undefined);
-  for (const invalid of [{ observations: 29 }, { distinctDates: 4 }, { earlyShare: NaN }, { shareIntervals: [] }]) {
+  for (const invalid of [{ observations: 29 }, { distinctDates: 4 }, { earlyShare: NaN }, { shareIntervals: [] }, { earlyShare: -.2, withinShare: 1, lateShare: .2 }, { p10Seconds: 100 }, { distinctDates: 61 }, { coverageStart: '2026-02-30' }]) {
     assert.equal(reliabilityForRide(ride, previous, { ...data, groups: { [key]: { ...stats, ...invalid } } }, now).status, 'unavailable');
   }
   const input = [{ segments: [previous, ride] }];
