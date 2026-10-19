@@ -32,7 +32,10 @@ Each ride's `path` is `[[lat, lng], ...]` along the route's GTFS line from the b
 Historical timing describes observed departures, not live predictions or arrivals.
 `src/reliability.ts` resolves boarding context and orchestrates enrichment;
 `src/reliabilityTime.ts` owns Winnipeg date conversion, two-hour windows and date
-eligibility. Both timing and report evidence match exact route, boarding stop,
+eligibility. Enrichment resolves each ride's boarding context once and passes it
+to independent timing and report readers. The timing reader has no pass-up
+policy dependency; the legacy nested category is attached only at the API
+boundary for older clients. Both timing and report evidence match exact route, boarding stop,
 normalized destination, weekday/weekend and even starting hour; seasons are pooled.
 Variant IDs are resolved through `data/reliability-destinations.json`, a reviewed
 same-route lookup generated from official variant metadata and validated against
@@ -112,6 +115,25 @@ Data builds and audits belong to the
 [analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).
 No database migration is needed. Check with `npm run build` and
 `node --import tsx --test src/*.test.ts src/gtfs/*.test.ts`.
+
+### Verify a running backend
+
+A successful health probe alone does not prove the reliability features are
+deployed. Run the read-only sample-trip contract check:
+
+```bash
+npm run check:reliability -- --base-url http://localhost:8787
+npm run check:reliability -- --base-url https://bustripplanner-backend.fly.dev
+```
+
+The check uses Westbrook → Thatcher at 16:40 on today's Winnipeg date. Override
+with `--date YYYY-MM-DD --time HH:MM` to reproduce a specific search. It checks
+health and each ride's timing/report availability states, unavailable reasons,
+category and policy version, returning a nonzero exit code for a missing or
+incompatible contract. It reports available counts and unavailable timing reasons.
+An unavailable estimate is valid when its reason is explicit; stale history,
+unsupported dates and sparse groups must not masquerade as successful estimates.
+The checker does not change or deploy anything and needs no private credentials.
 
 ### Destination metadata and refresh
 

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolveDestination, type DestinationUnavailableReason } from './reliabilityDestinations.js';
 import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
-import { passupRisk } from './passupRisk.js';
+import { passupRisk as legacyPassupRisk } from './passupRisk.js';
 import { reportRisk, unknownReportRisk } from './passupReportRisk.js';
 import { reportCountsForGroup, type ReportArtifact } from './passupReports.js';
 import {
@@ -92,7 +92,7 @@ const artifact = loadArtifact(process.env.RELIABILITY_DATA_PATH ?? defaultArtifa
 
 type ContextResolution =
   | { status: 'resolved'; context: BoardingContext }
-  | { status: 'unavailable'; reason: DestinationUnavailableReason | 'boarding_context_missing' };
+  | { status: 'unavailable'; reason: DestinationUnavailableReason | 'boarding_context_missing' | 'data_unavailable' };
 
 function resolveBoardingContext(ride: Ride, previous?: Ride): ContextResolution {
   const route = String(ride.route?.key ?? '');
@@ -110,8 +110,16 @@ function resolveBoardingContext(ride: Ride, previous?: Ride): ContextResolution 
   return { status: 'resolved', context: { route, boardingStop, destination, date: time.date, dayType, hour, groupKey } };
 }
 
+function safeBoardingContext(ride: Ride, previous?: Ride): ContextResolution {
+  try {
+    return resolveBoardingContext(ride, previous);
+  } catch {
+    return { status: 'unavailable', reason: 'data_unavailable' };
+  }
+}
+
 export function boardingContext(ride: Ride, previous?: Ride): BoardingContext | undefined {
-  const result = resolveBoardingContext(ride, previous);
+  const result = safeBoardingContext(ride, previous);
   return result.status === 'resolved' ? result.context : undefined;
 }
 
@@ -137,12 +145,12 @@ function validStatistics(stats: Statistics | undefined): stats is Statistics {
   );
 }
 
-export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact, now = new Date()) {
+/** Departure timing depends only on its own artifact and the shared boarding context. */
+function timingForContext(ride: Ride, resolved: ContextResolution, data: Artifact | undefined, now: Date) {
   if (!data || data.grouping !== GROUPING) return unavailable('data_unavailable');
   if (!data.routes.includes(String(ride.route?.key ?? ''))) return unavailable('route_without_history');
-
-  const resolved = resolveBoardingContext(ride, previous);
   if (resolved.status === 'unavailable') return unavailable(resolved.reason);
+
   const context = resolved.context;
   const dateReason = dateUnavailableReason(data.coverageEnd, context.date, now);
   if (dateReason) return unavailable(dateReason);
@@ -151,12 +159,9 @@ export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact,
   if (!stats) return unavailable('insufficient_comparable_history');
   if (!validStatistics(stats) || stats.coverageEnd >= context.date) return unavailable('data_unavailable');
 
-  // Keep the deployed visit-based category isolated from new report-count evidence.
-  const risk = passupRisk(context.groupKey, data.coverageEnd, data.sources?.departures?.sha256);
   return {
     status: 'available' as const,
     ...stats,
-    passupRisk: risk,
     hour: context.hour,
     windowMinutes: GROUP_WINDOW_MINUTES,
     dayType: context.dayType,
@@ -165,32 +170,50 @@ export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact,
   };
 }
 
-function enrichRide(ride: Ride, previous: Ride | undefined, data: Artifact | undefined, now: Date, reportData?: ReportArtifact) {
-  let reliability: ReturnType<typeof reliabilityForRide>;
-  try {
-    reliability = reliabilityForRide(ride, previous, data, now);
-  } catch {
-    reliability = unavailable('data_unavailable');
-  }
+export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact, now = new Date()) {
+  return safeTiming(ride, safeBoardingContext(ride, previous), data, now);
+}
 
-  // Report evidence remains available even if this timing group misses timing sample minimums.
-  let passupReports: ReturnType<typeof reportCountsForGroup>;
+function safeTiming(ride: Ride, context: ContextResolution, data: Artifact | undefined, now: Date) {
   try {
-    const resolved = resolveBoardingContext(ride, previous);
-    if (resolved.status === 'unavailable') {
-      passupReports = { status: 'unavailable', reason: resolved.reason };
-    } else {
-      const context = resolved.context;
-      passupReports = reportCountsForGroup(context.groupKey, context.date, data?.sources?.departures?.sha256, now, reportData);
-    }
+    return timingForContext(ride, context, data, now);
   } catch {
-    passupReports = { status: 'unavailable', reason: 'data_unavailable' };
+    return unavailable('data_unavailable');
   }
-  // New clients read this independent field, including when timing is unavailable.
-  // Leave the existing nested visit-based category for older clients during migration.
+}
+
+function reportsForContext(context: ContextResolution, data: Artifact | undefined, now: Date, reportData?: ReportArtifact) {
+  if (context.status === 'unavailable') return { status: 'unavailable' as const, reason: context.reason };
+  try {
+    const { groupKey, date } = context.context;
+    return reportCountsForGroup(groupKey, date, data?.sources?.departures?.sha256, now, reportData);
+  } catch {
+    return { status: 'unavailable' as const, reason: 'data_unavailable' };
+  }
+}
+
+function legacyRiskForContext(context: BoardingContext, data: Artifact | undefined) {
+  const unknown = { level: 'unknown' as const, basis: 'insufficient_or_unstable_history' };
+  if (!data) return unknown;
+  try {
+    return legacyPassupRisk(context.groupKey, data.coverageEnd, data.sources?.departures?.sha256);
+  } catch {
+    return unknown;
+  }
+}
+
+function enrichRide(ride: Ride, previous: Ride | undefined, data: Artifact | undefined, now: Date, reportData?: ReportArtifact) {
+  const context = safeBoardingContext(ride, previous);
+  const timing = safeTiming(ride, context, data, now);
+  const passupReports = reportsForContext(context, data, now, reportData);
   const passupRisk = passupReports.status === 'available'
     ? reportRisk(passupReports)
     : unknownReportRisk(passupReports.reason);
+
+  // Keep the older nested field at the API boundary, outside the timing reader.
+  const reliability = timing.status === 'available' && context.status === 'resolved'
+    ? { ...timing, passupRisk: legacyRiskForContext(context.context, data) }
+    : timing;
   return { ...ride, reliability, passupReports, passupRisk };
 }
 

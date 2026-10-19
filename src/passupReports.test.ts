@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPORT_POLICY } from './passupReportRisk.js';
 import { GROUPING } from './artifactGroups.js';
-import { enrichPlans, type Artifact } from './reliability.js';
+import { enrichPlans, reliabilityForRide, type Artifact } from './reliability.js';
 import { loadReportArtifact, reportCountsForGroup, type ReportArtifact, type ReportEvidence } from './passupReports.js';
 
 const now = new Date('2026-09-25T18:00:00Z');
@@ -122,4 +122,22 @@ test('enrichment serves reports independently of timing minimums and does not mu
   assert.equal('reliability' in ride, false);
   assert.equal('passupReports' in ride, false);
   assert.deepEqual(enrichPlans([null, {}, { segments: [ride] }], timing, now, fixture()).slice(0, 2), [null, {}]);
+});
+
+
+test('corrupt timing cannot suppress report evidence, and compatibility stays at the API boundary', () => {
+  const walk = { type: 'walk', to: { stop: { key: 1 } } };
+  const ride = { type: 'ride', route: { key: 'BLUE' }, variant: { name: 'To Downtown' },
+    times: { start: '2026-09-25T13:00:00' } };
+  const timing: Artifact = {
+    schemaVersion: 1, grouping: GROUPING, routes: ['BLUE'], coverageEnd: '2026-09-24',
+    sources: { departures: { sha256: 'same-file' } },
+    get groups(): Artifact['groups'] { throw new Error('Broken timing shard'); },
+  };
+  const reports = fixture({ recordedDepartures: 200, departureDates: 10 });
+  assert.deepEqual(reliabilityForRide(ride, walk, timing, now), { status: 'unavailable', reason: 'data_unavailable' });
+  const result = enrichPlans([{ segments: [walk, ride] }], timing, now, reports) as any[];
+  assert.deepEqual(result[0].segments[1].reliability, { status: 'unavailable', reason: 'data_unavailable' });
+  assert.equal(result[0].segments[1].passupReports.status, 'available');
+  assert.equal(result[0].segments[1].passupRisk.level, 'high');
 });

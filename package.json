@@ -11,7 +11,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "refresh:destinations": "node --import tsx scripts/refresh-reliability-destinations.mjs"
+    "refresh:destinations": "node --import tsx scripts/refresh-reliability-destinations.mjs",
+    "check:reliability": "node scripts/check-reliability.mjs"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.0",

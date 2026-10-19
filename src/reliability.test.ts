@@ -9,7 +9,9 @@ const stats = { observations: 60, distinctDates: 6, coverageStart: '2026-09-01',
 const key = '["BLUE","1","downtown","weekday",12]';
 const data: Artifact = { grouping: GROUPING, schemaVersion: 1, routes: ['BLUE'], coverageEnd: '2026-09-24', groups: { [key]: stats } };
 test('exact match, Winnipeg conversion and adjacent boarding', () => {
-  assert.equal(reliabilityForRide(ride, previous, data, now).status, 'available');
+  const timing = reliabilityForRide(ride, previous, data, now);
+  assert.equal(timing.status, 'available');
+  assert.equal('passupRisk' in timing, false);
   assert.deepEqual(winnipegTime('2026-09-26T02:00:00Z'), { date: '2026-09-25', month: 9, weekend: false, hour: 21 });
   assert.equal(winnipegTime('2026-02-30T13:00:00'), undefined);
   assert.equal(reliabilityForRide(ride, { ...previous, type: 'ride' }, data, now).status, 'unavailable');
@@ -33,6 +35,9 @@ test('bad samples and missing artifacts fail open', () => {
   const input = [{ segments: [previous, ride] }];
   const enriched = enrichPlans(input, data, now) as any[];
   assert.equal(enriched[0].segments[1].reliability.status, 'available');
+  assert.deepEqual(enriched[0].segments[1].reliability.passupRisk,
+    { level: 'unknown', basis: 'insufficient_or_unstable_history' });
+  assert.equal(enriched[0].segments[1].passupRisk.policyVersion, 'report-scheduled-visit-ratio-v1');
   assert.equal('reliability' in ride, false);
   assert.equal(enriched[0].segments[0], previous);
 });
