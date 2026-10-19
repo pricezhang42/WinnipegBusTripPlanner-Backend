@@ -15,7 +15,7 @@ Proxy + enrichment layer for the [Winnipeg Bus Trip Planner](https://github.com/
 
 ```json
 {
-  "plans": [ /* Winnipeg Transit trip-planner plans; each ride segment also gets `reliability` and, when matched, `path` */ ],
+  "plans": [ /* Winnipeg Transit trip-planner plans; each ride segment also gets `reliability`, `passupReports`, `passupRisk` and, when matched, `path` */ ],
   "shelters": {
     "10064": "Heated Shelter",
     "10073": "Unsheltered"
@@ -26,6 +26,88 @@ Proxy + enrichment layer for the [Winnipeg Bus Trip Planner](https://github.com/
 `shelters` maps `stop.key` → shelter type. One of `Heated Shelter`, `Unheated Shelter`, `Unsheltered`.
 
 Each ride's `path` is `[[lat, lng], ...]` along the route's GTFS line from the boarding stop to the exit stop. The boarding stop is the `to.stop` of the segment before the ride (walk or transfer) and the exit stop is the `from.stop` of the segment after it. GTFS stop IDs are the same keys the Winnipeg Transit API uses, and every GTFS shape has one fixed stop list (from `stop_times.txt`). So the backend picks a shape of that route that serves the boarding stop and then the exit stop, in that order, and cuts its line between them. That determines direction and branch exactly, including loops. If two adjacent stops land on the same line point, the path is a straight line between them. A ride with no match has no `path`, and the app draws a straight line between its stops. Checked on 2,940 sampled stop pairs across every shape: all got a path.
+
+### Historical reliability contract
+
+Historical timing describes observed departures, not live predictions or arrivals.
+`src/reliability.ts` resolves boarding context and orchestrates enrichment;
+`src/reliabilityTime.ts` owns Winnipeg date conversion, two-hour windows and date
+eligibility. Both timing and report evidence match exact route, boarding stop,
+normalized destination, weekday/weekend and even starting hour; seasons are pooled.
+Only an exact route display prefix is removed from destination text.
+
+Each ride gets independent timing, report evidence and category fields:
+
+- `reliability`: `{status: "available", ...statistics, passupRisk, hour,
+  windowMinutes, dayType, boardingStop, destination}` or
+  `{status: "unavailable", reason}`. Statistics require 30 observations across
+  5 dates, ordered finite quantiles, valid shares/intervals and valid coverage.
+  The stored statistics are not recalculated by the API.
+- `passupReports`: evidence-only schema-3 response, independent of timing sample
+  minimums. Available fields are `reportCount`, `reportDates`, report
+  `coverageStart`/`coverageEnd`, `recordedDepartures`, `departureDates`,
+  `referenceCoverageStart`/`referenceCoverageEnd` and `profiles` keyed by
+  `60m`, `100m`, `150m` (each with `reports` and `reportDates`). It also names
+  `evidenceUnit: "unique-report-id"`, `groupTimeBasis: "reported-local-time"`,
+  `referenceTimeBasis: "scheduled-local-time"` and
+  `labelStatus: "approved"` and `policyVersion: "report-scheduled-visit-ratio-v1"`. Missing evidence returns
+  `{status: "unavailable", reason}`. Missing groups are not zero-report groups.
+
+- `passupRisk`: `{level, basis, policyVersion}` from the approved report policy,
+  independently of timing. New clients prefer it over the nested legacy category.
+  Missing/incompatible evidence produces an explicit Unknown with the reason in
+  `basis`; it must not fall back to an older category.
+
+Policy `report-scheduled-visit-ratio-v1` uses unique 150 m full-bus reports divided
+by cleaned recorded visits in the corresponding scheduled-time group. The count
+is not the full GTFS schedule. Reports are grouped by report time; reference
+visits by scheduled time. Exact route/stop/destination/day type/two-hour grouping
+is shared; seasons are pooled. There is no +50 penalty.
+
+| Category | Rule after requiring 60 visits on 10 dates |
+|---|---|
+| Low | Ratio below 1%; zero reports need at least 120 visits |
+| Medium | Ratio at least 1% and below 2.5%, reports on at least 2 dates |
+| High | Ratio at least 2.5%, reports on at least 3 dates |
+| Unknown | Insufficient evidence/persistence, incompatible data, or reports exceeding visits |
+
+`src/passupReportRisk.ts` implements these rules. Report dates are counted, not
+matched bus visits. Multiple IDs can describe one bus; report-only groups remain
+valid evidence but cannot produce a category with a zero denominator. These are
+descriptive categories, not probabilities. The 60 m and 100 m profiles remain
+in the evidence for auditing; category agreement is not required.
+
+`src/passupRisk.ts`, the existing visit-based files and
+`reliability.passupRisk` remain for older clients during migration. They do not
+feed the new report category. Existing departure statistics remain unchanged.
+
+The installed evidence covers 72 routes and 93,609 groups: 70,428 Low, 161 Medium,
+35 High, 22,985 Unknown. The artifact cutoff remains September 24, 2026. Complete
+report manifests and route shards are included in `data/`; hosted deployment is
+separate from this code/artifact update.
+
+Timing reasons: `data_unavailable`, `route_without_history`,
+`boarding_context_missing`, `data_outdated`, `historical_date_unsupported`,
+`holiday_calendar_unsupported`, `insufficient_comparable_history`. Report evidence
+also uses `incompatible_report_evidence`, `source_mismatch` and
+`report_group_without_history`. Either enrichment can fail without blocking plans.
+Trip dates on/before the cutoff are unsupported; artifact age and trip horizon
+must be at most 30 days. The current holiday calendar supports 2026 only.
+
+Artifacts default to `data/reliability.json`, `data/passup-risk.json` and
+`data/passup-report-counts.json`. Override these with `RELIABILITY_DATA_PATH`,
+`PASSUP_RISK_DATA_PATH` and `PASSUP_REPORT_DATA_PATH`. Install each manifest with
+all referenced route shards, preserving relative paths, and restart the process:
+manifests and shard caches do not reload automatically. Report evidence requires
+schema 3, `stop-report-counts-v1`, `nearest-stop-report-time-v1`, the documented
+time bases, `labelStatus: approved`, the exact supported policy definition and a
+departure-source hash matching timing when timing provides one. Missing report
+files produce unavailable evidence and an Unknown report category.
+
+Data builds and audits belong to the
+[analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).
+No database migration is needed. Check with `npm run build` and
+`node --import tsx --test src/*.test.ts src/gtfs/*.test.ts`.
 
 ### `/api/route-shape` response shape (legacy)
 
