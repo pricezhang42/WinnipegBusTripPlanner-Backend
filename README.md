@@ -34,7 +34,11 @@ Historical timing describes observed departures, not live predictions or arrival
 `src/reliabilityTime.ts` owns Winnipeg date conversion, two-hour windows and date
 eligibility. Both timing and report evidence match exact route, boarding stop,
 normalized destination, weekday/weekend and even starting hour; seasons are pooled.
-Only an exact route display prefix is removed from destination text.
+Variant IDs are resolved through `data/reliability-destinations.json`, a reviewed
+same-route lookup generated from official variant metadata and validated against
+historical destination keys. This handles mismatched display prefixes and missing
+or additional branch text without fuzzy matching or stripping every `via` suffix.
+Established exact-name fallbacks still work when metadata is absent.
 
 Each ride gets independent timing, report evidence and category fields:
 
@@ -108,6 +112,53 @@ Data builds and audits belong to the
 [analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).
 No database migration is needed. Check with `npm run build` and
 `node --import tsx --test src/*.test.ts src/gtfs/*.test.ts`.
+
+### Destination metadata and refresh
+
+`src/reliabilityDestinations.ts` resolves one canonical destination for both timing
+and report evidence. The committed lookup covers the October 18 audit: 185
+variants across 72 routes, correcting 59 mismatches across 26 routes. Entries are
+scoped to a route and variant ID; the default display name and canonical name are
+recorded as accepted aliases. Known IDs with unexpected new display text return
+`destination_variant_changed` rather than borrowing another branch. Exact
+route-prefix/bare-destination cases remain supported, including `to St. Norbert`.
+
+Additional internal reasons are `destination_variant_route_mismatch`,
+`destination_variant_unknown` and `destination_metadata_missing`. These appear in
+the timing unavailable reason and independent report-risk basis. Metadata failure
+never blocks trip plans. Missing history or insufficient samples stays unavailable
+regardless of successful name resolution.
+
+To refresh in a development checkout with installed dependencies:
+
+```bash
+npm run refresh:destinations
+```
+
+The command uses the local `WT_API_KEY` and the configured timing/report manifests
+(`RELIABILITY_DATA_PATH`, `PASSUP_REPORT_DATA_PATH`, or their defaults in `data/`).
+It reads declared variants from the Routes API, fetches default and long-usage variant
+names with three route workers, filters wildcard siblings by exact declared ID,
+and queries exact IDs when wildcard results omit them. Missing canonical names
+may use an established exact display fallback only when it exists in same-route
+history. Unsupported destinations, duplicate identities, source mismatches or API
+failures abort before installation. A complete validated file is written atomically;
+no partial network result replaces the lookup. Credentials/credential-bearing URLs
+are not logged.
+
+Review the resulting file and rerun tests before shipping it. Refresh alongside
+historical artifacts and when route/variant definitions change; the source hash
+records the departure data used for validation. It does not extend that data's
+freshness cutoff. `RELIABILITY_DESTINATIONS_PATH` overrides the lookup location.
+The server loads it once at startup and makes no destination-metadata calls per
+ride; restart/redeploy after replacing it. The refresh tool runs in the checkout,
+not the production image, which needs only the prebuilt lookup in `data/`.
+
+Regression example: October 19 at 16:40, Westbrook → Thatcher, route 678 boarding
+60185 resolves to `freedman terminal` and returns 37 observations/11 dates,
+57% not on time. Route 679 resolves the same destination but retains its unavailable
+state (2 reference visits/1 date). Valid branch names such as
+`creek bend via burland` are preserved.
 
 ### `/api/route-shape` response shape (legacy)
 

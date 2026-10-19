@@ -1,6 +1,7 @@
 import { dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { resolveDestination, type DestinationUnavailableReason } from './reliabilityDestinations.js';
 import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
 import { passupRisk } from './passupRisk.js';
 import { reportRisk, unknownReportRisk } from './passupReportRisk.js';
@@ -45,7 +46,7 @@ export type Ride = {
   from?: { stop?: { key?: string | number } };
   to?: { stop?: { key?: string | number } };
   route?: { key?: string | number; name?: string };
-  variant?: { name?: string };
+  variant?: { key?: string; name?: string };
   times?: { start?: string };
 };
 
@@ -60,6 +61,7 @@ export type BoardingContext = {
 };
 
 export type TimingUnavailableReason =
+  | DestinationUnavailableReason
   | 'data_unavailable' | 'route_without_history' | 'boarding_context_missing'
   | 'data_outdated' | 'historical_date_unsupported' | 'holiday_calendar_unsupported'
   | 'insufficient_comparable_history';
@@ -88,32 +90,29 @@ const defaultArtifactPath = fileURLToPath(new URL('../data/reliability.json', im
 // Manifests are loaded at startup; deployments must replace a complete artifact set and restart.
 const artifact = loadArtifact(process.env.RELIABILITY_DATA_PATH ?? defaultArtifactPath);
 
-function variantDestination(ride: Ride): string | undefined {
-  const variant = ride.variant?.name?.trim().toLowerCase();
-  if (!variant) return undefined;
+type ContextResolution =
+  | { status: 'resolved'; context: BoardingContext }
+  | { status: 'unavailable'; reason: DestinationUnavailableReason | 'boarding_context_missing' };
 
-  let routeName = ride.route?.name?.trim().toLowerCase().replace(/^route\s+/, '');
-  const routeKey = String(ride.route?.key ?? '').toLowerCase();
-  const namedPrefix = routeName?.match(/^(\S+)\s+(.*)$/s);
-  if (namedPrefix?.[1] === routeKey) routeName = namedPrefix[2];
-  const destinationPrefix = routeName ? `${routeName} to ` : undefined;
-  // Remove only the exact route display prefix; never merge different branches fuzzily.
-  if (destinationPrefix && variant.startsWith(destinationPrefix)) return variant.slice(destinationPrefix.length);
-  return variant.replace(/^to\s+/, '');
-}
-
-export function boardingContext(ride: Ride, previous?: Ride): BoardingContext | undefined {
+function resolveBoardingContext(ride: Ride, previous?: Ride): ContextResolution {
   const route = String(ride.route?.key ?? '');
   const stop = ride.from?.stop?.key ?? (previous?.type !== 'ride' ? previous?.to?.stop?.key : undefined);
-  const destination = variantDestination(ride);
   const time = winnipegTime(ride.times?.start ?? '');
-  if (!route || stop == null || !destination || !time) return undefined;
+  if (!route || stop == null || !time) return { status: 'unavailable', reason: 'boarding_context_missing' };
+  const resolved = resolveDestination(ride);
+  if (resolved.status === 'unavailable') return resolved;
 
+  const destination = resolved.destination;
   const boardingStop = String(stop);
   const dayType = time.weekend ? 'weekend' : 'weekday';
   const hour = binStartHour(time.hour);
   const groupKey = JSON.stringify([route, boardingStop, destination, dayType, hour]);
-  return { route, boardingStop, destination, date: time.date, dayType, hour, groupKey };
+  return { status: 'resolved', context: { route, boardingStop, destination, date: time.date, dayType, hour, groupKey } };
+}
+
+export function boardingContext(ride: Ride, previous?: Ride): BoardingContext | undefined {
+  const result = resolveBoardingContext(ride, previous);
+  return result.status === 'resolved' ? result.context : undefined;
 }
 
 function isShare(value: unknown): value is number {
@@ -142,8 +141,9 @@ export function reliabilityForRide(ride: Ride, previous?: Ride, data = artifact,
   if (!data || data.grouping !== GROUPING) return unavailable('data_unavailable');
   if (!data.routes.includes(String(ride.route?.key ?? ''))) return unavailable('route_without_history');
 
-  const context = boardingContext(ride, previous);
-  if (!context) return unavailable('boarding_context_missing');
+  const resolved = resolveBoardingContext(ride, previous);
+  if (resolved.status === 'unavailable') return unavailable(resolved.reason);
+  const context = resolved.context;
   const dateReason = dateUnavailableReason(data.coverageEnd, context.date, now);
   if (dateReason) return unavailable(dateReason);
 
@@ -176,10 +176,13 @@ function enrichRide(ride: Ride, previous: Ride | undefined, data: Artifact | und
   // Report evidence remains available even if this timing group misses timing sample minimums.
   let passupReports: ReturnType<typeof reportCountsForGroup>;
   try {
-    const context = boardingContext(ride, previous);
-    passupReports = context
-      ? reportCountsForGroup(context.groupKey, context.date, data?.sources?.departures?.sha256, now, reportData)
-      : { status: 'unavailable', reason: 'boarding_context_missing' };
+    const resolved = resolveBoardingContext(ride, previous);
+    if (resolved.status === 'unavailable') {
+      passupReports = { status: 'unavailable', reason: resolved.reason };
+    } else {
+      const context = resolved.context;
+      passupReports = reportCountsForGroup(context.groupKey, context.date, data?.sources?.departures?.sha256, now, reportData);
+    }
   } catch {
     passupReports = { status: 'unavailable', reason: 'data_unavailable' };
   }
