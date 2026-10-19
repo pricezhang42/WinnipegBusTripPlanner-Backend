@@ -1,0 +1,1672 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-19T05:01:05.175Z",
+  "historySourceSha256": "82e75a2785b54896e494a1da4aad6296d9eb186203eb0fbeafcae72aa2ce8a26",
+  "variants": {
+    "22-0-P": {
+      "route": "22",
+      "destination": "polo park",
+      "displayNames": [
+        "polo park",
+        "portage to polo park"
+      ],
+      "source": "variant-api"
+    },
+    "22-1-U": {
+      "route": "22",
+      "destination": "unicity",
+      "displayNames": [
+        "portage to unicity",
+        "unicity"
+      ],
+      "source": "variant-api"
+    },
+    "220-0-R": {
+      "route": "220",
+      "destination": "rouge & assiniboine",
+      "displayNames": [
+        "rouge & assiniboine",
+        "westwood-st. charles to rouge & assiniboine"
+      ],
+      "source": "variant-api"
+    },
+    "220-1-S": {
+      "route": "220",
+      "destination": "st. charles",
+      "displayNames": [
+        "st. charles",
+        "westwood - st. charles to st. charles"
+      ],
+      "source": "variant-api"
+    },
+    "223-0-L": {
+      "route": "223",
+      "destination": "lumsden",
+      "displayNames": [
+        "charleswood - cavalier to lumsden",
+        "lumsden"
+      ],
+      "source": "variant-api"
+    },
+    "223-1-W": {
+      "route": "223",
+      "destination": "westdale",
+      "displayNames": [
+        "charleswood - cavalier to westdale",
+        "westdale"
+      ],
+      "source": "variant-api"
+    },
+    "224-0-P": {
+      "route": "224",
+      "destination": "polo park",
+      "displayNames": [
+        "polo park",
+        "sherwin - valour to polo park"
+      ],
+      "source": "variant-api"
+    },
+    "224-0-T": {
+      "route": "224",
+      "destination": "tecumseh loop",
+      "displayNames": [
+        "sherwin - valour to tecumseh loop",
+        "tecumseh loop"
+      ],
+      "source": "variant-api"
+    },
+    "224-1-P": {
+      "route": "224",
+      "destination": "polo park",
+      "displayNames": [
+        "polo park",
+        "sherwin - valour to polo park"
+      ],
+      "source": "variant-api"
+    },
+    "224-1-R": {
+      "route": "224",
+      "destination": "rrc polytech",
+      "displayNames": [
+        "rrc polytech",
+        "sherwin - valour to rrc polytech"
+      ],
+      "source": "variant-api"
+    },
+    "28-0-T": {
+      "route": "28",
+      "destination": "templeton walmart",
+      "displayNames": [
+        "arlington - stafford to templeton walmart via garden city hub",
+        "templeton walmart"
+      ],
+      "source": "variant-api"
+    },
+    "28-1-S": {
+      "route": "28",
+      "destination": "seel station",
+      "displayNames": [
+        "arlington - stafford to seel station",
+        "seel station"
+      ],
+      "source": "variant-api"
+    },
+    "31-0-R": {
+      "route": "31",
+      "destination": "riverbend",
+      "displayNames": [
+        "riverbend",
+        "waterfront - north main to riverbend"
+      ],
+      "source": "variant-api"
+    },
+    "31-1-F": {
+      "route": "31",
+      "destination": "the forks",
+      "displayNames": [
+        "the forks",
+        "waterfront - north main to the forks"
+      ],
+      "source": "variant-api"
+    },
+    "330-0-*": {
+      "route": "330",
+      "destination": "main & murray",
+      "displayNames": [
+        "main & murray",
+        "murray - grey to main & murray"
+      ],
+      "source": "variant-api"
+    },
+    "330-0-L": {
+      "route": "330",
+      "destination": "levis & nairn",
+      "displayNames": [
+        "levis & nairn",
+        "murray - grey to levis & nairn"
+      ],
+      "source": "variant-api"
+    },
+    "330-0-M": {
+      "route": "330",
+      "destination": "mcleod & louelda",
+      "displayNames": [
+        "mcleod & louelda",
+        "murray - grey to mcleod & louelda"
+      ],
+      "source": "variant-api"
+    },
+    "330-1-G": {
+      "route": "330",
+      "destination": "garden city hub",
+      "displayNames": [
+        "garden city hub",
+        "murray - grey to garden city hub"
+      ],
+      "source": "variant-api"
+    },
+    "330-1-T": {
+      "route": "330",
+      "destination": "templeton walmart",
+      "displayNames": [
+        "murray - grey to templeton walmart via garden city hub",
+        "templeton walmart"
+      ],
+      "source": "variant-api"
+    },
+    "332-0-G": {
+      "route": "332",
+      "destination": "garden city hub",
+      "displayNames": [
+        "amber trails - church to garden city hub",
+        "garden city hub"
+      ],
+      "source": "variant-api"
+    },
+    "332-0-O": {
+      "route": "332",
+      "destination": "old commonwealth",
+      "displayNames": [
+        "amber trails - church to old commonwealth",
+        "old commonwealth"
+      ],
+      "source": "variant-api"
+    },
+    "332-1-S": {
+      "route": "332",
+      "destination": "selkirk & mcphillips",
+      "displayNames": [
+        "amber trails - church to selkirk & mcphillips",
+        "selkirk & mcphillips"
+      ],
+      "source": "variant-api"
+    },
+    "332-1-W": {
+      "route": "332",
+      "destination": "waterford green",
+      "displayNames": [
+        "amber trails - church to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "334-0-G": {
+      "route": "334",
+      "destination": "garden city hub",
+      "displayNames": [
+        "garden city hub",
+        "watson - dr. jose rizal to garden city hub"
+      ],
+      "source": "variant-api"
+    },
+    "334-1-W": {
+      "route": "334",
+      "destination": "waterford green",
+      "displayNames": [
+        "waterford green",
+        "watson - dr. jose rizal to waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "336-0-G": {
+      "route": "336",
+      "destination": "garden city hub",
+      "displayNames": [
+        "garden city hub",
+        "templeton - tyndall park to garden city hub"
+      ],
+      "source": "variant-api"
+    },
+    "336-0-O": {
+      "route": "336",
+      "destination": "old commonweath",
+      "displayNames": [
+        "old commonweath",
+        "templeton - tyndall park to old commonweath"
+      ],
+      "source": "variant-api"
+    },
+    "336-0-T": {
+      "route": "336",
+      "destination": "templeton walmart",
+      "displayNames": [
+        "templeton - tyndall park to templeton walmart via garden city hub",
+        "templeton walmart"
+      ],
+      "source": "variant-api"
+    },
+    "336-1-D": {
+      "route": "336",
+      "destination": "dr jose rizal",
+      "displayNames": [
+        "dr jose rizal",
+        "templeton - tyndall park to dr jose rizal"
+      ],
+      "source": "variant-api"
+    },
+    "336-1-F": {
+      "route": "336",
+      "destination": "fife loop",
+      "displayNames": [
+        "fife loop",
+        "templeton - tyndall park to fife loop"
+      ],
+      "source": "variant-api"
+    },
+    "336-1-W": {
+      "route": "336",
+      "destination": "waterford green",
+      "displayNames": [
+        "templeton - tyndall park to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "37-0-C": {
+      "route": "37",
+      "destination": "cathedral & main",
+      "displayNames": [
+        "cathedral & main",
+        "jefferson to cathedral & main"
+      ],
+      "source": "variant-api"
+    },
+    "37-1-W": {
+      "route": "37",
+      "destination": "waterford green",
+      "displayNames": [
+        "jefferson to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "38-0-K": {
+      "route": "38",
+      "destination": "kildonan place",
+      "displayNames": [
+        "kildonan place",
+        "munroe - mountain to kildonan place"
+      ],
+      "source": "variant-api"
+    },
+    "38-1-G": {
+      "route": "38",
+      "destination": "garden city hub",
+      "displayNames": [
+        "garden city hub",
+        "munroe - mountain to garden city hub"
+      ],
+      "source": "variant-api"
+    },
+    "39-0-C": {
+      "route": "39",
+      "destination": "cathedral & main",
+      "displayNames": [
+        "cathedral & main",
+        "inkster to cathedral & main"
+      ],
+      "source": "variant-api"
+    },
+    "39-1-W": {
+      "route": "39",
+      "destination": "waterford green",
+      "displayNames": [
+        "inkster to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "43-0-D": {
+      "route": "43",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "watt - logan to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "43-0-G": {
+      "route": "43",
+      "destination": "gateway",
+      "displayNames": [
+        "gateway",
+        "watt - logan to gateway"
+      ],
+      "source": "variant-api"
+    },
+    "43-1-D": {
+      "route": "43",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "watt - logan to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "43-1-R": {
+      "route": "43",
+      "destination": "rrc polytech",
+      "displayNames": [
+        "rrc polytech",
+        "watt - logan to rrc polytech"
+      ],
+      "source": "variant-api"
+    },
+    "440-0-L": {
+      "route": "440",
+      "destination": "lakeside meadows",
+      "displayNames": [
+        "lakeside meadows",
+        "rougeau - plessis to lakeside meadows"
+      ],
+      "source": "variant-api"
+    },
+    "440-1-C": {
+      "route": "440",
+      "destination": "crossroads station",
+      "displayNames": [
+        "crossroads station",
+        "rougeau - plessis to crossroads station"
+      ],
+      "source": "variant-api"
+    },
+    "442-0-H": {
+      "route": "442",
+      "destination": "henderson & northdale",
+      "displayNames": [
+        "concordia - north kildonan to henderson & northdale",
+        "henderson & northdale"
+      ],
+      "source": "variant-api"
+    },
+    "442-0-S": {
+      "route": "442",
+      "destination": "springfield loop",
+      "displayNames": [
+        "concordia - north kildonan to springfield loop",
+        "springfield loop"
+      ],
+      "source": "variant-api"
+    },
+    "442-1-h": {
+      "route": "442",
+      "destination": "south bound henderson & northdale",
+      "displayNames": [
+        "concordia - north kildonan to south bound henderson & northdale",
+        "south bound henderson & northdale"
+      ],
+      "source": "variant-api"
+    },
+    "442-1-K": {
+      "route": "442",
+      "destination": "kildonan place hub",
+      "displayNames": [
+        "concordia - north kildonan to kildonan place hub",
+        "kildonan place hub"
+      ],
+      "source": "variant-api"
+    },
+    "444-0-S": {
+      "route": "444",
+      "destination": "summerlea",
+      "displayNames": [
+        "devonshire - redonda to summerlea",
+        "summerlea"
+      ],
+      "source": "variant-api"
+    },
+    "444-1-K": {
+      "route": "444",
+      "destination": "kildonan place hub",
+      "displayNames": [
+        "devonshire - redonda to kildonan place hub",
+        "kildonan place hub"
+      ],
+      "source": "variant-api"
+    },
+    "446-0-K": {
+      "route": "446",
+      "destination": "kildonan place",
+      "displayNames": [
+        "kildonan place",
+        "peguis - donwood to kildonan place"
+      ],
+      "source": "variant-api"
+    },
+    "446-1-W": {
+      "route": "446",
+      "destination": "whellams lane",
+      "displayNames": [
+        "peguis - donwood to whellams lane",
+        "whellams lane"
+      ],
+      "source": "variant-api"
+    },
+    "48-0-R": {
+      "route": "48",
+      "destination": "redonda & pandora",
+      "displayNames": [
+        "mcmeans to redonda & pandora",
+        "redonda & pandora"
+      ],
+      "source": "variant-api"
+    },
+    "48-1-C": {
+      "route": "48",
+      "destination": "crossroads station",
+      "displayNames": [
+        "crossroads station",
+        "transcona blvd to crossroads station"
+      ],
+      "source": "variant-api"
+    },
+    "551-0-W": {
+      "route": "551",
+      "destination": "watt & leighton",
+      "displayNames": [
+        "watt & leighton",
+        "watt - windsor park to watt & leighton"
+      ],
+      "source": "variant-api"
+    },
+    "551-1-P": {
+      "route": "551",
+      "destination": "paterson & lagimodiere",
+      "displayNames": [
+        "paterson & lagimodiere",
+        "watt - windsor park to paterson & lagimodiere"
+      ],
+      "source": "variant-api"
+    },
+    "552-0-A": {
+      "route": "552",
+      "destination": "avalon loop",
+      "displayNames": [
+        "aldgate - meadowood to avalon loop",
+        "avalon loop"
+      ],
+      "source": "variant-api"
+    },
+    "552-0-V": {
+      "route": "552",
+      "destination": "st. vital centre",
+      "displayNames": [
+        "aldgate - meadowood to st. vital centre",
+        "st. vital centre"
+      ],
+      "source": "variant-api"
+    },
+    "552-1-S": {
+      "route": "552",
+      "destination": "south st. vital",
+      "displayNames": [
+        "aldgate - meadowood to south st. vital",
+        "south st. vital"
+      ],
+      "source": "variant-api"
+    },
+    "556-0-S": {
+      "route": "556",
+      "destination": "sage creek",
+      "displayNames": [
+        "beliveau to sage creek",
+        "sage creek"
+      ],
+      "source": "variant-api"
+    },
+    "556-1-P": {
+      "route": "556",
+      "destination": "plaza dr",
+      "displayNames": [
+        "beliveau to plaza dr",
+        "plaza dr"
+      ],
+      "source": "variant-api"
+    },
+    "557-0-S": {
+      "route": "557",
+      "destination": "sage creek",
+      "displayNames": [
+        "island lakes - morley to sage creek",
+        "sage creek"
+      ],
+      "source": "variant-api"
+    },
+    "557-1-F": {
+      "route": "557",
+      "destination": "fermor & st. marys",
+      "displayNames": [
+        "fermor & st. marys",
+        "island lakes - morley to fermor & st. marys"
+      ],
+      "source": "variant-api"
+    },
+    "557-1-W": {
+      "route": "557",
+      "destination": "windermere",
+      "displayNames": [
+        "island lakes - morley to windermere",
+        "windermere"
+      ],
+      "source": "variant-api"
+    },
+    "558-0-E": {
+      "route": "558",
+      "destination": "east mint",
+      "displayNames": [
+        "east mint",
+        "southglen - cottonwood to east mint"
+      ],
+      "source": "variant-api"
+    },
+    "558-1-A": {
+      "route": "558",
+      "destination": "avalon loop",
+      "displayNames": [
+        "avalon loop",
+        "southglen - cottonwood to avalon loop"
+      ],
+      "source": "variant-api"
+    },
+    "641-0-B": {
+      "route": "641",
+      "destination": "beaumont station",
+      "displayNames": [
+        "beaumont station",
+        "lindenwoods west to beaumont station"
+      ],
+      "source": "variant-api"
+    },
+    "641-1-C": {
+      "route": "641",
+      "destination": "commerce loop",
+      "displayNames": [
+        "commerce loop",
+        "lindenwoods west to commerce loop"
+      ],
+      "source": "variant-api"
+    },
+    "642-0-S": {
+      "route": "642",
+      "destination": "seel station",
+      "displayNames": [
+        "lindenwoods east to seel station",
+        "seel station"
+      ],
+      "source": "variant-api"
+    },
+    "642-1-H": {
+      "route": "642",
+      "destination": "henlow & fultz",
+      "displayNames": [
+        "henlow & fultz",
+        "lindenwoods east to henlow & fultz"
+      ],
+      "source": "variant-api"
+    },
+    "649-0-S": {
+      "route": "649",
+      "destination": "seel station",
+      "displayNames": [
+        "chevrier to seel station",
+        "seel station"
+      ],
+      "source": "variant-api"
+    },
+    "649-1-F": {
+      "route": "649",
+      "destination": "fort whyte alive",
+      "displayNames": [
+        "chevrier to fort whyte alive",
+        "fort whyte alive"
+      ],
+      "source": "variant-api"
+    },
+    "650-0-S": {
+      "route": "650",
+      "destination": "seel station",
+      "displayNames": [
+        "mcgillivray to seel station",
+        "seel station"
+      ],
+      "source": "variant-api"
+    },
+    "650-1-W": {
+      "route": "650",
+      "destination": "fort whyte alive",
+      "displayNames": [
+        "fort whyte alive",
+        "mcgillivray to fort whyte alive"
+      ],
+      "source": "variant-api"
+    },
+    "662-0-U": {
+      "route": "662",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "richmond to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "662-1-M": {
+      "route": "662",
+      "destination": "markham station via richmond west",
+      "displayNames": [
+        "markham station via richmond west",
+        "richmond to markham station via richmond west"
+      ],
+      "source": "variant-api"
+    },
+    "664-0-S": {
+      "route": "664",
+      "destination": "stafford & pembina",
+      "displayNames": [
+        "stafford & pembina",
+        "taylor to stafford & pembina"
+      ],
+      "source": "variant-api"
+    },
+    "664-1-O": {
+      "route": "664",
+      "destination": "outlet mall",
+      "displayNames": [
+        "outlet mall",
+        "taylor to outlet mall"
+      ],
+      "source": "variant-api"
+    },
+    "671-0-U": {
+      "route": "671",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "dalhousie to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "671-1-P": {
+      "route": "671",
+      "destination": "prairie pointe",
+      "displayNames": [
+        "dalhousie to prairie pointe",
+        "prairie pointe"
+      ],
+      "source": "variant-api"
+    },
+    "672-0-U": {
+      "route": "672",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "killarney to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "672-1-P": {
+      "route": "672",
+      "destination": "prairie pointe",
+      "displayNames": [
+        "killarney to prairie pointe",
+        "prairie pointe"
+      ],
+      "source": "variant-api"
+    },
+    "676-0-C": {
+      "route": "676",
+      "destination": "creek bend via burland",
+      "displayNames": [
+        "creek bend via burland",
+        "northtown - burland to creek bend via burland"
+      ],
+      "source": "variant-api"
+    },
+    "676-1-B": {
+      "route": "676",
+      "destination": "bridgwater",
+      "displayNames": [
+        "bridgwater",
+        "northtown - burland to bridgwater"
+      ],
+      "source": "variant-api"
+    },
+    "676-1-D": {
+      "route": "676",
+      "destination": "dakota",
+      "displayNames": [
+        "dakota",
+        "northtown - burland to dakota"
+      ],
+      "source": "variant-api"
+    },
+    "677-0-B": {
+      "route": "677",
+      "destination": "beaumont station",
+      "displayNames": [
+        "beaumont station",
+        "wilkes to beaumont station"
+      ],
+      "source": "variant-api"
+    },
+    "677-1-O": {
+      "route": "677",
+      "destination": "outlet mall",
+      "displayNames": [
+        "outlet mall",
+        "wilkes to outlet mall"
+      ],
+      "source": "variant-api"
+    },
+    "678-0-A": {
+      "route": "678",
+      "destination": "arbour meadow & bridgeland",
+      "displayNames": [
+        "arbour meadow & bridgeland",
+        "waverly west - chancellor to arbour meadow & bridgeland"
+      ],
+      "source": "variant-api"
+    },
+    "678-0-F": {
+      "route": "678",
+      "destination": "freedman terminal",
+      "displayNames": [
+        "freedman terminal",
+        "waverly west - chancellor to freedman terminal"
+      ],
+      "source": "variant-api"
+    },
+    "678-1-S": {
+      "route": "678",
+      "destination": "south pointe",
+      "displayNames": [
+        "south pointe",
+        "waverly west - chancellor to south pointe"
+      ],
+      "source": "variant-api"
+    },
+    "679-0-S": {
+      "route": "679",
+      "destination": "seel station",
+      "displayNames": [
+        "seel station",
+        "waverley to seel station"
+      ],
+      "source": "variant-api"
+    },
+    "679-1-U": {
+      "route": "679",
+      "destination": "freedman terminal",
+      "displayNames": [
+        "freedman terminal",
+        "waverley to freedman terminal via waverley"
+      ],
+      "source": "variant-api"
+    },
+    "680-0-P": {
+      "route": "680",
+      "destination": "polo park hub",
+      "displayNames": [
+        "polo park hub",
+        "river heights - cambridge to polo park hub"
+      ],
+      "source": "variant-api"
+    },
+    "680-1-S": {
+      "route": "680",
+      "destination": "seel station",
+      "displayNames": [
+        "river heights - cambridge to seel station",
+        "seel station"
+      ],
+      "source": "variant-api"
+    },
+    "690-0-S": {
+      "route": "690",
+      "destination": "seel station via fort garry industrial park",
+      "displayNames": [
+        "industrial to seel station",
+        "seel station via fort garry industrial park"
+      ],
+      "source": "variant-api"
+    },
+    "690-1-K": {
+      "route": "690",
+      "destination": "kenaston via fort garry industrial park",
+      "displayNames": [
+        "industrial to kenaston",
+        "kenaston via fort garry industrial park"
+      ],
+      "source": "variant-api"
+    },
+    "691-0-S": {
+      "route": "691",
+      "destination": "seel station via chevrier",
+      "displayNames": [
+        "seel station via chevrier",
+        "whyte ridge to seel station"
+      ],
+      "source": "variant-api"
+    },
+    "691-1-W": {
+      "route": "691",
+      "destination": "whyte ridge via scurfield",
+      "displayNames": [
+        "whyte ridge to whyte ridge",
+        "whyte ridge via scurfield"
+      ],
+      "source": "variant-api"
+    },
+    "694-0-S": {
+      "route": "694",
+      "destination": "seel station via wildwood",
+      "displayNames": [
+        "seel station via wildwood",
+        "wildwood to seel station"
+      ],
+      "source": "variant-api"
+    },
+    "694-1-F": {
+      "route": "694",
+      "destination": "fort garry industrial park via",
+      "displayNames": [
+        "fort garry industrial park via",
+        "wildwood to fort garry industrial park"
+      ],
+      "source": "variant-api"
+    },
+    "70-0-P": {
+      "route": "70",
+      "destination": "polo park",
+      "displayNames": [
+        "polo park",
+        "roblin to polo park"
+      ],
+      "source": "variant-api"
+    },
+    "70-1-U": {
+      "route": "70",
+      "destination": "unicity",
+      "displayNames": [
+        "roblin to unicity",
+        "unicity"
+      ],
+      "source": "variant-api"
+    },
+    "74-0-P": {
+      "route": "74",
+      "destination": "polo park",
+      "displayNames": [
+        "kenaston-keewatin to polo park",
+        "polo park"
+      ],
+      "source": "variant-api"
+    },
+    "74-0-W": {
+      "route": "74",
+      "destination": "waterford green",
+      "displayNames": [
+        "kenaston-keewatin to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "74-1-P": {
+      "route": "74",
+      "destination": "polo park",
+      "displayNames": [
+        "kenaston-keewatin to polo park",
+        "polo park"
+      ],
+      "source": "variant-api"
+    },
+    "74-1-U": {
+      "route": "74",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "kenaston-keewatin to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "833-0-T": {
+      "route": "833",
+      "destination": "tecumseh loop",
+      "displayNames": [
+        "burrows to tecumseh loop",
+        "tecumseh loop"
+      ],
+      "source": "variant-api"
+    },
+    "833-1-T": {
+      "route": "833",
+      "destination": "tyndall park",
+      "displayNames": [
+        "burrows to tyndall park",
+        "tyndall park"
+      ],
+      "source": "variant-api"
+    },
+    "881-0-N": {
+      "route": "881",
+      "destination": "north inkster industrial",
+      "displayNames": [
+        "brookside to north inkster industrial",
+        "north inkster industrial"
+      ],
+      "source": "variant-api"
+    },
+    "881-1-R": {
+      "route": "881",
+      "destination": "rrc polytech",
+      "displayNames": [
+        "brookside to rrc polytech",
+        "rrc polytech"
+      ],
+      "source": "variant-api"
+    },
+    "883-0-S": {
+      "route": "883",
+      "destination": "saskatchewan loop",
+      "displayNames": [
+        "murray park to saskatchewan loop",
+        "saskatchewan loop"
+      ],
+      "source": "variant-api"
+    },
+    "883-1-G": {
+      "route": "883",
+      "destination": "grace hospital",
+      "displayNames": [
+        "grace hospital",
+        "murray park to grace hospital"
+      ],
+      "source": "variant-api"
+    },
+    "884-0-W": {
+      "route": "884",
+      "destination": "waterford green",
+      "displayNames": [
+        "keewatin to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "884-1-P": {
+      "route": "884",
+      "destination": "portage",
+      "displayNames": [
+        "keewatin to portage",
+        "portage"
+      ],
+      "source": "variant-api"
+    },
+    "885-0-C": {
+      "route": "885",
+      "destination": "cathcart & grant",
+      "displayNames": [
+        "cathcart & grant",
+        "rannock - westwood to cathcart & grant"
+      ],
+      "source": "variant-api"
+    },
+    "885-0-U": {
+      "route": "885",
+      "destination": "unicity",
+      "displayNames": [
+        "rannock - westwood to unicity",
+        "unicity"
+      ],
+      "source": "variant-api"
+    },
+    "885-1-D": {
+      "route": "885",
+      "destination": "dale & windmill",
+      "displayNames": [
+        "dale & windmill",
+        "rannock - westwood to dale & windmill"
+      ],
+      "source": "variant-api"
+    },
+    "885-1-R": {
+      "route": "885",
+      "destination": "ronald & portage",
+      "displayNames": [
+        "rannock - westwood to ronald & portage",
+        "ronald & portage"
+      ],
+      "source": "variant-api"
+    },
+    "886-0-S": {
+      "route": "886",
+      "destination": "south transcona",
+      "displayNames": [
+        "dugald to south transcona",
+        "south transcona"
+      ],
+      "source": "variant-api"
+    },
+    "886-1-S": {
+      "route": "886",
+      "destination": "stadacona",
+      "displayNames": [
+        "dugald to stadacona",
+        "stadacona"
+      ],
+      "source": "variant-api"
+    },
+    "887-0-S": {
+      "route": "887",
+      "destination": "st. boniface industrial park",
+      "displayNames": [
+        "dugald to st. boniface industrial park",
+        "st. boniface industrial park"
+      ],
+      "source": "variant-api"
+    },
+    "887-1-S": {
+      "route": "887",
+      "destination": "stadacona",
+      "displayNames": [
+        "dugald to stadacona",
+        "stadacona"
+      ],
+      "source": "variant-api"
+    },
+    "888-0-W": {
+      "route": "888",
+      "destination": "whittier park",
+      "displayNames": [
+        "tache to whittier park",
+        "whittier park"
+      ],
+      "source": "variant-api"
+    },
+    "888-1-N": {
+      "route": "888",
+      "destination": "norwood",
+      "displayNames": [
+        "norwood",
+        "tache to norwood"
+      ],
+      "source": "variant-api"
+    },
+    "889-0-T": {
+      "route": "889",
+      "destination": "tecumseh loop",
+      "displayNames": [
+        "sherbrook - pembina express to tecumseh loop",
+        "tecumseh loop"
+      ],
+      "source": "variant-api"
+    },
+    "889-1-U": {
+      "route": "889",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "sherbrook - pembina express to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "895-0-R": {
+      "route": "895",
+      "destination": "riverview",
+      "displayNames": [
+        "morley to riverview",
+        "riverview"
+      ],
+      "source": "variant-api"
+    },
+    "895-1-J": {
+      "route": "895",
+      "destination": "jubilee station",
+      "displayNames": [
+        "jubilee station",
+        "morley to jubilee station"
+      ],
+      "source": "variant-api"
+    },
+    "91-0-B": {
+      "route": "91",
+      "destination": "baylor & killarney",
+      "displayNames": [
+        "baylor & killarney",
+        "killarney to baylor & killarney"
+      ],
+      "source": "variant-api"
+    },
+    "91-1-S": {
+      "route": "91",
+      "destination": "st. norbert",
+      "displayNames": [
+        "st norbert to st. norbert",
+        "st. norbert"
+      ],
+      "source": "variant-api"
+    },
+    "BLUE-0-D": {
+      "route": "BLUE",
+      "destination": "downtown",
+      "displayNames": [
+        "blue to downtown",
+        "downtown"
+      ],
+      "source": "variant-api"
+    },
+    "BLUE-0-U": {
+      "route": "BLUE",
+      "destination": "unicity shopping centre",
+      "displayNames": [
+        "blue to unicity shopping centre",
+        "unicity shopping centre"
+      ],
+      "source": "variant-api"
+    },
+    "BLUE-1-S": {
+      "route": "BLUE",
+      "destination": "st. norbert",
+      "displayNames": [
+        "st. norbert",
+        "to st. norbert"
+      ],
+      "source": "variant-api"
+    },
+    "BLUE-1-U": {
+      "route": "BLUE",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "blue to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "D10-0-K": {
+      "route": "D10",
+      "destination": "kildonan place",
+      "displayNames": [
+        "kildonan place",
+        "panet - adsum to kildonan place"
+      ],
+      "source": "variant-api"
+    },
+    "D10-1-W": {
+      "route": "D10",
+      "destination": "waterford green",
+      "displayNames": [
+        "panet - adsum to waterford green",
+        "waterford green"
+      ],
+      "source": "variant-api"
+    },
+    "D11-0-D": {
+      "route": "D11",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "salter - stafford to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D11-0-T": {
+      "route": "D11",
+      "destination": "templeton & salter",
+      "displayNames": [
+        "salter - stafford to templeton & salter",
+        "templeton & salter"
+      ],
+      "source": "variant-api"
+    },
+    "D11-1-B": {
+      "route": "D11",
+      "destination": "beaumont station",
+      "displayNames": [
+        "beaumont station",
+        "salter - stafford to beaumont station"
+      ],
+      "source": "variant-api"
+    },
+    "D11-1-D": {
+      "route": "D11",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "salter - stafford to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D12-0-F": {
+      "route": "D12",
+      "destination": "the forks",
+      "displayNames": [
+        "d12 to the forks",
+        "the forks"
+      ],
+      "source": "variant-api"
+    },
+    "D12-1-A": {
+      "route": "D12",
+      "destination": "the airport",
+      "displayNames": [
+        "d12 to the airport via ellice",
+        "the airport"
+      ],
+      "source": "variant-api"
+    },
+    "D13-0-F": {
+      "route": "D13",
+      "destination": "the forks",
+      "displayNames": [
+        "d13 to the forks via sargent",
+        "the forks"
+      ],
+      "source": "variant-api"
+    },
+    "D13-1-A": {
+      "route": "D13",
+      "destination": "the airport",
+      "displayNames": [
+        "d13 to the airport via sargent",
+        "the airport"
+      ],
+      "source": "variant-api"
+    },
+    "D14-0-R": {
+      "route": "D14",
+      "destination": "redonda & pandora",
+      "displayNames": [
+        "d14 to redonda & pandora via marion",
+        "redonda & pandora"
+      ],
+      "source": "variant-api"
+    },
+    "D14-1-W": {
+      "route": "D14",
+      "destination": "wall street",
+      "displayNames": [
+        "d14 to wall street via broadway",
+        "wall street"
+      ],
+      "source": "variant-api"
+    },
+    "D15-0-D": {
+      "route": "D15",
+      "destination": "downtown",
+      "displayNames": [
+        "d15 to downtown via ness",
+        "downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D15-0-S": {
+      "route": "D15",
+      "destination": "sage creek",
+      "displayNames": [
+        "d15 to sage creek",
+        "sage creek"
+      ],
+      "source": "variant-api"
+    },
+    "D15-1-D": {
+      "route": "D15",
+      "destination": "downtown",
+      "displayNames": [
+        "d15 to downtown via archibald",
+        "downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D15-1-U": {
+      "route": "D15",
+      "destination": "unicity",
+      "displayNames": [
+        "d15 to unicity",
+        "unicity"
+      ],
+      "source": "variant-api"
+    },
+    "D16-0-D": {
+      "route": "D16",
+      "destination": "downtown",
+      "displayNames": [
+        "d16 to downtown",
+        "downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D16-1-P": {
+      "route": "D16",
+      "destination": "polo park",
+      "displayNames": [
+        "d16 to polo park",
+        "polo park"
+      ],
+      "source": "variant-api"
+    },
+    "D17-0-K": {
+      "route": "D17",
+      "destination": "kildonan place",
+      "displayNames": [
+        "d17 to kildonan place",
+        "kildonan place"
+      ],
+      "source": "variant-api"
+    },
+    "D17-1-R": {
+      "route": "D17",
+      "destination": "rrc polytech",
+      "displayNames": [
+        "d17 to rrc polytech",
+        "rrc polytech"
+      ],
+      "source": "variant-api"
+    },
+    "D17-1-S": {
+      "route": "D17",
+      "destination": "selkirk & mcphillips",
+      "displayNames": [
+        "d17 to selkirk & mcphillips",
+        "selkirk & mcphillips"
+      ],
+      "source": "variant-api"
+    },
+    "D18-0-D": {
+      "route": "D18",
+      "destination": "downtown",
+      "displayNames": [
+        "d18 to downtown",
+        "downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D18-1-R": {
+      "route": "D18",
+      "destination": "rrc polytech",
+      "displayNames": [
+        "d18 to rrc polytech",
+        "rrc polytech"
+      ],
+      "source": "variant-api"
+    },
+    "D19-0-D": {
+      "route": "D19",
+      "destination": "downtown",
+      "displayNames": [
+        "d19 to downtown",
+        "downtown"
+      ],
+      "source": "variant-api"
+    },
+    "D19-1-Z": {
+      "route": "D19",
+      "destination": "the zoo",
+      "displayNames": [
+        "d19 to the zoo",
+        "the zoo"
+      ],
+      "source": "variant-api"
+    },
+    "F5-0-G": {
+      "route": "F5",
+      "destination": "garden city centre",
+      "displayNames": [
+        "garden city centre",
+        "mcphillips - donald to garden city centre"
+      ],
+      "source": "variant-api"
+    },
+    "F5-1-F": {
+      "route": "F5",
+      "destination": "fort rouge station",
+      "displayNames": [
+        "fort rouge station",
+        "mcphillips - donald to fort rouge station"
+      ],
+      "source": "variant-api"
+    },
+    "F6-0-T": {
+      "route": "F6",
+      "destination": "templeton & salter",
+      "displayNames": [
+        "mcgregor - osborne to templeton & salter",
+        "templeton & salter"
+      ],
+      "source": "variant-api"
+    },
+    "F6-1-S": {
+      "route": "F6",
+      "destination": "south st. vital",
+      "displayNames": [
+        "mcgregor - osborne to south st. vital",
+        "south st. vital"
+      ],
+      "source": "variant-api"
+    },
+    "F7-0-B": {
+      "route": "F7",
+      "destination": "broadway & portage",
+      "displayNames": [
+        "broadway & portage",
+        "st. anne's - provencher to broadway & portage"
+      ],
+      "source": "variant-api"
+    },
+    "F7-1-C": {
+      "route": "F7",
+      "destination": "creek bend",
+      "displayNames": [
+        "creek bend",
+        "st. anne's - provencher to creek bend"
+      ],
+      "source": "variant-api"
+    },
+    "F8-0-D": {
+      "route": "F8",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "henderson - pembina to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "F8-0-G": {
+      "route": "F8",
+      "destination": "glenway",
+      "displayNames": [
+        "glenway",
+        "henderson - pembina to glenway"
+      ],
+      "source": "variant-api"
+    },
+    "F8-1-U": {
+      "route": "F8",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "henderson - pembina to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "F9-0-K": {
+      "route": "F9",
+      "destination": "kildonan place",
+      "displayNames": [
+        "kildonan place",
+        "lagimodiere - abinojii mikanah to kildonan place"
+      ],
+      "source": "variant-api"
+    },
+    "F9-0-L": {
+      "route": "F9",
+      "destination": "lakewood at vermillion",
+      "displayNames": [
+        "lagimodiere - abinojii mikanah to lakewood at vermillion",
+        "lakewood at vermillion"
+      ],
+      "source": "variant-api"
+    },
+    "F9-1-U": {
+      "route": "F9",
+      "destination": "university of manitoba",
+      "displayNames": [
+        "lagimodiere - abinojii mikanah to university of manitoba",
+        "university of manitoba"
+      ],
+      "source": "variant-api"
+    },
+    "FX2-0-D": {
+      "route": "FX2",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "main - st. marys to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "FX2-0-G": {
+      "route": "FX2",
+      "destination": "garden city centre",
+      "displayNames": [
+        "garden city centre",
+        "main - st. marys to garden city centre"
+      ],
+      "source": "variant-api"
+    },
+    "FX2-1-D": {
+      "route": "FX2",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "main - st. marys to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "FX2-1-V": {
+      "route": "FX2",
+      "destination": "st. vital centre",
+      "displayNames": [
+        "main - st. marys to st. vital centre",
+        "st. vital centre"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-0-*": {
+      "route": "FX3",
+      "destination": "regent & plessis",
+      "displayNames": [
+        "regent & plessis",
+        "regent - grant to regent & plessis"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-0-C": {
+      "route": "FX3",
+      "destination": "concert hall",
+      "displayNames": [
+        "concert hall",
+        "regent - grant to concert hall"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-0-K": {
+      "route": "FX3",
+      "destination": "kildonan place hub",
+      "displayNames": [
+        "kildonan place hub",
+        "regent - grant to kildonan place hub"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-0-R": {
+      "route": "FX3",
+      "destination": "redonda & pandora",
+      "displayNames": [
+        "redonda & pandora",
+        "regent - grant to redonda & pandora"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-1-D": {
+      "route": "FX3",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "regent - grant to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-1-G": {
+      "route": "FX3",
+      "destination": "grant at cathcart",
+      "displayNames": [
+        "grant at cathcart",
+        "regent - grant to grant at cathcart"
+      ],
+      "source": "variant-api"
+    },
+    "FX3-1-S": {
+      "route": "FX3",
+      "destination": "sturgeon & murray park",
+      "displayNames": [
+        "regent - grant to sturgeon & murray park",
+        "sturgeon & murray park"
+      ],
+      "source": "variant-api"
+    },
+    "FX4-0-D": {
+      "route": "FX4",
+      "destination": "downtown",
+      "displayNames": [
+        "downtown",
+        "gateway-portage to downtown"
+      ],
+      "source": "variant-api"
+    },
+    "FX4-0-G": {
+      "route": "FX4",
+      "destination": "gateway at mcleod",
+      "displayNames": [
+        "fx4 to gateway at mcleod",
+        "gateway at mcleod"
+      ],
+      "source": "variant-api"
+    },
+    "FX4-0-R": {
+      "route": "FX4",
+      "destination": "raleigh & knowles",
+      "displayNames": [
+        "gateway-portage to raleigh & knowles",
+        "raleigh & knowles"
+      ],
+      "source": "variant-api"
+    },
+    "FX4-1-P": {
+      "route": "FX4",
+      "destination": "polo park hub",
+      "displayNames": [
+        "gateway-portage to polo park hub",
+        "polo park hub"
+      ],
+      "source": "variant-api"
+    }
+  }
+}

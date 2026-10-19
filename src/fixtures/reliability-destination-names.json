@@ -1,0 +1,2038 @@
+[
+  {
+    "route": {
+      "key": 22,
+      "name": "Route 22 Portage"
+    },
+    "variant": {
+      "key": "22-0-P",
+      "name": "Portage to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": 22,
+      "name": "Route 22 Portage"
+    },
+    "variant": {
+      "key": "22-1-U",
+      "name": "Portage to Unicity"
+    },
+    "destination": "unicity"
+  },
+  {
+    "route": {
+      "key": 220,
+      "name": "Route 220 Crestview - Westwood"
+    },
+    "variant": {
+      "key": "220-0-R",
+      "name": "Westwood-St. Charles to Rouge & Assiniboine"
+    },
+    "destination": "rouge & assiniboine"
+  },
+  {
+    "route": {
+      "key": 220,
+      "name": "Route 220 Crestview - Westwood"
+    },
+    "variant": {
+      "key": "220-1-S",
+      "name": "Westwood - St. Charles to St. Charles"
+    },
+    "destination": "st. charles"
+  },
+  {
+    "route": {
+      "key": 223,
+      "name": "Route 223 Charleswood - Cavalier"
+    },
+    "variant": {
+      "key": "223-0-L",
+      "name": "Charleswood - Cavalier to Lumsden"
+    },
+    "destination": "lumsden"
+  },
+  {
+    "route": {
+      "key": 223,
+      "name": "Route 223 Charleswood - Cavalier"
+    },
+    "variant": {
+      "key": "223-1-W",
+      "name": "Charleswood - Cavalier to Westdale"
+    },
+    "destination": "westdale"
+  },
+  {
+    "route": {
+      "key": 224,
+      "name": "Route 224 Sherwin - Valour"
+    },
+    "variant": {
+      "key": "224-0-P",
+      "name": "Sherwin - Valour to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": 224,
+      "name": "Route 224 Sherwin - Valour"
+    },
+    "variant": {
+      "key": "224-0-T",
+      "name": "Sherwin - Valour to Tecumseh Loop"
+    },
+    "destination": "tecumseh loop"
+  },
+  {
+    "route": {
+      "key": 224,
+      "name": "Route 224 Sherwin - Valour"
+    },
+    "variant": {
+      "key": "224-1-P",
+      "name": "Sherwin - Valour to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": 224,
+      "name": "Route 224 Sherwin - Valour"
+    },
+    "variant": {
+      "key": "224-1-R",
+      "name": "Sherwin - Valour to RRC Polytech"
+    },
+    "destination": "rrc polytech"
+  },
+  {
+    "route": {
+      "key": 28,
+      "name": "Route 28 Arlington - Stafford"
+    },
+    "variant": {
+      "key": "28-0-T",
+      "name": "Arlington - Stafford to Templeton Walmart via Garden City Hub"
+    },
+    "destination": "templeton walmart"
+  },
+  {
+    "route": {
+      "key": 28,
+      "name": "Route 28 Arlington - Stafford"
+    },
+    "variant": {
+      "key": "28-1-S",
+      "name": "Arlington - Stafford to Seel Station"
+    },
+    "destination": "seel station"
+  },
+  {
+    "route": {
+      "key": 31,
+      "name": "Route 31 Waterfront - North Main"
+    },
+    "variant": {
+      "key": "31-0-R",
+      "name": "Waterfront - North Main to Riverbend"
+    },
+    "destination": "riverbend"
+  },
+  {
+    "route": {
+      "key": 31,
+      "name": "Route 31 Waterfront - North Main"
+    },
+    "variant": {
+      "key": "31-1-F",
+      "name": "Waterfront - North Main to The Forks"
+    },
+    "destination": "the forks"
+  },
+  {
+    "route": {
+      "key": 330,
+      "name": "Route 330 Murray - Grey"
+    },
+    "variant": {
+      "key": "330-0-*",
+      "name": "Murray - Grey to Main & Murray"
+    },
+    "destination": "main & murray"
+  },
+  {
+    "route": {
+      "key": 330,
+      "name": "Route 330 Murray - Grey"
+    },
+    "variant": {
+      "key": "330-0-L",
+      "name": "Murray - Grey to Levis & Nairn"
+    },
+    "destination": "levis & nairn"
+  },
+  {
+    "route": {
+      "key": 330,
+      "name": "Route 330 Murray - Grey"
+    },
+    "variant": {
+      "key": "330-0-M",
+      "name": "Murray - Grey to McLeod & Louelda"
+    },
+    "destination": "mcleod & louelda"
+  },
+  {
+    "route": {
+      "key": 330,
+      "name": "Route 330 Murray - Grey"
+    },
+    "variant": {
+      "key": "330-1-G",
+      "name": "Murray - Grey to Garden City Hub"
+    },
+    "destination": "garden city hub"
+  },
+  {
+    "route": {
+      "key": 330,
+      "name": "Route 330 Murray - Grey"
+    },
+    "variant": {
+      "key": "330-1-T",
+      "name": "Murray - Grey to Templeton Walmart via Garden City Hub"
+    },
+    "destination": "templeton walmart"
+  },
+  {
+    "route": {
+      "key": 332,
+      "name": "Route 332 Amber Trails - Church"
+    },
+    "variant": {
+      "key": "332-0-G",
+      "name": "Amber Trails - Church to Garden City Hub"
+    },
+    "destination": "garden city hub"
+  },
+  {
+    "route": {
+      "key": 332,
+      "name": "Route 332 Amber Trails - Church"
+    },
+    "variant": {
+      "key": "332-0-O",
+      "name": "Amber Trails - Church to Old Commonwealth"
+    },
+    "destination": "old commonwealth"
+  },
+  {
+    "route": {
+      "key": 332,
+      "name": "Route 332 Amber Trails - Church"
+    },
+    "variant": {
+      "key": "332-1-S",
+      "name": "Amber Trails - Church to Selkirk & McPhillips"
+    },
+    "destination": "selkirk & mcphillips"
+  },
+  {
+    "route": {
+      "key": 332,
+      "name": "Route 332 Amber Trails - Church"
+    },
+    "variant": {
+      "key": "332-1-W",
+      "name": "Amber Trails - Church to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 334,
+      "name": "Route 334 Watson - Dr. Jose Rizal"
+    },
+    "variant": {
+      "key": "334-0-G",
+      "name": "Watson - Dr. Jose Rizal to Garden City Hub"
+    },
+    "destination": "garden city hub"
+  },
+  {
+    "route": {
+      "key": 334,
+      "name": "Route 334 Watson - Dr. Jose Rizal"
+    },
+    "variant": {
+      "key": "334-1-W",
+      "name": "Watson - Dr. Jose Rizal to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 336,
+      "name": "Route 336 Templeton - Tyndall Park"
+    },
+    "variant": {
+      "key": "336-0-G",
+      "name": "Templeton - Tyndall Park to Garden City Hub"
+    },
+    "destination": "garden city hub"
+  },
+  {
+    "route": {
+      "key": 336,
+      "name": "Route 336 Templeton - Tyndall Park"
+    },
+    "variant": {
+      "key": "336-0-O",
+      "name": "Templeton - Tyndall Park to Old Commonweath"
+    },
+    "destination": "old commonweath"
+  },
+  {
+    "route": {
+      "key": 336,
+      "name": "Route 336 Templeton - Tyndall Park"
+    },
+    "variant": {
+      "key": "336-0-T",
+      "name": "Templeton - Tyndall Park to Templeton Walmart via Garden City Hub"
+    },
+    "destination": "templeton walmart"
+  },
+  {
+    "route": {
+      "key": 336,
+      "name": "Route 336 Templeton - Tyndall Park"
+    },
+    "variant": {
+      "key": "336-1-D",
+      "name": "Templeton - Tyndall Park to Dr Jose Rizal"
+    },
+    "destination": "dr jose rizal"
+  },
+  {
+    "route": {
+      "key": 336,
+      "name": "Route 336 Templeton - Tyndall Park"
+    },
+    "variant": {
+      "key": "336-1-F",
+      "name": "Templeton - Tyndall Park to Fife Loop"
+    },
+    "destination": "fife loop"
+  },
+  {
+    "route": {
+      "key": 336,
+      "name": "Route 336 Templeton - Tyndall Park"
+    },
+    "variant": {
+      "key": "336-1-W",
+      "name": "Templeton - Tyndall Park to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 37,
+      "name": "Route 37 Jefferson"
+    },
+    "variant": {
+      "key": "37-0-C",
+      "name": "Jefferson to Cathedral & Main"
+    },
+    "destination": "cathedral & main"
+  },
+  {
+    "route": {
+      "key": 37,
+      "name": "Route 37 Jefferson"
+    },
+    "variant": {
+      "key": "37-1-W",
+      "name": "Jefferson to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 38,
+      "name": "Route 38 Mountain - Munroe"
+    },
+    "variant": {
+      "key": "38-0-K",
+      "name": "Munroe - Mountain to Kildonan Place"
+    },
+    "destination": "kildonan place"
+  },
+  {
+    "route": {
+      "key": 38,
+      "name": "Route 38 Mountain - Munroe"
+    },
+    "variant": {
+      "key": "38-1-G",
+      "name": "Munroe - Mountain to Garden City Hub"
+    },
+    "destination": "garden city hub"
+  },
+  {
+    "route": {
+      "key": 39,
+      "name": "Route 39 Inkster"
+    },
+    "variant": {
+      "key": "39-0-C",
+      "name": "Inkster to Cathedral & Main"
+    },
+    "destination": "cathedral & main"
+  },
+  {
+    "route": {
+      "key": 39,
+      "name": "Route 39 Inkster"
+    },
+    "variant": {
+      "key": "39-1-W",
+      "name": "Inkster to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 43,
+      "name": "Route 43 Watt - Logan"
+    },
+    "variant": {
+      "key": "43-0-D",
+      "name": "Watt - Logan to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": 43,
+      "name": "Route 43 Watt - Logan"
+    },
+    "variant": {
+      "key": "43-0-G",
+      "name": "Watt - Logan to Gateway"
+    },
+    "destination": "gateway"
+  },
+  {
+    "route": {
+      "key": 43,
+      "name": "Route 43 Watt - Logan"
+    },
+    "variant": {
+      "key": "43-1-D",
+      "name": "Watt - Logan to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": 43,
+      "name": "Route 43 Watt - Logan"
+    },
+    "variant": {
+      "key": "43-1-R",
+      "name": "Watt - Logan to RRC Polytech"
+    },
+    "destination": "rrc polytech"
+  },
+  {
+    "route": {
+      "key": 440,
+      "name": "Route 440 Rougeau - Plessis"
+    },
+    "variant": {
+      "key": "440-0-L",
+      "name": "Rougeau - Plessis to Lakeside Meadows"
+    },
+    "destination": "lakeside meadows"
+  },
+  {
+    "route": {
+      "key": 440,
+      "name": "Route 440 Rougeau - Plessis"
+    },
+    "variant": {
+      "key": "440-1-C",
+      "name": "Rougeau - Plessis to Crossroads Station"
+    },
+    "destination": "crossroads station"
+  },
+  {
+    "route": {
+      "key": 442,
+      "name": "Route 442 Concordia - North Kildonan"
+    },
+    "variant": {
+      "key": "442-0-H",
+      "name": "Concordia - North Kildonan to Henderson & Northdale"
+    },
+    "destination": "henderson & northdale"
+  },
+  {
+    "route": {
+      "key": 442,
+      "name": "Route 442 Concordia - North Kildonan"
+    },
+    "variant": {
+      "key": "442-0-S",
+      "name": "Concordia - North Kildonan to Springfield Loop"
+    },
+    "destination": "springfield loop"
+  },
+  {
+    "route": {
+      "key": 442,
+      "name": "Route 442 Concordia - North Kildonan"
+    },
+    "variant": {
+      "key": "442-1-K",
+      "name": "Concordia - North Kildonan to Kildonan Place Hub"
+    },
+    "destination": "kildonan place hub"
+  },
+  {
+    "route": {
+      "key": 442,
+      "name": "Route 442 Concordia - North Kildonan"
+    },
+    "variant": {
+      "key": "442-1-h",
+      "name": "Concordia - North Kildonan to South Bound Henderson & Northdale"
+    },
+    "destination": "south bound henderson & northdale"
+  },
+  {
+    "route": {
+      "key": 444,
+      "name": "Route 444 Devonshire - Redonda"
+    },
+    "variant": {
+      "key": "444-0-S",
+      "name": "Devonshire - Redonda to Summerlea"
+    },
+    "destination": "summerlea"
+  },
+  {
+    "route": {
+      "key": 444,
+      "name": "Route 444 Devonshire - Redonda"
+    },
+    "variant": {
+      "key": "444-1-K",
+      "name": "Devonshire - Redonda to Kildonan Place Hub"
+    },
+    "destination": "kildonan place hub"
+  },
+  {
+    "route": {
+      "key": 446,
+      "name": "Route 446 Peguis - Donwood"
+    },
+    "variant": {
+      "key": "446-0-K",
+      "name": "Peguis - Donwood to Kildonan Place"
+    },
+    "destination": "kildonan place"
+  },
+  {
+    "route": {
+      "key": 446,
+      "name": "Route 446 Peguis - Donwood"
+    },
+    "variant": {
+      "key": "446-1-W",
+      "name": "Peguis - Donwood to Whellams Lane"
+    },
+    "destination": "whellams lane"
+  },
+  {
+    "route": {
+      "key": 48,
+      "name": "Route 48 Transcona Blvd - McMeans"
+    },
+    "variant": {
+      "key": "48-0-R",
+      "name": "McMeans to Redonda & Pandora"
+    },
+    "destination": "redonda & pandora"
+  },
+  {
+    "route": {
+      "key": 48,
+      "name": "Route 48 Transcona Blvd - McMeans"
+    },
+    "variant": {
+      "key": "48-1-C",
+      "name": "Transcona Blvd to Crossroads Station"
+    },
+    "destination": "crossroads station"
+  },
+  {
+    "route": {
+      "key": 551,
+      "name": "Route 551 Watt - Windsor Park"
+    },
+    "variant": {
+      "key": "551-0-W",
+      "name": "Watt - Windsor Park to Watt & Leighton"
+    },
+    "destination": "watt & leighton"
+  },
+  {
+    "route": {
+      "key": 551,
+      "name": "Route 551 Watt - Windsor Park"
+    },
+    "variant": {
+      "key": "551-1-P",
+      "name": "Watt - Windsor Park to Paterson & Lagimodiere"
+    },
+    "destination": "paterson & lagimodiere"
+  },
+  {
+    "route": {
+      "key": 552,
+      "name": "Route 552 Aldgate - Meadowood"
+    },
+    "variant": {
+      "key": "552-0-A",
+      "name": "Aldgate - Meadowood to Avalon Loop"
+    },
+    "destination": "avalon loop"
+  },
+  {
+    "route": {
+      "key": 552,
+      "name": "Route 552 Aldgate - Meadowood"
+    },
+    "variant": {
+      "key": "552-0-V",
+      "name": "Aldgate - Meadowood to St. Vital Centre"
+    },
+    "destination": "st. vital centre"
+  },
+  {
+    "route": {
+      "key": 552,
+      "name": "Route 552 Aldgate - Meadowood"
+    },
+    "variant": {
+      "key": "552-1-S",
+      "name": "Aldgate - Meadowood to South St. Vital"
+    },
+    "destination": "south st. vital"
+  },
+  {
+    "route": {
+      "key": 556,
+      "name": "Route 556 Beliveau"
+    },
+    "variant": {
+      "key": "556-0-S",
+      "name": "Beliveau to Sage Creek"
+    },
+    "destination": "sage creek"
+  },
+  {
+    "route": {
+      "key": 556,
+      "name": "Route 556 Beliveau"
+    },
+    "variant": {
+      "key": "556-1-P",
+      "name": "Beliveau to Plaza Dr"
+    },
+    "destination": "plaza dr"
+  },
+  {
+    "route": {
+      "key": 557,
+      "name": "Route 557 Island Lakes - Morley"
+    },
+    "variant": {
+      "key": "557-0-S",
+      "name": "Island Lakes - Morley to Sage Creek"
+    },
+    "destination": "sage creek"
+  },
+  {
+    "route": {
+      "key": 557,
+      "name": "Route 557 Island Lakes - Morley"
+    },
+    "variant": {
+      "key": "557-1-F",
+      "name": "Island Lakes - Morley to Fermor & St. Marys"
+    },
+    "destination": "fermor & st. marys"
+  },
+  {
+    "route": {
+      "key": 557,
+      "name": "Route 557 Island Lakes - Morley"
+    },
+    "variant": {
+      "key": "557-1-W",
+      "name": "Island Lakes - Morley to Windermere"
+    },
+    "destination": "windermere"
+  },
+  {
+    "route": {
+      "key": 558,
+      "name": "Route 558 Southglen - Cottonwood"
+    },
+    "variant": {
+      "key": "558-0-E",
+      "name": "Southglen - Cottonwood to East Mint"
+    },
+    "destination": "east mint"
+  },
+  {
+    "route": {
+      "key": 558,
+      "name": "Route 558 Southglen - Cottonwood"
+    },
+    "variant": {
+      "key": "558-1-A",
+      "name": "Southglen - Cottonwood to Avalon Loop"
+    },
+    "destination": "avalon loop"
+  },
+  {
+    "route": {
+      "key": 641,
+      "name": "Route 641 Lindenwoods West"
+    },
+    "variant": {
+      "key": "641-0-B",
+      "name": "Lindenwoods West to Beaumont Station"
+    },
+    "destination": "beaumont station"
+  },
+  {
+    "route": {
+      "key": 641,
+      "name": "Route 641 Lindenwoods West"
+    },
+    "variant": {
+      "key": "641-1-C",
+      "name": "Lindenwoods West to Commerce Loop"
+    },
+    "destination": "commerce loop"
+  },
+  {
+    "route": {
+      "key": 642,
+      "name": "Route 642 Lindenwoods East"
+    },
+    "variant": {
+      "key": "642-0-S",
+      "name": "Lindenwoods East to Seel Station"
+    },
+    "destination": "seel station"
+  },
+  {
+    "route": {
+      "key": 642,
+      "name": "Route 642 Lindenwoods East"
+    },
+    "variant": {
+      "key": "642-1-H",
+      "name": "Lindenwoods East to Henlow & Fultz"
+    },
+    "destination": "henlow & fultz"
+  },
+  {
+    "route": {
+      "key": 649,
+      "name": "Route 649 Chevrier"
+    },
+    "variant": {
+      "key": "649-0-S",
+      "name": "Chevrier to Seel Station"
+    },
+    "destination": "seel station"
+  },
+  {
+    "route": {
+      "key": 649,
+      "name": "Route 649 Chevrier"
+    },
+    "variant": {
+      "key": "649-1-F",
+      "name": "Chevrier to Fort Whyte Alive"
+    },
+    "destination": "fort whyte alive"
+  },
+  {
+    "route": {
+      "key": 650,
+      "name": "Route 650 McGillivray"
+    },
+    "variant": {
+      "key": "650-0-S",
+      "name": "McGillivray to Seel Station"
+    },
+    "destination": "seel station"
+  },
+  {
+    "route": {
+      "key": 650,
+      "name": "Route 650 McGillivray"
+    },
+    "variant": {
+      "key": "650-1-W",
+      "name": "McGillivray to Fort Whyte Alive"
+    },
+    "destination": "fort whyte alive"
+  },
+  {
+    "route": {
+      "key": 662,
+      "name": "Route 662 Richmond"
+    },
+    "variant": {
+      "key": "662-0-U",
+      "name": "Richmond to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": 662,
+      "name": "Route 662 Richmond"
+    },
+    "variant": {
+      "key": "662-1-M",
+      "name": "Richmond to Markham Station via Richmond West"
+    },
+    "destination": "markham station via richmond west"
+  },
+  {
+    "route": {
+      "key": 664,
+      "name": "Route 664 Taylor - West Taylor"
+    },
+    "variant": {
+      "key": "664-0-S",
+      "name": "Taylor to Stafford & Pembina"
+    },
+    "destination": "stafford & pembina"
+  },
+  {
+    "route": {
+      "key": 664,
+      "name": "Route 664 Taylor - West Taylor"
+    },
+    "variant": {
+      "key": "664-1-O",
+      "name": "Taylor to Outlet Mall"
+    },
+    "destination": "outlet mall"
+  },
+  {
+    "route": {
+      "key": 671,
+      "name": "Route 671 Dalhousie"
+    },
+    "variant": {
+      "key": "671-0-U",
+      "name": "Dalhousie to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": 671,
+      "name": "Route 671 Dalhousie"
+    },
+    "variant": {
+      "key": "671-1-P",
+      "name": "Dalhousie to Prairie Pointe"
+    },
+    "destination": "prairie pointe"
+  },
+  {
+    "route": {
+      "key": 672,
+      "name": "Route 672 Killarney"
+    },
+    "variant": {
+      "key": "672-0-U",
+      "name": "Killarney to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": 672,
+      "name": "Route 672 Killarney"
+    },
+    "variant": {
+      "key": "672-1-P",
+      "name": "Killarney to Prairie Pointe"
+    },
+    "destination": "prairie pointe"
+  },
+  {
+    "route": {
+      "key": 676,
+      "name": "Route 676 North Town - Burland"
+    },
+    "variant": {
+      "key": "676-0-C",
+      "name": "Northtown - Burland to Creek Bend via Burland"
+    },
+    "destination": "creek bend via burland"
+  },
+  {
+    "route": {
+      "key": 676,
+      "name": "Route 676 North Town - Burland"
+    },
+    "variant": {
+      "key": "676-1-B",
+      "name": "Northtown - Burland to Bridgwater"
+    },
+    "destination": "bridgwater"
+  },
+  {
+    "route": {
+      "key": 676,
+      "name": "Route 676 North Town - Burland"
+    },
+    "variant": {
+      "key": "676-1-D",
+      "name": "Northtown - Burland to Dakota"
+    },
+    "destination": "dakota"
+  },
+  {
+    "route": {
+      "key": 677,
+      "name": "Route 677 Wilkes"
+    },
+    "variant": {
+      "key": "677-0-B",
+      "name": "Wilkes to Beaumont Station"
+    },
+    "destination": "beaumont station"
+  },
+  {
+    "route": {
+      "key": 677,
+      "name": "Route 677 Wilkes"
+    },
+    "variant": {
+      "key": "677-1-O",
+      "name": "Wilkes to Outlet Mall"
+    },
+    "destination": "outlet mall"
+  },
+  {
+    "route": {
+      "key": 678,
+      "name": "Route 678 Waverley West - Chancellor"
+    },
+    "variant": {
+      "key": "678-0-A",
+      "name": "Waverly West - Chancellor to Arbour Meadow & Bridgeland"
+    },
+    "destination": "arbour meadow & bridgeland"
+  },
+  {
+    "route": {
+      "key": 678,
+      "name": "Route 678 Waverley West - Chancellor"
+    },
+    "variant": {
+      "key": "678-0-F",
+      "name": "Waverly West - Chancellor to Freedman Terminal"
+    },
+    "destination": "freedman terminal"
+  },
+  {
+    "route": {
+      "key": 678,
+      "name": "Route 678 Waverley West - Chancellor"
+    },
+    "variant": {
+      "key": "678-1-S",
+      "name": "Waverly West - Chancellor to South Pointe"
+    },
+    "destination": "south pointe"
+  },
+  {
+    "route": {
+      "key": 679,
+      "name": "Route 679 Waverley"
+    },
+    "variant": {
+      "key": "679-0-S",
+      "name": "Waverley to Seel Station"
+    },
+    "destination": "seel station"
+  },
+  {
+    "route": {
+      "key": 679,
+      "name": "Route 679 Waverley"
+    },
+    "variant": {
+      "key": "679-1-U",
+      "name": "Waverley to Freedman Terminal via Waverley"
+    },
+    "destination": "freedman terminal"
+  },
+  {
+    "route": {
+      "key": 680,
+      "name": "Route 680 River Heights - Cambridge"
+    },
+    "variant": {
+      "key": "680-0-P",
+      "name": "River Heights - Cambridge to Polo Park Hub"
+    },
+    "destination": "polo park hub"
+  },
+  {
+    "route": {
+      "key": 680,
+      "name": "Route 680 River Heights - Cambridge"
+    },
+    "variant": {
+      "key": "680-1-S",
+      "name": "River Heights - Cambridge to Seel Station"
+    },
+    "destination": "seel station"
+  },
+  {
+    "route": {
+      "key": 690,
+      "name": "Route 690 Industrial"
+    },
+    "variant": {
+      "key": "690-0-S",
+      "name": "Industrial to Seel Station"
+    },
+    "destination": "seel station via fort garry industrial park"
+  },
+  {
+    "route": {
+      "key": 690,
+      "name": "Route 690 Industrial"
+    },
+    "variant": {
+      "key": "690-1-K",
+      "name": "Industrial to Kenaston"
+    },
+    "destination": "kenaston via fort garry industrial park"
+  },
+  {
+    "route": {
+      "key": 691,
+      "name": "Route 691 Whyte Ridge"
+    },
+    "variant": {
+      "key": "691-0-S",
+      "name": "Whyte Ridge to Seel Station"
+    },
+    "destination": "seel station via chevrier"
+  },
+  {
+    "route": {
+      "key": 691,
+      "name": "Route 691 Whyte Ridge"
+    },
+    "variant": {
+      "key": "691-1-W",
+      "name": "Whyte Ridge to Whyte Ridge"
+    },
+    "destination": "whyte ridge via scurfield"
+  },
+  {
+    "route": {
+      "key": 694,
+      "name": "Route 694 Wildwood"
+    },
+    "variant": {
+      "key": "694-0-S",
+      "name": "Wildwood to Seel Station"
+    },
+    "destination": "seel station via wildwood"
+  },
+  {
+    "route": {
+      "key": 694,
+      "name": "Route 694 Wildwood"
+    },
+    "variant": {
+      "key": "694-1-F",
+      "name": "Wildwood to Fort Garry Industrial Park",
+      "description": "Fort Garry Industrial Park"
+    },
+    "destination": "fort garry industrial park via"
+  },
+  {
+    "route": {
+      "key": 70,
+      "name": "Route 70 Roblin"
+    },
+    "variant": {
+      "key": "70-0-P",
+      "name": "Roblin to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": 70,
+      "name": "Route 70 Roblin"
+    },
+    "variant": {
+      "key": "70-1-U",
+      "name": "Roblin to Unicity"
+    },
+    "destination": "unicity"
+  },
+  {
+    "route": {
+      "key": 74,
+      "name": "Route 74 Kenaston - Keewatin"
+    },
+    "variant": {
+      "key": "74-0-P",
+      "name": "Kenaston-Keewatin to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": 74,
+      "name": "Route 74 Kenaston - Keewatin"
+    },
+    "variant": {
+      "key": "74-0-W",
+      "name": "Kenaston-Keewatin to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 74,
+      "name": "Route 74 Kenaston - Keewatin"
+    },
+    "variant": {
+      "key": "74-1-P",
+      "name": "Kenaston-Keewatin to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": 74,
+      "name": "Route 74 Kenaston - Keewatin"
+    },
+    "variant": {
+      "key": "74-1-U",
+      "name": "Kenaston-Keewatin to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": 833,
+      "name": "Route 833 Burrows"
+    },
+    "variant": {
+      "key": "833-0-T",
+      "name": "Burrows to Tecumseh Loop"
+    },
+    "destination": "tecumseh loop"
+  },
+  {
+    "route": {
+      "key": 833,
+      "name": "Route 833 Burrows"
+    },
+    "variant": {
+      "key": "833-1-T",
+      "name": "Burrows to Tyndall Park"
+    },
+    "destination": "tyndall park"
+  },
+  {
+    "route": {
+      "key": 881,
+      "name": "Route 881 Brookside"
+    },
+    "variant": {
+      "key": "881-0-N",
+      "name": "Brookside to North Inkster Industrial"
+    },
+    "destination": "north inkster industrial"
+  },
+  {
+    "route": {
+      "key": 881,
+      "name": "Route 881 Brookside"
+    },
+    "variant": {
+      "key": "881-1-R",
+      "name": "Brookside to RRC Polytech"
+    },
+    "destination": "rrc polytech"
+  },
+  {
+    "route": {
+      "key": 883,
+      "name": "Route 883 Murray Park"
+    },
+    "variant": {
+      "key": "883-0-S",
+      "name": "Murray Park to Saskatchewan Loop"
+    },
+    "destination": "saskatchewan loop"
+  },
+  {
+    "route": {
+      "key": 883,
+      "name": "Route 883 Murray Park"
+    },
+    "variant": {
+      "key": "883-1-G",
+      "name": "Murray Park to Grace Hospital"
+    },
+    "destination": "grace hospital"
+  },
+  {
+    "route": {
+      "key": 884,
+      "name": "Route 884 Keewatin"
+    },
+    "variant": {
+      "key": "884-0-W",
+      "name": "Keewatin to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": 884,
+      "name": "Route 884 Keewatin"
+    },
+    "variant": {
+      "key": "884-1-P",
+      "name": "Keewatin to Portage"
+    },
+    "destination": "portage"
+  },
+  {
+    "route": {
+      "key": 885,
+      "name": "Route 885 Rannock - Westwood"
+    },
+    "variant": {
+      "key": "885-0-C",
+      "name": "Rannock - Westwood to Cathcart & Grant"
+    },
+    "destination": "cathcart & grant"
+  },
+  {
+    "route": {
+      "key": 885,
+      "name": "Route 885 Rannock - Westwood"
+    },
+    "variant": {
+      "key": "885-0-U",
+      "name": "Rannock - Westwood to Unicity"
+    },
+    "destination": "unicity"
+  },
+  {
+    "route": {
+      "key": 885,
+      "name": "Route 885 Rannock - Westwood"
+    },
+    "variant": {
+      "key": "885-1-D",
+      "name": "Rannock - Westwood to Dale & Windmill"
+    },
+    "destination": "dale & windmill"
+  },
+  {
+    "route": {
+      "key": 885,
+      "name": "Route 885 Rannock - Westwood"
+    },
+    "variant": {
+      "key": "885-1-R",
+      "name": "Rannock - Westwood to Ronald & Portage"
+    },
+    "destination": "ronald & portage"
+  },
+  {
+    "route": {
+      "key": 886,
+      "name": "Route 886 Dugald"
+    },
+    "variant": {
+      "key": "886-0-S",
+      "name": "Dugald to South Transcona"
+    },
+    "destination": "south transcona"
+  },
+  {
+    "route": {
+      "key": 886,
+      "name": "Route 886 Dugald"
+    },
+    "variant": {
+      "key": "886-1-S",
+      "name": "Dugald to Stadacona"
+    },
+    "destination": "stadacona"
+  },
+  {
+    "route": {
+      "key": 887,
+      "name": "Route 887 Dugald"
+    },
+    "variant": {
+      "key": "887-0-S",
+      "name": "Dugald to St. Boniface Industrial Park"
+    },
+    "destination": "st. boniface industrial park"
+  },
+  {
+    "route": {
+      "key": 887,
+      "name": "Route 887 Dugald"
+    },
+    "variant": {
+      "key": "887-1-S",
+      "name": "Dugald to Stadacona"
+    },
+    "destination": "stadacona"
+  },
+  {
+    "route": {
+      "key": 888,
+      "name": "Route 888 Tache"
+    },
+    "variant": {
+      "key": "888-0-W",
+      "name": "Tache to Whittier Park"
+    },
+    "destination": "whittier park"
+  },
+  {
+    "route": {
+      "key": 888,
+      "name": "Route 888 Tache"
+    },
+    "variant": {
+      "key": "888-1-N",
+      "name": "Tache to Norwood"
+    },
+    "destination": "norwood"
+  },
+  {
+    "route": {
+      "key": 889,
+      "name": "Route 889 Sherbrook Express - Pembina Express"
+    },
+    "variant": {
+      "key": "889-0-T",
+      "name": "Sherbrook - Pembina Express to Tecumseh Loop"
+    },
+    "destination": "tecumseh loop"
+  },
+  {
+    "route": {
+      "key": 889,
+      "name": "Route 889 Sherbrook Express - Pembina Express"
+    },
+    "variant": {
+      "key": "889-1-U",
+      "name": "Sherbrook - Pembina Express to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": 895,
+      "name": "Route 895 Morley"
+    },
+    "variant": {
+      "key": "895-0-R",
+      "name": "Morley to Riverview"
+    },
+    "destination": "riverview"
+  },
+  {
+    "route": {
+      "key": 895,
+      "name": "Route 895 Morley"
+    },
+    "variant": {
+      "key": "895-1-J",
+      "name": "Morley to Jubilee Station"
+    },
+    "destination": "jubilee station"
+  },
+  {
+    "route": {
+      "key": 91,
+      "name": "Route 91 St. Norbert"
+    },
+    "variant": {
+      "key": "91-0-B",
+      "name": "Killarney to Baylor & Killarney"
+    },
+    "destination": "baylor & killarney"
+  },
+  {
+    "route": {
+      "key": 91,
+      "name": "Route 91 St. Norbert"
+    },
+    "variant": {
+      "key": "91-1-S",
+      "name": "St Norbert to St. Norbert"
+    },
+    "destination": "st. norbert"
+  },
+  {
+    "route": {
+      "key": "BLUE",
+      "name": "BLUE"
+    },
+    "variant": {
+      "key": "BLUE-0-D",
+      "name": "BLUE to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "BLUE",
+      "name": "BLUE"
+    },
+    "variant": {
+      "key": "BLUE-0-U",
+      "name": "BLUE to Unicity Shopping Centre"
+    },
+    "destination": "unicity shopping centre"
+  },
+  {
+    "route": {
+      "key": "BLUE",
+      "name": "BLUE"
+    },
+    "variant": {
+      "key": "BLUE-1-S",
+      "name": "to St. Norbert"
+    },
+    "destination": "st. norbert"
+  },
+  {
+    "route": {
+      "key": "BLUE",
+      "name": "BLUE"
+    },
+    "variant": {
+      "key": "BLUE-1-U",
+      "name": "BLUE to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": "D10",
+      "name": "Route D10 Panet - Adsum"
+    },
+    "variant": {
+      "key": "D10-0-K",
+      "name": "Panet - Adsum to Kildonan Place"
+    },
+    "destination": "kildonan place"
+  },
+  {
+    "route": {
+      "key": "D10",
+      "name": "Route D10 Panet - Adsum"
+    },
+    "variant": {
+      "key": "D10-1-W",
+      "name": "Panet - Adsum to Waterford Green"
+    },
+    "destination": "waterford green"
+  },
+  {
+    "route": {
+      "key": "D11",
+      "name": "Route D11 Salter - Stafford"
+    },
+    "variant": {
+      "key": "D11-0-D",
+      "name": "Salter - Stafford to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D11",
+      "name": "Route D11 Salter - Stafford"
+    },
+    "variant": {
+      "key": "D11-0-T",
+      "name": "Salter - Stafford to Templeton & Salter"
+    },
+    "destination": "templeton & salter"
+  },
+  {
+    "route": {
+      "key": "D11",
+      "name": "Route D11 Salter - Stafford"
+    },
+    "variant": {
+      "key": "D11-1-B",
+      "name": "Salter - Stafford to Beaumont Station"
+    },
+    "destination": "beaumont station"
+  },
+  {
+    "route": {
+      "key": "D11",
+      "name": "Route D11 Salter - Stafford"
+    },
+    "variant": {
+      "key": "D11-1-D",
+      "name": "Salter - Stafford to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D12",
+      "name": "Route D12 Ellice"
+    },
+    "variant": {
+      "key": "D12-0-F",
+      "name": "D12 to The Forks"
+    },
+    "destination": "the forks"
+  },
+  {
+    "route": {
+      "key": "D12",
+      "name": "Route D12 Ellice"
+    },
+    "variant": {
+      "key": "D12-1-A",
+      "name": "D12 to The Airport via Ellice"
+    },
+    "destination": "the airport"
+  },
+  {
+    "route": {
+      "key": "D13",
+      "name": "Route D13 Sargent"
+    },
+    "variant": {
+      "key": "D13-0-F",
+      "name": "D13 to The Forks via Sargent"
+    },
+    "destination": "the forks"
+  },
+  {
+    "route": {
+      "key": "D13",
+      "name": "Route D13 Sargent"
+    },
+    "variant": {
+      "key": "D13-1-A",
+      "name": "D13 to The Airport via Sargent"
+    },
+    "destination": "the airport"
+  },
+  {
+    "route": {
+      "key": "D14",
+      "name": "Route D14 Dugald - Broadway"
+    },
+    "variant": {
+      "key": "D14-0-R",
+      "name": "D14 to Redonda & Pandora via Marion"
+    },
+    "destination": "redonda & pandora"
+  },
+  {
+    "route": {
+      "key": "D14",
+      "name": "Route D14 Dugald - Broadway"
+    },
+    "variant": {
+      "key": "D14-1-W",
+      "name": "D14 to Wall Street via Broadway"
+    },
+    "destination": "wall street"
+  },
+  {
+    "route": {
+      "key": "D15",
+      "name": "Route D15 Archibald - Ness"
+    },
+    "variant": {
+      "key": "D15-0-D",
+      "name": "D15 to Downtown via Ness"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D15",
+      "name": "Route D15 Archibald - Ness"
+    },
+    "variant": {
+      "key": "D15-0-S",
+      "name": "D15 to Sage Creek"
+    },
+    "destination": "sage creek"
+  },
+  {
+    "route": {
+      "key": "D15",
+      "name": "Route D15 Archibald - Ness"
+    },
+    "variant": {
+      "key": "D15-1-D",
+      "name": "D15 to Downtown via Archibald"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D15",
+      "name": "Route D15 Archibald - Ness"
+    },
+    "variant": {
+      "key": "D15-1-U",
+      "name": "D15 to Unicity"
+    },
+    "destination": "unicity"
+  },
+  {
+    "route": {
+      "key": "D16",
+      "name": "Route D16 Academy"
+    },
+    "variant": {
+      "key": "D16-0-D",
+      "name": "D16 to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D16",
+      "name": "Route D16 Academy"
+    },
+    "variant": {
+      "key": "D16-1-P",
+      "name": "D16 to Polo Park"
+    },
+    "destination": "polo park"
+  },
+  {
+    "route": {
+      "key": "D17",
+      "name": "Route D17 Talbot - Selkirk"
+    },
+    "variant": {
+      "key": "D17-0-K",
+      "name": "D17 to Kildonan Place"
+    },
+    "destination": "kildonan place"
+  },
+  {
+    "route": {
+      "key": "D17",
+      "name": "Route D17 Talbot - Selkirk"
+    },
+    "variant": {
+      "key": "D17-1-R",
+      "name": "D17 to RRC Polytech"
+    },
+    "destination": "rrc polytech"
+  },
+  {
+    "route": {
+      "key": "D17",
+      "name": "Route D17 Talbot - Selkirk"
+    },
+    "variant": {
+      "key": "D17-1-S",
+      "name": "D17 to Selkirk & McPhillips"
+    },
+    "destination": "selkirk & mcphillips"
+  },
+  {
+    "route": {
+      "key": "D18",
+      "name": "Route D18 Notre Dame"
+    },
+    "variant": {
+      "key": "D18-0-D",
+      "name": "D18 to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D18",
+      "name": "Route D18 Notre Dame"
+    },
+    "variant": {
+      "key": "D18-1-R",
+      "name": "D18 to RRC Polytech"
+    },
+    "destination": "rrc polytech"
+  },
+  {
+    "route": {
+      "key": "D19",
+      "name": "Route D19 Corydon"
+    },
+    "variant": {
+      "key": "D19-0-D",
+      "name": "D19 to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "D19",
+      "name": "Route D19 Corydon"
+    },
+    "variant": {
+      "key": "D19-1-Z",
+      "name": "D19 to The Zoo"
+    },
+    "destination": "the zoo"
+  },
+  {
+    "route": {
+      "key": "F5",
+      "name": "Route F5 McPhillips - Donald"
+    },
+    "variant": {
+      "key": "F5-0-G",
+      "name": "McPhillips - Donald to Garden City Centre"
+    },
+    "destination": "garden city centre"
+  },
+  {
+    "route": {
+      "key": "F5",
+      "name": "Route F5 McPhillips - Donald"
+    },
+    "variant": {
+      "key": "F5-1-F",
+      "name": "McPhillips - Donald to Fort Rouge Station"
+    },
+    "destination": "fort rouge station"
+  },
+  {
+    "route": {
+      "key": "F6",
+      "name": "Route F6 McGregor - Osborne"
+    },
+    "variant": {
+      "key": "F6-0-T",
+      "name": "McGregor - Osborne to Templeton & Salter"
+    },
+    "destination": "templeton & salter"
+  },
+  {
+    "route": {
+      "key": "F6",
+      "name": "Route F6 McGregor - Osborne"
+    },
+    "variant": {
+      "key": "F6-1-S",
+      "name": "McGregor - Osborne to South St. Vital"
+    },
+    "destination": "south st. vital"
+  },
+  {
+    "route": {
+      "key": "F7",
+      "name": "Route F7 St. Anne's - Provencher"
+    },
+    "variant": {
+      "key": "F7-0-B",
+      "name": "St. Anne's - Provencher to Broadway & Portage"
+    },
+    "destination": "broadway & portage"
+  },
+  {
+    "route": {
+      "key": "F7",
+      "name": "Route F7 St. Anne's - Provencher"
+    },
+    "variant": {
+      "key": "F7-1-C",
+      "name": "St. Anne's - Provencher to Creek Bend"
+    },
+    "destination": "creek bend"
+  },
+  {
+    "route": {
+      "key": "F8",
+      "name": "Route F8 Henderson - Pembina"
+    },
+    "variant": {
+      "key": "F8-0-D",
+      "name": "Henderson - Pembina to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "F8",
+      "name": "Route F8 Henderson - Pembina"
+    },
+    "variant": {
+      "key": "F8-0-G",
+      "name": "Henderson - Pembina to Glenway"
+    },
+    "destination": "glenway"
+  },
+  {
+    "route": {
+      "key": "F8",
+      "name": "Route F8 Henderson - Pembina"
+    },
+    "variant": {
+      "key": "F8-1-U",
+      "name": "Henderson - Pembina to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": "F9",
+      "name": "Route F9 Lagimodiere - Abinojii Mikanah"
+    },
+    "variant": {
+      "key": "F9-0-K",
+      "name": "Lagimodiere - Abinojii Mikanah to Kildonan Place"
+    },
+    "destination": "kildonan place"
+  },
+  {
+    "route": {
+      "key": "F9",
+      "name": "Route F9 Lagimodiere - Abinojii Mikanah"
+    },
+    "variant": {
+      "key": "F9-0-L",
+      "name": "Lagimodiere - Abinojii Mikanah to Lakewood at Vermillion"
+    },
+    "destination": "lakewood at vermillion"
+  },
+  {
+    "route": {
+      "key": "F9",
+      "name": "Route F9 Lagimodiere - Abinojii Mikanah"
+    },
+    "variant": {
+      "key": "F9-1-U",
+      "name": "Lagimodiere - Abinojii Mikanah to University of Manitoba"
+    },
+    "destination": "university of manitoba"
+  },
+  {
+    "route": {
+      "key": "FX2",
+      "name": "Route FX2 Main - St. Mary's"
+    },
+    "variant": {
+      "key": "FX2-0-D",
+      "name": "Main - St. Marys to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "FX2",
+      "name": "Route FX2 Main - St. Mary's"
+    },
+    "variant": {
+      "key": "FX2-0-G",
+      "name": "Main - St. Marys to Garden City Centre"
+    },
+    "destination": "garden city centre"
+  },
+  {
+    "route": {
+      "key": "FX2",
+      "name": "Route FX2 Main - St. Mary's"
+    },
+    "variant": {
+      "key": "FX2-1-D",
+      "name": "Main - St. Marys to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "FX2",
+      "name": "Route FX2 Main - St. Mary's"
+    },
+    "variant": {
+      "key": "FX2-1-V",
+      "name": "Main - St. Marys to St. Vital Centre"
+    },
+    "destination": "st. vital centre"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-0-*",
+      "name": "Regent - Grant to Regent & Plessis"
+    },
+    "destination": "regent & plessis"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-0-C",
+      "name": "Regent - Grant to Concert Hall"
+    },
+    "destination": "concert hall"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-0-K",
+      "name": "Regent - Grant to Kildonan Place Hub"
+    },
+    "destination": "kildonan place hub"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-0-R",
+      "name": "Regent - Grant to Redonda & Pandora"
+    },
+    "destination": "redonda & pandora"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-1-D",
+      "name": "Regent - Grant to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-1-G",
+      "name": "Regent - Grant to Grant at Cathcart"
+    },
+    "destination": "grant at cathcart"
+  },
+  {
+    "route": {
+      "key": "FX3",
+      "name": "Route FX3 Regent - Grant"
+    },
+    "variant": {
+      "key": "FX3-1-S",
+      "name": "Regent - Grant to Sturgeon & Murray Park"
+    },
+    "destination": "sturgeon & murray park"
+  },
+  {
+    "route": {
+      "key": "FX4",
+      "name": "Route FX4 Gateway - Portage"
+    },
+    "variant": {
+      "key": "FX4-0-D",
+      "name": "Gateway-Portage to Downtown"
+    },
+    "destination": "downtown"
+  },
+  {
+    "route": {
+      "key": "FX4",
+      "name": "Route FX4 Gateway - Portage"
+    },
+    "variant": {
+      "key": "FX4-0-G",
+      "name": "FX4 to Gateway at McLeod"
+    },
+    "destination": "gateway at mcleod"
+  },
+  {
+    "route": {
+      "key": "FX4",
+      "name": "Route FX4 Gateway - Portage"
+    },
+    "variant": {
+      "key": "FX4-0-R",
+      "name": "Gateway-Portage to Raleigh & Knowles"
+    },
+    "destination": "raleigh & knowles"
+  },
+  {
+    "route": {
+      "key": "FX4",
+      "name": "Route FX4 Gateway - Portage"
+    },
+    "variant": {
+      "key": "FX4-1-P",
+      "name": "Gateway-Portage to Polo Park Hub"
+    },
+    "destination": "polo park hub"
+  }
+]
