@@ -1,3 +1,4 @@
+import { REPORT_POLICY } from './passupReportRisk.js';
 import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +31,7 @@ export type ReportArtifact = Sharded<ReportEvidence> & {
   groupTimeBasis: string;
   referenceTimeBasis: string;
   labelStatus: string;
+  policy: typeof REPORT_POLICY;
   passupMatchingMethod: string;
   coverageStart: string;
   coverageEnd: string;
@@ -37,13 +39,19 @@ export type ReportArtifact = Sharded<ReportEvidence> & {
   sources: { departures: { sha256: string } };
 };
 
+function hasApprovedPolicy(data: { labelStatus?: unknown; policy?: unknown }): boolean {
+  if (data.labelStatus !== 'approved' || !data.policy || typeof data.policy !== 'object') return false;
+  const policy = data.policy as Record<string, unknown>;
+  return Object.entries(REPORT_POLICY).every(([name, value]) => policy[name] === value);
+}
+
 export function loadReportArtifact(path: string): ReportArtifact | undefined {
   try {
     const data = JSON.parse(readFileSync(path, 'utf8'));
     if (data?.schemaVersion !== 3 || data.grouping !== GROUPING || data.groupWindowMinutes !== 120) return undefined;
     if (data.evidenceVersion !== EVIDENCE_VERSION || data.passupMatchingMethod !== MATCHING_METHOD) return undefined;
     if (data.evidenceUnit !== 'unique-report-id' || data.groupTimeBasis !== 'reported-local-time') return undefined;
-    if (data.referenceTimeBasis !== 'scheduled-local-time' || data.labelStatus !== 'pending_policy_review') return undefined;
+    if (data.referenceTimeBasis !== 'scheduled-local-time' || !hasApprovedPolicy(data)) return undefined;
     if (!isCalendarDate(data.coverageStart) || !isCalendarDate(data.coverageEnd) || data.coverageStart > data.coverageEnd) return undefined;
     if (!Array.isArray(data.routes) || !data.routes.every((route: unknown) => typeof route === 'string')) return undefined;
     if (!data.groups || typeof data.groups !== 'object' || Array.isArray(data.groups)) return undefined;
@@ -90,7 +98,7 @@ function unavailable(reason: string) {
   return { status: 'unavailable' as const, reason };
 }
 
-/** Serve report evidence only. Category selection remains pending; counts are never probabilities. */
+/** Load report evidence independently of timing; classification uses the broad counts. */
 export function reportCountsForGroup(
   groupKey: string,
   tripDate: string,
@@ -103,7 +111,7 @@ export function reportCountsForGroup(
   if (data.schemaVersion !== 3 || data.grouping !== GROUPING || data.evidenceVersion !== EVIDENCE_VERSION ||
       data.passupMatchingMethod !== MATCHING_METHOD || data.evidenceUnit !== 'unique-report-id' ||
       data.groupTimeBasis !== 'reported-local-time' || data.referenceTimeBasis !== 'scheduled-local-time' ||
-      data.groupWindowMinutes !== 120 || data.labelStatus !== 'pending_policy_review') {
+      data.groupWindowMinutes !== 120 || !hasApprovedPolicy(data)) {
     return unavailable('incompatible_report_evidence');
   }
   if (expectedDepartureHash && data.sources?.departures?.sha256 !== expectedDepartureHash) {
@@ -130,7 +138,8 @@ export function reportCountsForGroup(
     evidenceUnit: 'unique-report-id' as const,
     groupTimeBasis: 'reported-local-time' as const,
     referenceTimeBasis: 'scheduled-local-time' as const,
-    labelStatus: 'pending_policy_review' as const,
+    labelStatus: 'approved' as const,
+    policyVersion: REPORT_POLICY.version,
     reportCount: evidence.reportCount,
     reportDates: evidence.reportDates,
     coverageStart: evidence.coverageStart,

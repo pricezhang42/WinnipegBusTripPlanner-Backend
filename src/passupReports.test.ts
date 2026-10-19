@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { REPORT_POLICY } from './passupReportRisk.js';
 import { GROUPING } from './artifactGroups.js';
 import { enrichPlans, type Artifact } from './reliability.js';
 import { loadReportArtifact, reportCountsForGroup, type ReportArtifact, type ReportEvidence } from './passupReports.js';
@@ -25,7 +26,7 @@ function fixture(changes: Partial<ReportEvidence> = {}): ReportArtifact {
     schemaVersion: 3, grouping: GROUPING, groupWindowMinutes: 120,
     evidenceVersion: 'stop-report-counts-v1', evidenceUnit: 'unique-report-id',
     groupTimeBasis: 'reported-local-time', referenceTimeBasis: 'scheduled-local-time',
-    labelStatus: 'pending_policy_review', passupMatchingMethod: 'nearest-stop-report-time-v1',
+    labelStatus: 'approved', policy: REPORT_POLICY, passupMatchingMethod: 'nearest-stop-report-time-v1',
     coverageStart: '2025-07-01', coverageEnd: '2026-09-24', routes: ['BLUE'],
     sources: { departures: { sha256: 'same-file' } },
     groups: { [key]: { ...evidence, ...changes } },
@@ -41,7 +42,7 @@ test('report counts can exceed recorded departures and never assign labels', () 
   if (result.status !== 'available') return;
   assert.equal(result.reportCount, 5);
   assert.equal(result.recordedDepartures, 2);
-  assert.equal(result.labelStatus, 'pending_policy_review');
+  assert.equal(result.labelStatus, 'approved');
   assert.equal('level' in result, false);
   assert.equal('percentage' in result, false);
 });
@@ -57,6 +58,8 @@ test('reports without reference departures and known zero-report groups stay dis
 
 test('rejects incompatible identity, source mismatch, malformed evidence and unsupported dates', () => {
   assert.equal(read({ ...fixture(), evidenceVersion: 'visit-counts' }).status, 'unavailable');
+  assert.equal(read({ ...fixture(), labelStatus: 'pending_policy_review' }).status, 'unavailable');
+  assert.equal(read({ ...fixture(), policy: { ...REPORT_POLICY, highRatio: .05 } as any }).status, 'unavailable');
   assert.equal(read({ ...fixture(), groupWindowMinutes: 60 }).status, 'unavailable');
   assert.deepEqual(read({ ...fixture(), sources: { departures: { sha256: 'other-file' } } }),
     { status: 'unavailable', reason: 'source_mismatch' });
@@ -105,11 +108,16 @@ test('enrichment serves reports independently of timing minimums and does not mu
     times: { start: '2026-09-25T13:00:00' } };
   const input = [{ segments: [walk, ride] }];
   const output = enrichPlans(input, timing, now, fixture()) as Array<{
-    segments: Array<{ reliability?: { status: string; reason?: string }; passupReports?: { status: string } }>;
+    segments: Array<{ reliability?: { status: string; reason?: string }; passupReports?: { status: string }; passupRisk?: { level: string; basis: string } }>;
   }>;
   assert.deepEqual(output[0].segments[1].reliability,
     { status: 'unavailable', reason: 'insufficient_comparable_history' });
   assert.equal(output[0].segments[1].passupReports?.status, 'available');
+  assert.equal(output[0].segments[1].passupRisk?.level, 'unknown');
+  // Narrow profiles disagree with the broad category but must not veto it.
+  const supported = fixture({ recordedDepartures: 200, departureDates: 10 });
+  const independent = enrichPlans(input, timing, now, supported) as typeof output;
+  assert.equal(independent[0].segments[1].passupRisk?.level, 'high');
   assert.equal(output[0].segments[0], walk);
   assert.equal('reliability' in ride, false);
   assert.equal('passupReports' in ride, false);

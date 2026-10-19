@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
 import { passupRisk } from './passupRisk.js';
+import { reportRisk, unknownReportRisk } from './passupReportRisk.js';
 import { reportCountsForGroup, type ReportArtifact } from './passupReports.js';
 import {
   binStartHour, dateUnavailableReason, GROUP_WINDOW_MINUTES, isCalendarDate, winnipegTime,
@@ -182,7 +183,12 @@ function enrichRide(ride: Ride, previous: Ride | undefined, data: Artifact | und
   } catch {
     passupReports = { status: 'unavailable', reason: 'data_unavailable' };
   }
-  return { ...ride, reliability, passupReports };
+  // New clients read this independent field, including when timing is unavailable.
+  // Leave the existing nested visit-based category for older clients during migration.
+  const passupRisk = passupReports.status === 'available'
+    ? reportRisk(passupReports)
+    : unknownReportRisk(passupReports.reason);
+  return { ...ride, reliability, passupReports, passupRisk };
 }
 
 export function enrichPlans(plans: unknown[], data = artifact, now = new Date(), reportData?: ReportArtifact) {

@@ -15,7 +15,7 @@ Proxy + enrichment layer for the [Winnipeg Bus Trip Planner](https://github.com/
 
 ```json
 {
-  "plans": [ /* Winnipeg Transit trip-planner plans; each ride segment also gets `reliability`, `passupReports` and, when matched, `path` */ ],
+  "plans": [ /* Winnipeg Transit trip-planner plans; each ride segment also gets `reliability`, `passupReports`, `passupRisk` and, when matched, `path` */ ],
   "shelters": {
     "10064": "Heated Shelter",
     "10073": "Unsheltered"
@@ -36,7 +36,7 @@ eligibility. Both timing and report evidence match exact route, boarding stop,
 normalized destination, weekday/weekend and even starting hour; seasons are pooled.
 Only an exact route display prefix is removed from destination text.
 
-Each ride gets two independent fields:
+Each ride gets independent timing, report evidence and category fields:
 
 - `reliability`: `{status: "available", ...statistics, passupRisk, hour,
   windowMinutes, dayType, boardingStop, destination}` or
@@ -50,21 +50,41 @@ Each ride gets two independent fields:
   `60m`, `100m`, `150m` (each with `reports` and `reportDates`). It also names
   `evidenceUnit: "unique-report-id"`, `groupTimeBasis: "reported-local-time"`,
   `referenceTimeBasis: "scheduled-local-time"` and
-  `labelStatus: "pending_policy_review"`. Missing evidence returns
+  `labelStatus: "approved"` and `policyVersion: "report-scheduled-visit-ratio-v1"`. Missing evidence returns
   `{status: "unavailable", reason}`. Missing groups are not zero-report groups.
 
-New report evidence counts unique report IDs assigned to the nearest same-route,
-destination and date stop within 150 m, grouped by report time. It does not match
-a report to a visit. Multiple reports can describe one bus; counts may exceed
-reference departures and report groups without departures remain valid. These
-counts are not percentages. **Report-based Low/Medium/High rules remain under
-review.** No new category is assigned or shown by this change.
+- `passupRisk`: `{level, basis, policyVersion}` from the approved report policy,
+  independently of timing. New clients prefer it over the nested legacy category.
+  Missing/incompatible evidence produces an explicit Unknown with the reason in
+  `basis`; it must not fall back to an older category.
 
-`src/passupRisk.ts` separately validates the deployed visit-based
-`reported-pattern-v2` category in `reliability.passupRisk`. Existing thresholds,
-source matching and warnings remain unchanged. Schema-3 report counts must never
-be substituted for that legacy artifact. Missing risk data yields Unknown without
-removing timing statistics.
+Policy `report-scheduled-visit-ratio-v1` uses unique 150 m full-bus reports divided
+by cleaned recorded visits in the corresponding scheduled-time group. The count
+is not the full GTFS schedule. Reports are grouped by report time; reference
+visits by scheduled time. Exact route/stop/destination/day type/two-hour grouping
+is shared; seasons are pooled. There is no +50 penalty.
+
+| Category | Rule after requiring 60 visits on 10 dates |
+|---|---|
+| Low | Ratio below 1%; zero reports need at least 120 visits |
+| Medium | Ratio at least 1% and below 2.5%, reports on at least 2 dates |
+| High | Ratio at least 2.5%, reports on at least 3 dates |
+| Unknown | Insufficient evidence/persistence, incompatible data, or reports exceeding visits |
+
+`src/passupReportRisk.ts` implements these rules. Report dates are counted, not
+matched bus visits. Multiple IDs can describe one bus; report-only groups remain
+valid evidence but cannot produce a category with a zero denominator. These are
+descriptive categories, not probabilities. The 60 m and 100 m profiles remain
+in the evidence for auditing; category agreement is not required.
+
+`src/passupRisk.ts`, the existing visit-based files and
+`reliability.passupRisk` remain for older clients during migration. They do not
+feed the new report category. Existing departure statistics remain unchanged.
+
+The installed evidence covers 72 routes and 93,609 groups: 70,428 Low, 161 Medium,
+35 High, 22,985 Unknown. The artifact cutoff remains September 24, 2026. Complete
+report manifests and route shards are included in `data/`; hosted deployment is
+separate from this code/artifact update.
 
 Timing reasons: `data_unavailable`, `route_without_history`,
 `boarding_context_missing`, `data_outdated`, `historical_date_unsupported`,
@@ -80,9 +100,9 @@ Artifacts default to `data/reliability.json`, `data/passup-risk.json` and
 all referenced route shards, preserving relative paths, and restart the process:
 manifests and shard caches do not reload automatically. Report evidence requires
 schema 3, `stop-report-counts-v1`, `nearest-stop-report-time-v1`, the documented
-time bases, a pending label status and a departure-source hash matching timing
-when timing provides one. Missing report files are an expected unavailable state;
-this refactor does not install new artifacts or deploy the backend.
+time bases, `labelStatus: approved`, the exact supported policy definition and a
+departure-source hash matching timing when timing provides one. Missing report
+files produce unavailable evidence and an Unknown report category.
 
 Data builds and audits belong to the
 [analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).
