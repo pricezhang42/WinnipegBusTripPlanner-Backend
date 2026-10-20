@@ -219,8 +219,9 @@ On startup the GTFS feed (`https://gtfs.winnipegtransit.com/google_transit.zip`,
 
 Android emulator — `10.0.2.2` maps to the host's localhost:
 
-```ts
-export const BACKEND_BASE_URL = 'http://10.0.2.2:8787';
+```sh
+# In the app repository:
+npm run android -- --api local --auth qa1
 ```
 
 Physical device on the same Wi-Fi — use your machine's LAN IP (e.g. `http://192.168.1.42:8787`).
@@ -274,8 +275,8 @@ fly logs    # should show "[gtfs] indexed 71 routes" within ~3 s of startup
 Then update the mobile client:
 
 ```bash
-cd ../BusTripPlanner
-EXPO_PUBLIC_BACKEND_URL=https://<your-app>.fly.dev npx expo run:android --variant release
+cd ../WinnipegBusTripPlanner-Custom
+npm run android -- --api production --auth production --variant release
 ```
 
 ### VM sizing
@@ -304,7 +305,7 @@ All caches are process-local. If you scale out to multiple instances, hit rates 
 
 `/api/me/*` verifies the Supabase bearer access token with Auth and uses an
 isolated client carrying the same user JWT for database queries. Keep RLS and
-the app SQL migrations. Set `SUPABASE_URL` and
+the SQL migrations in this repository. Set `SUPABASE_URL` and
 `SUPABASE_PUBLISHABLE_KEY` to the app's project (publishable or legacy anon key;
 never service-role). The Supabase dependency and Docker images require Node 22+.
 
@@ -320,7 +321,7 @@ never service-role). The Supabase dependency and Docker images require Node 22+.
 
 Writes return 204. History deletes verify that an owned row did not survive
 a zero-row DELETE; a missing policy or DELETE grant returns
-`history_delete_not_allowed` (403). Apply the app migration
+`history_delete_not_allowed` (403). Apply the migration in this repository
 `202610200001_restore_history_delete_policy.sql` if those permissions need repair. Lists exclude user IDs. Errors are 400/401/403/413/503 with an
 `error: {code,message}` envelope; the existing per-IP limiter returns standard
 429 responses (120 requests/minute/instance). All saved responses use no-store.
@@ -348,8 +349,22 @@ empty disposable accounts), the Supabase settings, and
 `SAVED_ITEMS_TEST_DISPOSABLE=1`. It verifies real RLS, cross-account isolation,
 forged ownership, favorite deduplication and latest-10-distinct history, then
 cleans its fixtures. It refuses nonempty accounts before writing. Use a test
-project with all three app SQL migrations and do not commit tokens.
+project with all registered SQL migrations and do not commit tokens.
 
-Detailed contract and rollout:
-https://github.com/pricezhang42/WinnipegBusTripPlanner-Custom/blob/codex/backend-saved-items/docs/saved-items-backend.md
-Tracking: https://github.com/pricezhang42/WinnipegBusTripPlanner-Custom/issues/17
+Detailed contract: [saved-data API](docs/saved-items-backend.md).
+
+## Connection profiles and database ownership
+
+This repository owns `supabase/migrations/` and `scripts/database/`. Configure
+`.env.connections.local` using [the example](.env.connections.example), then
+choose server/deployment and database separately:
+
+```sh
+npm run dev -- --server local --database qa1
+npm run deploy -- --server qa1 --database production --print
+npm run db -- status --database qa1
+```
+
+See [independent connections](docs/connections.md),
+[hosted database management](docs/hosted-database-management.md) and
+[exact production-to-QA refresh](docs/exact-production-to-qa-copy.md).

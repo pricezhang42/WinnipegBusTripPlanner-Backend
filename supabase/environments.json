@@ -1,0 +1,14 @@
+{
+  "production": {
+    "kind": "production",
+    "projectRef": "rshgohxdntjglnqilyls"
+  },
+  "qa1": {
+    "kind": "qa",
+    "projectRef": "dvxkygiqnvvghkmqxhvk"
+  },
+  "qa2": {
+    "kind": "qa",
+    "projectRef": null
+  }
+}

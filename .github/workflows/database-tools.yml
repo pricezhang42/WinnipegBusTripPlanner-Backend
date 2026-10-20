@@ -1,0 +1,42 @@
+name: Database management tools
+on:
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - 'scripts/database/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/connections*'
+      - 'scripts/run.mjs'
+      - 'src/**'
+      - '.github/workflows/database-tools.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - 'scripts/database/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/connections*'
+      - 'scripts/run.mjs'
+      - 'src/**'
+      - '.github/workflows/database-tools.yml'
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      # These tests do not execute the CLI or use hosted credentials.
+      - run: npm ci --ignore-scripts
+      - run: npm run db:check
+      - run: npm run db:tools:test
+      - run: npm run connections:test
+      - run: npm run typecheck
+      - run: npm run build
+      - run: node --import tsx --test src/*.test.ts src/gtfs/*.test.ts

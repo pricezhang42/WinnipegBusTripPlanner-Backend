@@ -9,3 +9,8 @@ dist
 .DS_Store
 README.md
 .gtfs-cache/
+
+.database/
+supabase/
+scripts/database/
+*.crt

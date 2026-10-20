@@ -5,3 +5,9 @@ dist/
 *.log
 .DS_Store
 .gtfs-cache/
+
+.env*.local
+.database/
+supabase/.temp/
+supabase/.branches/
+/prod-ca-2021*.crt
