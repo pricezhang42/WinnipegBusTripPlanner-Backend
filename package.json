@@ -12,10 +12,12 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
     "refresh:destinations": "node --import tsx scripts/refresh-reliability-destinations.mjs",
-    "check:reliability": "node scripts/check-reliability.mjs"
+    "check:reliability": "node scripts/check-reliability.mjs",
+    "check:saved-items": "node scripts/check-saved-items.mjs"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.0",
+    "@supabase/supabase-js": "^2.118.0",
     "dotenv": "^16.4.5",
     "hono": "^4.6.0",
     "jszip": "^3.10.1"

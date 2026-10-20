@@ -284,7 +284,7 @@ EXPO_PUBLIC_BACKEND_URL=https://<your-app>.fly.dev npx expo run:android --varian
 
 ### Other hosts
 
-The code is vanilla Node + Hono; it runs on any Node 20+ host:
+The code is vanilla Node + Hono; it runs on any Node 22+ host:
 
 - **Render / Railway** — auto-detect Node, run `npm run build && npm start`. Set env vars in the dashboard.
 - **Cloudflare Workers** — requires code changes: swap `@hono/node-server` for the Workers adapter, replace the `setInterval` GTFS refresh with a Cron Trigger, move the GTFS index into KV (no persistent memory across invocations).
@@ -299,3 +299,54 @@ Whatever host you pick, set `MAPBOX_TOKEN`, `WT_API_KEY`, and (optionally) `CORS
 - **GTFS index**: held in memory for the lifetime of the process, refreshed every `GTFS_REFRESH_HOURS`
 
 All caches are process-local. If you scale out to multiple instances, hit rates drop but correctness is unaffected.
+
+## Authenticated favorites and history
+
+`/api/me/*` verifies the Supabase bearer access token with Auth and uses an
+isolated client carrying the same user JWT for database queries. Keep RLS and
+all three existing app migrations. Set `SUPABASE_URL` and
+`SUPABASE_PUBLISHABLE_KEY` to the app's project (publishable or legacy anon key;
+never service-role). The Supabase dependency and Docker images require Node 22+.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/api/me/saved-items` | Favorite locations, favorite trips, latest 10 distinct trips |
+| POST | `/api/me/favorite-locations` | Upsert `{location}` |
+| DELETE | `/api/me/favorite-locations/:key` | Delete own URL-encoded coordinate key |
+| POST | `/api/me/favorite-trips` | Upsert `{origin,destination}` |
+| DELETE | `/api/me/favorite-trips/:key` | Delete own URL-encoded trip key |
+| POST | `/api/me/trip-history` | Record `{origin,destination}` through atomic history RPC |
+| DELETE | `/api/me/trip-history/:id` | Delete own history ID |
+
+Writes return 204. Lists exclude user IDs. Errors are 400/401/413/503 with an
+`error: {code,message}` envelope; the existing per-IP limiter returns standard
+429 responses (120 requests/minute/instance). All saved responses use no-store.
+Request logs omit `/api/me` paths because deletion keys contain coordinates.
+Auth and database calls time out after 8 seconds; database retries are disabled.
+CORS accepts bearer Authorization and DELETE. The public transit routes keep
+their existing behavior.
+
+Deploy these endpoints and configure Supabase before releasing the app update.
+There is no new database schema migration or data conversion. The Data API stays
+exposed under existing RLS/grants; routing mobile requests through this backend
+does not prevent authenticated callers from using the Data API directly.
+
+Checks:
+
+```sh
+npm run typecheck
+npm run build
+node --import tsx --test src/*.test.ts src/gtfs/*.test.ts
+```
+
+`npm run check:saved-items` is an opt-in live integration check. Set
+`SAVED_ITEMS_TEST_BACKEND_URL`, `SAVED_ITEMS_TEST_TOKEN_A/B` (access tokens for two
+empty disposable accounts), the Supabase settings, and
+`SAVED_ITEMS_TEST_DISPOSABLE=1`. It verifies real RLS, cross-account isolation,
+forged ownership, favorite deduplication and latest-10-distinct history, then
+cleans its fixtures. It refuses nonempty accounts before writing. Use a test
+project with all three app SQL migrations and do not commit tokens.
+
+Detailed contract and rollout:
+https://github.com/pricezhang42/WinnipegBusTripPlanner-Custom/blob/codex/backend-saved-items/docs/saved-items-backend.md
+Tracking: https://github.com/pricezhang42/WinnipegBusTripPlanner-Custom/issues/17
