@@ -60,14 +60,14 @@ because a table restore succeeded.
 
 Run in the backend repository. Native PostgreSQL 17 clients (`pg_dump`, `pg_restore`,
 `psql`) are required; no local database or Supabase instance is started. They
-were installed on this Mac and configured in ignored `.env.connections.local`
+were installed on this Mac and configured in ignored `.env.local`
 during implementation. On another machine, install them if absent:
 
 ```sh
 brew install libpq@17
 ```
 
-Set `DATABASE_PG_BIN` in ignored `.env.connections.local` to the `bin` directory
+Set `DATABASE_PG_BIN` in ignored `.env.local` to the `bin` directory
 under `brew --prefix libpq@17` (normally `/opt/homebrew/opt/libpq@17/bin` on Apple
 Silicon). The [Homebrew formula](https://formulae.brew.sh/formula/libpq%4017)
 provides these clients. Other operating systems can install PostgreSQL 17 clients

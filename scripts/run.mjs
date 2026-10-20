@@ -1,7 +1,6 @@
 import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { parseEnv } from 'node:util';
 import { selection, localSettings, value, publicSupabase, cleanEnvironment } from './connections.mjs';
 const root = new URL('../', import.meta.url);
 const runtimeFields = ['PORT', 'CORS_ORIGINS', 'MAPBOX_TOKEN', 'WT_API_KEY', 'GTFS_REFRESH_HOURS',
@@ -13,8 +12,13 @@ export function backendPlan(args, settings, inherited = process.env, registry) {
   const { selected, rest } = selection(flags, ['server', 'database']);
   if (rest.some(flag => flag !== '--print')) throw new Error('Unknown option. Use --server, --database or --print.');
   if (command === 'deploy' && (!selected.server || !selected.database)) throw new Error('Deployment requires --server and --database.');
-  let env = { ...inherited }, summary = { mode: 'existing runtime environment' }, runtime = {};
-  if (Object.keys(selected).length) {
+  // Deploy keeps requiring explicit flags. Local defaults apply only to dev/start.
+  if (command !== 'deploy') {
+    selected.server ??= settings.DEFAULT_SERVER;
+    selected.database ??= settings.DEFAULT_DATABASE;
+  }
+  let env = { ...inherited }, summary = { mode: 'host-provided runtime environment' }, runtime = {};
+  if (selected.server || selected.database) {
     if (!selected.server || !selected.database) throw new Error('Select both --server and --database independently.');
     if (!serverFields.some(field => settings[`${selected.server.toUpperCase()}_${field}`]?.trim())) {
       throw new Error('Unknown server profile. Configure its runtime/deployment block first.');
@@ -60,14 +64,10 @@ function child(command, args, env, input) {
   });
 }
 export async function main(args = process.argv.slice(2)) {
-  // The deployment environment overrides local files. Neither file is sourced
-  // as shell code, and only selected runtime fields reach a child process.
-  let defaults = {};
-  try { defaults = parseEnv(await readFile(new URL('.env', root), 'utf8')); }
-  catch (error) { if (error.code !== 'ENOENT') throw new Error('Could not read .env.'); }
-  const settings = { ...defaults, ...await localSettings(root) };
+  // One optional local file; hosting/CI variables take precedence.
+  const settings = await localSettings(root);
   const registry = JSON.parse(await readFile(new URL('supabase/environments.json', root), 'utf8'));
-  const plan = backendPlan(args, settings, { ...defaults, ...process.env }, registry);
+  const plan = backendPlan(args, settings, process.env, registry);
   console.log(JSON.stringify(plan.summary));
   if (plan.print) return;
   if (plan.command === 'deploy') {

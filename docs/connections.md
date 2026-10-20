@@ -7,11 +7,11 @@ without changing migration versions or SQL hashes. The app repository no longer
 ships those tools or their development dependencies. No database changes happen
 when selecting a profile, installing dependencies, or running unit tests.
 
-Use Node 22+. Run `npm ci`, copy `.env.connections.example` to
-`.env.connections.local` if it does not exist, and keep the local file ignored
-with permissions `chmod 600 .env.connections.local`. The existing local operator
-settings and recovery artifacts were copied from the app checkout; originals were
-retained for recovery. Certificates still use their absolute paths. Old app
+Use Node 22+. Run `npm ci`, copy `.env.example` to
+`.env.local` if it does not exist, and keep the local file ignored
+with permissions `chmod 600 .env.local`. There is one active env file and one template. Old `.env` and
+`.env.connections.local` settings were merged here; protected originals are in
+ignored `.database/env-backups/`. Those backups are not loaded by any command. Certificates still use their absolute paths. Old app
 `db:*` commands were removed. qa1 is the existing hosted QA project; qa2 is an
 unprovisioned placeholder, not an alias for qa1.
 
@@ -21,7 +21,7 @@ Database blocks define `<NAME>_SUPABASE_URL` and
 `<NAME>_SUPABASE_PUBLISHABLE_KEY`. Server blocks define runtime overrides such as
 `<NAME>_PORT`, `<NAME>_CORS_ORIGINS`, `<NAME>_WT_API_KEY`, `<NAME>_MAPBOX_TOKEN`
 and deployment target `<NAME>_FLY_APP`. Unprefixed runtime defaults can remain
-in `.env` or process environment. Process environment overrides local files.
+in this same `.env.local` file or process environment. Process environment overrides local files.
 Database names/project references/kind are registered in `supabase/environments.json`.
 
 Choose server and database independently:
@@ -51,8 +51,12 @@ Docker context and deployed runtime values. Global upstream credentials can be
 shared or overridden per server profile. Set server-specific values explicitly
 when different deployments require different credentials.
 
-Commands with no selectors retain the direct `.env`/host-environment runtime
-workflow. Docker starts `dist/index.js` directly with hosting-provided variables;
+Set `DEFAULT_SERVER=local` and `DEFAULT_DATABASE=qa1` in `.env.local` so
+`npm run dev` starts your usual local configuration. Override either default
+independently, for example `npm run dev -- --database qa2`. Deploy still requires
+both explicit selectors. When no local defaults/selectors exist, dev/start accepts
+host-provided runtime variables. Standalone tooling and database commands also
+read only `.env.local`; there is no second `.env` fallback. Docker starts `dist/index.js` directly with hosting-provided variables;
 it does not need local profile files, migrations, pg or the Supabase CLI.
 
 The frontend chooses `--api` and `--auth` independently; no matching-name check

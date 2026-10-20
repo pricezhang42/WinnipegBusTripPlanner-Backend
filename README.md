@@ -205,13 +205,13 @@ Clients should fall back to drawing a straight line between the two stops when `
 ## Setup
 
 ```bash
-cp .env.example .env
-# Fill in MAPBOX_TOKEN and WT_API_KEY
+cp .env.example .env.local
+# Fill in MAPBOX_TOKEN, WT_API_KEY and the selected QA1 public connection settings
 npm install
 npm run dev
 ```
 
-Server runs on `http://localhost:8787` by default.
+The example selects the local server on `http://localhost:18787` and database qa1. Set its publishable key in `.env.local`; CLI flags override either default independently.
 
 On startup the GTFS feed (`https://gtfs.winnipegtransit.com/google_transit.zip`, ~4 MB) is downloaded, parsed, and indexed in memory: `shapes.txt`, `trips.txt`, `stops.txt`, and `stop_times.txt`. Only one stop list per shape is kept from `stop_times.txt`. Indexing takes about 1.7 s (+0.2 s for the stop lists). Retained memory is ~8 MB, and peak memory during load is ~135 MB (previously ~112 MB), within the 256 MB Fly machine. The feed is re-downloaded every `GTFS_REFRESH_HOURS` (default 24).
 
@@ -356,7 +356,7 @@ Detailed contract: [saved-data API](docs/saved-items-backend.md).
 ## Connection profiles and database ownership
 
 This repository owns `supabase/migrations/` and `scripts/database/`. Configure
-`.env.connections.local` using [the example](.env.connections.example), then
+`.env.local` using [the example](.env.example), then
 choose server/deployment and database separately:
 
 ```sh

@@ -18,7 +18,7 @@ test('selectors reject duplicate, missing or invalid profile names', () => {
 test('profile files are parsed as data and process environment wins', async () => {
   const root = await mkdtemp(join(tmpdir(), 'connections-'));
   try {
-    await writeFile(join(root, '.env.connections.local'), 'QA1_API_URL="https://file.example"\nLITERAL="$(touch not-executed)"\n');
+    await writeFile(join(root, '.env.local'), 'QA1_API_URL="https://file.example"\nLITERAL="$(touch not-executed)"\n');
     const result = await localSettings(pathToFileURL(root + '/'), { QA1_API_URL:'https://process.example' });
     assert.equal(result.QA1_API_URL, 'https://process.example');
     assert.equal(result.LITERAL, '$(touch not-executed)');
@@ -106,4 +106,28 @@ if(args[0]==='secrets'&&process.env.FAKE_FLY_FAIL==='1')process.exit(1);
     calls=(await readFile(log,'utf8')).trim().split('\n').map(JSON.parse);
     assert.equal(calls.length,1);
   } finally { await rm(dir,{recursive:true}); }
+});
+
+test('only .env.local is read; legacy files cannot override it', async () => {
+  const dir=await mkdtemp(join(tmpdir(),'sole-env-'));
+  try {
+    await writeFile(join(dir,'.env'),'LEGACY_ONLY=old\nQA1_API_URL=https://old.example\n');
+    await writeFile(join(dir,'.env.connections.local'),'LEGACY_PROFILE=old\n');
+    await writeFile(join(dir,'.env.local'),'QA1_API_URL=https://chosen.example\n');
+    const loaded=await localSettings(pathToFileURL(dir+'/'),{});
+    assert.deepEqual(loaded,{QA1_API_URL:'https://chosen.example'});
+  } finally {await rm(dir,{recursive:true});}
+});
+
+test('local defaults stay independent and deployment still requires explicit selections', () => {
+  const configured={...settings,DEFAULT_SERVER:'local',DEFAULT_DATABASE:'qa2'};
+  assert.equal(backendPlan(['dev'],configured,{},registry).runtime.SUPABASE_URL,base(qa2));
+  assert.equal(backendPlan(['start','--database','production'],configured,{},registry).runtime.SUPABASE_URL,base(qa1));
+  assert.throws(() => backendPlan(['deploy'],configured,{},registry), /requires/);
+});
+
+test('hosting can supply direct runtime variables without a local default profile', () => {
+  const env={PATH:'/usr/bin',SUPABASE_URL:base(qa2),SUPABASE_PUBLISHABLE_KEY:key,PORT:'8787'};
+  const plan=backendPlan(['start'],{},env,registry);
+  assert.deepEqual(plan.env,env);
 });

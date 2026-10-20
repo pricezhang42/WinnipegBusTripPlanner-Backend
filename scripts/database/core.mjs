@@ -11,7 +11,7 @@ export const TABLES = ['favorite_locations', 'favorite_trips', 'trip_history'];
 export const sha256 = value => createHash('sha256').update(value).digest('hex');
 export const loadJson = async path => JSON.parse(await readFile(path, 'utf8'));
 export async function loadSettings() {
-  try { process.loadEnvFile(join(ROOT, '.env.connections.local')); }
+  try { process.loadEnvFile(join(ROOT, '.env.local')); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
   return loadJson(join(ROOT, 'supabase/environments.json'));
 }
@@ -39,7 +39,7 @@ export function projectRef(settings, environment) {
 export function target(settings, environment, env = process.env) {
   const ref = projectRef(settings, environment);
   const value = env[`${environment.toUpperCase()}_DATABASE_URL`];
-  if (!value) throw new Error(`Set ${environment.toUpperCase()}_DATABASE_URL in .env.connections.local (keep credentials out of chat/Git).`);
+  if (!value) throw new Error(`Set ${environment.toUpperCase()}_DATABASE_URL in .env.local (keep credentials out of chat/Git).`);
   let url;
   try { url = new URL(value); } catch { throw new Error('Invalid database connection URL.'); }
   const direct = url.hostname === `db.${ref}.supabase.co`;
@@ -105,7 +105,7 @@ export async function connect(database) {
   } catch (error) {
     await client.end().catch(() => {});
     if (['SELF_SIGNED_CERT_IN_CHAIN', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY'].includes(error.code)) {
-      throw new Error(`Database certificate verification failed. Download the root certificate from Supabase Dashboard → Database Settings → SSL Configuration, then set ${database.environment.toUpperCase()}_DATABASE_CA_FILE in .env.connections.local to its absolute path. TLS verification remains enabled.`);
+      throw new Error(`Database certificate verification failed. Download the root certificate from Supabase Dashboard → Database Settings → SSL Configuration, then set ${database.environment.toUpperCase()}_DATABASE_CA_FILE in .env.local to its absolute path. TLS verification remains enabled.`);
     }
     throw error;
   }
