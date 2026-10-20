@@ -4,7 +4,7 @@ export type Location = { id: string; place_name: string; geometry: { coordinates
 export type Trip = { origin: Location; destination: Location };
 
 export class SavedItemsError extends Error {
-  constructor(public status: 400 | 401 | 413 | 503, public code: string, message: string) {
+  constructor(public status: 400 | 401 | 403 | 413 | 503, public code: string, message: string) {
     super(message);
   }
 }
@@ -81,8 +81,24 @@ export function savedItemsStore(client: SupabaseClient, userId: string) {
       checked(await client.rpc('record_planned_trip', { p_origin: trip.origin, p_destination: trip.destination }));
     },
     async remove(kind: 'location' | 'trip' | 'history', key: string) {
+      if (kind === 'history') {
+        const failure = () => new SavedItemsError(403, 'history_delete_not_allowed',
+          'This history entry could not be deleted. Please contact support.');
+        const result = await client.from('trip_history').delete().eq('user_id', userId).eq('id', key).select('id');
+        if (result.error?.code === '42501') throw failure();
+        const removed = checked(result);
+        if (!removed?.length) {
+          // A missing RLS DELETE policy silently affects zero rows. Confirm that an
+          // owned, visible row did not survive instead of reporting false success.
+          const remaining = checked(await client.from('trip_history').select('id')
+            .eq('user_id', userId).eq('id', key).maybeSingle());
+          if (remaining) throw failure();
+        }
+        // Absent/already-deleted/other-user IDs remain indistinguishable and idempotent.
+        return;
+      }
       const [table, column] = kind === 'location' ? ['favorite_locations', 'location_key'] :
-        kind === 'trip' ? ['favorite_trips', 'trip_key'] : ['trip_history', 'id'];
+        ['favorite_trips', 'trip_key'];
       checked(await client.from(table).delete().eq('user_id', userId).eq(column, key));
     },
   };
