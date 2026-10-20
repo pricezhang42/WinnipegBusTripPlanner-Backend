@@ -1,12 +1,13 @@
-import 'dotenv/config';
+import { localSettings } from './connections.mjs';
 import assert from 'node:assert/strict';
 import { createClient } from '@supabase/supabase-js';
 
+const settings = await localSettings(new URL('../', import.meta.url));
 // Opt-in only: use two empty disposable accounts, never real user sessions.
 const { SUPABASE_URL: url, SUPABASE_PUBLISHABLE_KEY: key,
-  SAVED_ITEMS_TEST_TOKEN_A: tokenA, SAVED_ITEMS_TEST_TOKEN_B: tokenB } = process.env;
-const base = process.env.SAVED_ITEMS_TEST_BACKEND_URL;
-if (process.env.SAVED_ITEMS_TEST_DISPOSABLE !== '1' || !url || !key || !tokenA || !tokenB || !base) {
+  SAVED_ITEMS_TEST_TOKEN_A: tokenA, SAVED_ITEMS_TEST_TOKEN_B: tokenB } = settings;
+const base = settings.SAVED_ITEMS_TEST_BACKEND_URL;
+if (settings.SAVED_ITEMS_TEST_DISPOSABLE !== '1' || !url || !key || !tokenA || !tokenB || !base) {
   console.error('Set SAVED_ITEMS_TEST_DISPOSABLE=1, SAVED_ITEMS_TEST_BACKEND_URL, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY and SAVED_ITEMS_TEST_TOKEN_A/B for two empty disposable accounts. No requests sent.');
   process.exit(1);
 }

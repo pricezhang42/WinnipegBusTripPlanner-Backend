@@ -15,15 +15,15 @@ export function selection(args, names) {
 }
 export async function localSettings(root, env = process.env) {
   let file = {};
-  try { file = parseEnv(await readFile(new URL('.env.connections.local', root), 'utf8')); }
-  catch (error) { if (error.code !== 'ENOENT') throw new Error('Could not read .env.connections.local.'); }
+  try { file = parseEnv(await readFile(new URL('.env.local', root), 'utf8')); }
+  catch (error) { if (error.code !== 'ENOENT') throw new Error('Could not read .env.local.'); }
   return { ...file, ...env };
 }
 export function value(settings, profile, field, required = true) {
   if (!validName(profile)) throw new Error('Select a connection profile explicitly.');
   const key = `${profile.toUpperCase()}_${field}`;
   const result = settings[key]?.trim();
-  if (required && !result) throw new Error(`Set ${key} in .env.connections.local or the process environment.`);
+  if (required && !result) throw new Error(`Set ${key} in .env.local or the process environment.`);
   if (result && /[\r\n\0]/.test(result)) throw new Error(`Invalid ${key}.`);
   return result;
 }

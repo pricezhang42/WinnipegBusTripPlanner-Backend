@@ -30,7 +30,7 @@ export function qaApiSettings(settings, env = process.env, needsAdmin = true, en
   const ref = requireQa(settings, environment);
   const adminKey = env[`${environment.toUpperCase()}_SUPABASE_ADMIN_KEY`];
   const publishableKey = env[`${environment.toUpperCase()}_SUPABASE_PUBLISHABLE_KEY`];
-  if ((needsAdmin && !adminKey) || !publishableKey) throw new Error(`Set ${environment.toUpperCase()}_SUPABASE_ADMIN_KEY and ${environment.toUpperCase()}_SUPABASE_PUBLISHABLE_KEY in .env.connections.local.`);
+  if ((needsAdmin && !adminKey) || !publishableKey) throw new Error(`Set ${environment.toUpperCase()}_SUPABASE_ADMIN_KEY and ${environment.toUpperCase()}_SUPABASE_PUBLISHABLE_KEY in .env.local.`);
   if (needsAdmin && !adminKey.startsWith('sb_secret_')) {
     let claims;
     try { claims = JSON.parse(Buffer.from(adminKey.split('.')[1], 'base64url').toString()); } catch {}

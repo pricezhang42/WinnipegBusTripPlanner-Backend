@@ -1,7 +1,7 @@
 # Hosted database management
 
 Run these commands from the backend repository. Start with
-[connection profiles](connections.md) to configure the ignored `.env.connections.local`.
+[connection profiles](connections.md) to configure the ignored `.env.local`.
 No local Supabase instance is needed. Migration SQL lives in `supabase/migrations/`;
 `supabase/migrations.lock.json` prevents editing/removing registered migrations.
 
