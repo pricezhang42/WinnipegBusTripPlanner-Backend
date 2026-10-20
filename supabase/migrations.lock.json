@@ -1,0 +1,27 @@
+[
+  {
+    "version": "202609250001",
+    "name": "202609250001_saved_places_and_trips.sql",
+    "sha256": "80646708ee042df5805ecb9a1b0dfc0bfb5a53e09d8fd16a46762905c34185e6"
+  },
+  {
+    "version": "202609260001",
+    "name": "202609260001_dedupe_trip_history.sql",
+    "sha256": "d39a8f398b254155688c1f1378001dead53134b99d8bb0f7046b0a8e2f537c3d"
+  },
+  {
+    "version": "202609260002",
+    "name": "202609260002_delete_trip_history.sql",
+    "sha256": "1d6896a5717b6a15ca0ddea7617b653648c87de886e76eabf866004308a13560"
+  },
+  {
+    "version": "202610200001",
+    "name": "202610200001_restore_history_delete_policy.sql",
+    "sha256": "10478d037cc0daa47f6bdef83ef36449b47817744d2b80e97c20ca7a543be92d"
+  },
+  {
+    "version": "202610200002",
+    "name": "202610200002_restrict_application_function_access.sql",
+    "sha256": "453537ad87eb8b9ef72981c1dbe99ab72af3f24c05f13f314ea838318dabb923"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "site_url": "http://localhost:8081",
+  "uri_allow_list": "bustripplanner://auth/callback,bustripplanner://auth/callback?recovery=true,http://localhost:8081/auth/callback,http://localhost:8081/auth/callback?recovery=true",
+  "external_email_enabled": true,
+  "mailer_autoconfirm": false,
+  "password_min_length": 8,
+  "disable_signup": false
+}

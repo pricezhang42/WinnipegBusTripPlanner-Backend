@@ -1,0 +1,6 @@
+# Used for hosted migration deployment; no local Supabase stack is started.
+project_id = "winnipeg-bus-trip-planner"
+
+[db.seed]
+# QA fixtures are provisioned separately through the QA-only management tools.
+enabled = false

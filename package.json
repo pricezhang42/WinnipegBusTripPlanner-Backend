@@ -7,13 +7,22 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "node scripts/run.mjs dev",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node scripts/run.mjs start",
     "typecheck": "tsc --noEmit",
     "refresh:destinations": "node --import tsx scripts/refresh-reliability-destinations.mjs",
     "check:reliability": "node scripts/check-reliability.mjs",
-    "check:saved-items": "node scripts/check-saved-items.mjs"
+    "check:saved-items": "node scripts/check-saved-items.mjs",
+    "db": "node scripts/database/cli.mjs",
+    "db:check": "node scripts/database/cli.mjs check",
+    "db:manifest": "node scripts/database/cli.mjs manifest",
+    "db:tools:test": "node --test scripts/database/*.test.mjs",
+    "db:refresh": "node scripts/database/refresh.mjs",
+    "db:refresh:sql:test": "node scripts/database/refresh-sql-check.mjs",
+    "db:refresh:rehearse": "node scripts/database/refresh-rehearsal.mjs",
+    "connections:test": "node --test scripts/connections.test.mjs",
+    "deploy": "node scripts/run.mjs deploy"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.0",
@@ -25,6 +34,11 @@
   "devDependencies": {
     "@types/node": "^22.7.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "pg": "8.23.1",
+    "supabase": "2.121.0"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
