@@ -304,7 +304,7 @@ All caches are process-local. If you scale out to multiple instances, hit rates 
 
 `/api/me/*` verifies the Supabase bearer access token with Auth and uses an
 isolated client carrying the same user JWT for database queries. Keep RLS and
-all three existing app migrations. Set `SUPABASE_URL` and
+the app SQL migrations. Set `SUPABASE_URL` and
 `SUPABASE_PUBLISHABLE_KEY` to the app's project (publishable or legacy anon key;
 never service-role). The Supabase dependency and Docker images require Node 22+.
 
@@ -318,7 +318,10 @@ never service-role). The Supabase dependency and Docker images require Node 22+.
 | POST | `/api/me/trip-history` | Record `{origin,destination}` through atomic history RPC |
 | DELETE | `/api/me/trip-history/:id` | Delete own history ID |
 
-Writes return 204. Lists exclude user IDs. Errors are 400/401/413/503 with an
+Writes return 204. History deletes verify that an owned row did not survive
+a zero-row DELETE; a missing policy or DELETE grant returns
+`history_delete_not_allowed` (403). Apply the app migration
+`202610200001_restore_history_delete_policy.sql` if those permissions need repair. Lists exclude user IDs. Errors are 400/401/403/413/503 with an
 `error: {code,message}` envelope; the existing per-IP limiter returns standard
 429 responses (120 requests/minute/instance). All saved responses use no-store.
 Request logs omit `/api/me` paths because deletion keys contain coordinates.

@@ -10,10 +10,11 @@ const destination = { ...location, id: 'work', geometry: { coordinates: [-97.2, 
 const trip = { origin: location, destination };
 type Call = { token: string; method: string; url: URL; body: any };
 
-function harness(options: { authStatus?: number; databaseStatus?: number; throwAuth?: boolean } = {}) {
+function harness(options: { authStatus?: number; databaseStatus?: number; throwAuth?: boolean; history?: Array<{ id: number; user_id: string }>; historyDeleteBlocked?: boolean; historyDeleteForbidden?: boolean } = {}) {
   const calls: Call[] = [];
   const favorites: Record<string, typeof location[]> = {};
   const clients: object[] = [];
+  let history = [...(options.history ?? [])];
   const app = new Hono();
   app.route('/api/me', createSavedItemsRoute(token => {
     const client = createClient('https://example.supabase.co', 'sb_publishable_test', {
@@ -35,6 +36,18 @@ function harness(options: { authStatus?: number; databaseStatus?: number; throwA
         if (url.pathname.endsWith('/favorite_locations')) {
           if (init?.method === 'POST') favorites[uid] = [body.location];
           return respond(init?.method === 'GET' || !init?.method ? (favorites[uid] ?? []).map(location => ({ location })) : null);
+        }
+        if (url.pathname.endsWith('/trip_history')) {
+          const id = url.searchParams.get('id')?.replace('eq.', '');
+          const own = history.filter(row => row.user_id === uid && url.searchParams.get('user_id') === `eq.${uid}` &&
+            (id === undefined || String(row.id) === id));
+          if (init?.method === 'DELETE') {
+            if (options.historyDeleteForbidden) return respond({ code: '42501', message: 'private privilege details' }, 403);
+            if (options.historyDeleteBlocked) return respond([]);
+            history = history.filter(row => !own.includes(row));
+            return respond(own.map(row => ({ id: row.id })));
+          }
+          return respond(own.map(row => ({ id: row.id })));
         }
         return respond(url.pathname.includes('/rpc/') ? null : []);
       } },
@@ -150,4 +163,41 @@ test('server configuration refuses secret/service-role keys before database acce
     if (previous.url === undefined) delete process.env.SUPABASE_URL; else process.env.SUPABASE_URL = previous.url;
     if (previous.key === undefined) delete process.env.SUPABASE_PUBLISHABLE_KEY; else process.env.SUPABASE_PUBLISHABLE_KEY = previous.key;
   }
+});
+
+
+test('a successful history delete removes the owned row and repeated deletion remains safe', async () => {
+  const h = harness({ history: [{ id: 42, user_id: 'user-a' }, { id: 99, user_id: 'user-b' }] });
+  assert.equal((await h.request('/trip-history/42', 'DELETE')).status, 204);
+  const a = await h.request('/saved-items');
+  assert.deepEqual((await a.json() as { history: unknown[] }).history, []);
+  assert.equal((await h.request('/trip-history/42', 'DELETE')).status, 204);
+  const b = await h.request('/saved-items', 'GET', undefined, 'token-b');
+  assert.deepEqual((await b.json() as { history: unknown[] }).history, [{ id: 99 }]);
+});
+
+test('missing DELETE policy cannot silently succeed while the owned history row remains visible', async () => {
+  const h = harness({ history: [{ id: 42, user_id: 'user-a' }], historyDeleteBlocked: true });
+  const response = await h.request('/trip-history/42', 'DELETE');
+  assert.equal(response.status, 403);
+  const error = await response.json() as { error: { code: string } };
+  assert.equal(error.error.code, 'history_delete_not_allowed');
+  const remaining = await h.request('/saved-items');
+  assert.deepEqual((await remaining.json() as { history: unknown[] }).history, [{ id: 42 }]);
+});
+
+test('missing history DELETE grant returns an actionable permission error without upstream details', async () => {
+  const h = harness({ history: [{ id: 42, user_id: 'user-a' }], historyDeleteForbidden: true });
+  const response = await h.request('/trip-history/42', 'DELETE');
+  assert.equal(response.status, 403);
+  const body = await response.text();
+  assert.match(body, /history_delete_not_allowed/);
+  assert.doesNotMatch(body, /private/);
+});
+
+test('deleting another account history reveals nothing and leaves its row untouched', async () => {
+  const h = harness({ history: [{ id: 99, user_id: 'user-b' }], historyDeleteBlocked: true });
+  assert.equal((await h.request('/trip-history/99', 'DELETE')).status, 204);
+  const b = await h.request('/saved-items', 'GET', undefined, 'token-b');
+  assert.deepEqual((await b.json() as { history: unknown[] }).history, [{ id: 99 }]);
 });
