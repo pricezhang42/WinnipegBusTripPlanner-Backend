@@ -9,7 +9,8 @@ import {
 } from './core.mjs';
 import { findings } from './contract.mjs';
 
-const AUTH_FIELDS = ['site_url', 'uri_allow_list', 'external_email_enabled', 'mailer_autoconfirm', 'password_min_length', 'disable_signup'];
+const AUTH_FIELDS = ['site_url', 'uri_allow_list', 'external_email_enabled', 'mailer_autoconfirm', 'password_min_length', 'disable_signup',
+  'mailer_otp_length', 'mailer_subjects_confirmation', 'mailer_templates_confirmation_content'];
 const selectAuthFields = value => Object.fromEntries(AUTH_FIELDS.filter(key => Object.hasOwn(value, key)).map(key => [key, value[key]]));
 export async function authConfig(settings, environment, apply = false) {
   const ref = projectRef(settings, environment);
