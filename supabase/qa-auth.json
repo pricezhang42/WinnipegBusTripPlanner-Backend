@@ -1,11 +1,13 @@
 {
   "site_url": "http://localhost:8081",
-  "uri_allow_list": "bustripplanner://auth/callback,bustripplanner://auth/callback?recovery=true,http://localhost:8081/auth/callback,http://localhost:8081/auth/callback?recovery=true",
+  "uri_allow_list": "bustripplanner://auth/callback,http://localhost:8081/auth/callback",
   "external_email_enabled": true,
   "mailer_autoconfirm": false,
   "password_min_length": 8,
   "disable_signup": false,
   "mailer_otp_length": 6,
   "mailer_subjects_confirmation": "Confirm your email",
-  "mailer_templates_confirmation_content": "<h2>Confirm your email</h2>\n<p>Enter this 6-digit code in Winnipeg Bus Trip Planner:</p>\n<p style=\"font-size:28px;font-weight:700;letter-spacing:6px\">{{ .Token }}</p>\n<p>Or open this link on the device you signed up on: <a href=\"{{ .ConfirmationURL }}\">Confirm your email</a></p>\n"
+  "mailer_templates_confirmation_content": "<h2>Confirm your email</h2>\n<p>Enter this 6-digit code in Winnipeg Bus Trip Planner:</p>\n<p style=\"font-size:28px;font-weight:700;letter-spacing:6px\">{{ .Token }}</p>\n<p>Or open this link on the device you signed up on: <a href=\"{{ .ConfirmationURL }}\">Confirm your email</a></p>\n",
+  "mailer_subjects_recovery": "Reset your password",
+  "mailer_templates_recovery_content": "<h2>Reset your password</h2>\n<p>Enter this 6-digit code in Winnipeg Bus Trip Planner to choose a new password:</p>\n<p style=\"font-size:28px;font-weight:700;letter-spacing:6px\">{{ .Token }}</p>\n<p>If you didn't ask to reset your password, you can ignore this email.</p>\n"
 }
