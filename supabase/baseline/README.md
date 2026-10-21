@@ -80,6 +80,12 @@ received the versioned `qa-auth.json` settings: development site URL on port 808
 native/web callback and recovery allowlist, and minimum password length 8. These
 are documented QA-specific differences; production Auth was not modified.
 
+`qa-auth.json` also sets a 6-digit email OTP and a Confirm signup template that
+shows `{{ .Token }}` next to the `{{ .ConfirmationURL }}` link, so the app's
+confirmation page can accept the code. Production needs the same two settings
+applied in the Dashboard (Authentication → Providers → Email → Email OTP Length,
+and Authentication → Email Templates → Confirm signup).
+
 Initial creation and the live integration path are verified. The destructive
 remote-reset command, persistent manual seed workflow, populated-schema upgrades,
 and emulator email/recovery flows have not been exercised in this run.
