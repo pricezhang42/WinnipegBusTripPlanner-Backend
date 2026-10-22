@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildStore, publishStore, readSources, verifyStore } from './reliability-store.mjs';
+import { AUDITS, buildStore, publishStore, readSources, verifyStore } from './reliability-store.mjs';
 import { fetchStore } from './fetch-reliability-store.mjs';
 import { openReliabilityStore } from '../src/reliabilityStore.ts';
 import { reliabilityForRide, storeArtifact } from '../src/reliability.ts';
@@ -47,6 +47,7 @@ function fixture(directory, changes = {}) {
   write('passup-risk.json', { ...common, schemaVersion: 2, policy: { version: POLICY_VERSION },
     routeFiles: { 678: 'passup-risk-routes/678.json' } });
   write('passup-risk-routes/678.json', { groups: { [KEY]: legacy } });
+  for (const file of AUDITS) write(file, { status: 'approved', file });
   write('reliability-destinations.json', { schemaVersion: 1, generatedAt: '2026-10-19T05:01:05.175Z',
     historySourceSha256: changes.destinationsHash ?? HASH,
     variants: { '678-0-F': { route: '678', destination: 'freedman terminal', displayNames: ['freedman terminal'], source: 'variant-api' } } });
@@ -65,6 +66,7 @@ test('a build round-trips every group and serves the same evidence', () => withD
   const store = openReliabilityStore(built.file);
   try {
     assert.deepEqual(store.lookup('timing')('678', KEY), timing);
+    assert.deepEqual(store.manifest('audit:passup-policy-report.json'), { status: 'approved', file: 'passup-policy-report.json' });
     assert.equal(store.lookup('timing')('679', KEY), undefined);
     assert.equal(store.lookup('timing')('678', KEY.replace(',8]', ', 8]')), undefined);
     const ride = { type: 'ride', route: { key: '678' }, variant: { name: 'Freedman Terminal' },
@@ -96,6 +98,10 @@ test('mixed sources, unknown fields and tampered files are rejected', () => with
   fixture(join(directory, 'extra'), { timing: { ...timing, newField: 1 } });
   assert.throws(() => buildStore(join(directory, 'extra'), join(directory, 'out')), /timing group differs/);
   assert.deepEqual(readdirSync(join(directory, 'out')).filter(name => name.endsWith('.sqlite')), []);
+
+  fixture(join(directory, 'no-audit'));
+  rmSync(join(directory, 'no-audit/passup-policy-report.json'));
+  assert.throws(() => buildStore(join(directory, 'no-audit'), join(directory, 'out')), /Missing build audit/);
 
   fixture(join(directory, 'data'));
   const built = buildStore(join(directory, 'data'), join(directory, 'out'));

@@ -5,7 +5,7 @@ import { DatabaseSync, type StatementSync } from 'node:sqlite';
 export const STORE_SCHEMA_VERSION = 1;
 export const STORE_DATASETS = ['timing', 'reports', 'legacy'] as const;
 export type StoreDataset = typeof STORE_DATASETS[number];
-export type StoreManifest = StoreDataset | 'destinations';
+export type StoreManifest = StoreDataset | 'destinations' | `audit:${string}`;
 
 type Path = (string | number)[];
 type Column = [name: string, path: Path, type: 'INTEGER' | 'REAL' | 'TEXT'];
