@@ -99,7 +99,39 @@ Timing reasons: `data_unavailable`, `route_without_history`,
 also uses `incompatible_report_evidence`, `source_mismatch` and
 `report_group_without_history`. Either enrichment can fail without blocking plans.
 Trip dates on/before the cutoff are unsupported; artifact age and trip horizon
-must be at most 30 days. The current holiday calendar supports 2026 only.
+must be at most 30 days. Trip dates must also be ordinary service days in the
+service calendar (below); holidays and dates it does not cover are unavailable.
+
+#### Service calendar
+
+`src/serviceCalendar.ts` holds `SERVICE_CALENDAR`: a `version`, the covered range
+(`validFrom`–`validThrough`, currently 2026-01-01 to 2027-12-31) and an explicit,
+sorted list of excluded dates. Each entry is a Winnipeg Transit holiday-service
+day (`holiday`) or a weekday substitute for a weekend holiday (`observed`, kept as
+a conservative exclusion). Dates are Winnipeg local dates, so a late-evening trip
+is classified by its local day, not its UTC day. A date outside the range, or any
+date at all when the calendar fails validation, returns
+`holiday_calendar_unsupported`: the backend never assumes a day is ordinary.
+`/healthz` reports the deployed `serviceCalendar` version.
+
+Releasing calendar updates with artifact refreshes:
+
+1. Before each artifact refresh, check that `validThrough` is at least 30 days
+   after the new `coverageEnd`. The test "calendar covers the full trip horizon of
+   every shipped artifact" fails otherwise, so a refresh cannot ship past the
+   calendar.
+2. To extend it, add the next year's dates from Winnipeg Transit's published
+   holiday service schedule (all twelve holidays, plus observed weekdays when a
+   holiday falls on a weekend), move `validThrough`, and bump `version`. The test
+   suite checks that every covered year lists all twelve holidays, that entries
+   are sorted and unique, and that observed days are weekdays.
+3. If Transit announces special service on another date, add it as an exclusion
+   and bump `version`, even without a data refresh.
+4. Ship the calendar change in the same deploy as (or before) the artifacts that
+   need it, then confirm `/healthz` shows the new version.
+
+Extend the calendar during the fall each year so the January rollover is never
+the first time it is needed.
 
 Artifacts default to `data/reliability.json`, `data/passup-risk.json` and
 `data/passup-report-counts.json`. Override these with `RELIABILITY_DATA_PATH`,
