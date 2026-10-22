@@ -75,15 +75,15 @@ test('rejects incompatible identity, source mismatch, malformed evidence and uns
   assert.deepEqual(read(fixture(), '2026-10-25'), { status: 'unavailable', reason: 'data_outdated' });
 });
 
-test('loads versioned manifests and route shards; ignores undeclared top-level response fields', () => {
+test('validates versioned manifests; ignores undeclared top-level response fields', () => {
   const directory = mkdtempSync(join(tmpdir(), 'passup-reports-'));
   try {
     const manifest = join(directory, 'manifest.json');
-    const data = { ...fixture(), groups: {}, routeFiles: { BLUE: 'BLUE.json' } };
-    writeFileSync(manifest, JSON.stringify(data));
-    writeFileSync(join(directory, 'BLUE.json'), JSON.stringify({ groups: {
+    // Manifests still declare route files; the store build reads them, the runtime does not.
+    const data = { ...fixture(), routeFiles: { BLUE: 'BLUE.json' }, groups: {
       [key]: { ...evidence, level: 'high', percentage: 99, status: 'broken' },
-    } }));
+    } };
+    writeFileSync(manifest, JSON.stringify(data));
     const loaded = loadReportArtifact(manifest);
     assert.ok(loaded);
     const result = read(loaded);

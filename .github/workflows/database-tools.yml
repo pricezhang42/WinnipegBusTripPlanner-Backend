@@ -11,6 +11,7 @@ on:
       - 'scripts/reliability-store*'
       - 'scripts/fetch-reliability-store.mjs'
       - 'Dockerfile'
+      - 'reliability-store.lock.json'
       - 'src/**'
       - '.github/workflows/database-tools.yml'
   push:
@@ -25,6 +26,7 @@ on:
       - 'scripts/reliability-store*'
       - 'scripts/fetch-reliability-store.mjs'
       - 'Dockerfile'
+      - 'reliability-store.lock.json'
       - 'src/**'
       - '.github/workflows/database-tools.yml'
 permissions:
@@ -45,5 +47,7 @@ jobs:
       - run: npm run connections:test
       - run: npm run typecheck
       - run: npm run build
+      # Tests read the pinned reliability store, as the backend does.
+      - run: node scripts/fetch-reliability-store.mjs
       - run: node --import tsx --test src/*.test.ts src/gtfs/*.test.ts
       - run: npm run reliability:store:test

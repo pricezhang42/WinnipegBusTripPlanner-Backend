@@ -1,6 +1,4 @@
-import { dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { resolveDestination, type DestinationUnavailableReason } from './reliabilityDestinations.js';
 import { artifactGroup, GROUPING, type Sharded } from './artifactGroups.js';
 import { reliabilityStore, type ReliabilityStore } from './reliabilityStore.js';
@@ -73,8 +71,7 @@ function unavailable(reason: TimingUnavailableReason) {
 
 export function loadArtifact(path: string): Artifact | undefined {
   try {
-    const data = checkArtifact(JSON.parse(readFileSync(path, 'utf8')));
-    return data && { ...data, rootDirectory: dirname(path) };
+    return checkArtifact(JSON.parse(readFileSync(path, 'utf8')));
   } catch {
     return undefined;
   }
@@ -96,11 +93,8 @@ function checkArtifact(data: any): Artifact | undefined {
   return data;
 }
 
-const defaultArtifactPath = fileURLToPath(new URL('../data/reliability.json', import.meta.url));
-// Manifests are loaded at startup; deployments must replace a complete artifact set and restart.
-const artifact = reliabilityStore === undefined
-  ? loadArtifact(process.env.RELIABILITY_DATA_PATH ?? defaultArtifactPath)
-  : storeArtifact(reliabilityStore);
+// The store is opened at startup; deployments replace the whole file and restart.
+const artifact = storeArtifact(reliabilityStore);
 
 type ContextResolution =
   | { status: 'resolved'; context: BoardingContext }

@@ -37,7 +37,7 @@ test('child environment removes operator secrets and unselected connection block
     SUPABASE_ACCESS_TOKEN:'secret', FLY_API_TOKEN:'secret', QA1_WT_API_KEY:'secret',
     QA2_MAPBOX_TOKEN:'secret', PRODUCTION_SUPABASE_PUBLISHABLE_KEY:'other',
     EXPO_PUBLIC_BACKEND_URL:'https://old.example', QA1_FLY_APP:'old', QA2_PORT:'9999',
-    QA1_RELIABILITY_DATA_PATH:'/private/data', SAVED_ITEMS_TEST_TOKEN_A:'private' };
+    QA1_RELIABILITY_STORE_PATH:'/private/data', SAVED_ITEMS_TEST_TOKEN_A:'private' };
   assert.deepEqual(cleanEnvironment(dirty), { PATH:'/usr/bin' });
 });
 

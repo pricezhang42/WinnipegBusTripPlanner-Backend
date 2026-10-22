@@ -1,12 +1,10 @@
 import { localSettings } from './connections.mjs';
 import { readFileSync, writeFileSync, renameSync, unlinkSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { GROUPING } from '../src/artifactGroups.ts';
 import { createDestinationLookup } from '../src/reliabilityDestinations.ts';
 
 const settings = await localSettings(new URL('../', import.meta.url));
-const root = fileURLToPath(new URL('../', import.meta.url));
 const apiKey = settings.WT_API_KEY;
 if (!apiKey) throw new Error('WT_API_KEY is required to refresh destination names');
 
@@ -42,8 +40,12 @@ function addHistoricalDestinations(manifestPath, destinations) {
 }
 
 async function main() {
-  const historyPath = settings.RELIABILITY_DATA_PATH ?? resolve(root, 'data/reliability.json');
-  const reportPath = settings.PASSUP_REPORT_DATA_PATH ?? resolve(root, 'data/passup-report-counts.json');
+  // The analysis export the next store is built from; the lookup is written into it.
+  const index = process.argv.indexOf('--data');
+  if (index === -1 || !process.argv[index + 1]) throw new Error('Use: npm run refresh:destinations -- --data DIR');
+  const data = resolve(process.argv[index + 1]);
+  const historyPath = resolve(data, 'reliability.json');
+  const reportPath = resolve(data, 'passup-report-counts.json');
   const destinations = new Map();
   const timing = addHistoricalDestinations(historyPath, destinations);
   const reports = addHistoricalDestinations(reportPath, destinations);
@@ -80,7 +82,7 @@ async function main() {
   await Promise.all([worker(), worker(), worker()]);
   records.sort((a, b) => a.key.localeCompare(b.key));
   const lookup = createDestinationLookup(records, destinations, sourceHash);
-  const output = settings.RELIABILITY_DESTINATIONS_PATH ?? resolve(root, 'data/reliability-destinations.json');
+  const output = resolve(data, 'reliability-destinations.json');
   const temporary = `${output}.${process.pid}.tmp`;
   try {
     writeFileSync(temporary, JSON.stringify(lookup, null, 2) + '\n', { flag: 'wx' });

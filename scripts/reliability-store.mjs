@@ -1,8 +1,10 @@
 // Builds and verifies the versioned SQLite reliability store from the JSON artifacts.
 // Run with tsx so the backend's own artifact validators are reused:
-//   npm run reliability:store -- build [--data data] [--out .reliability]
-//   npm run reliability:store -- verify FILE [--data data]
-//   npm run reliability:store -- publish FILE [--data data] [--repo OWNER/REPO]
+// DIR is the analysis repository's export: the three manifests with their route
+// directories, reliability-destinations.json and the four build audits.
+//   npm run reliability:store -- build --data DIR [--out .reliability]
+//   npm run reliability:store -- verify FILE --data DIR
+//   npm run reliability:store -- publish FILE [--data DIR] [--repo OWNER/REPO]
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, renameSync, rmSync, existsSync, writeFileSync } from 'node:fs';
@@ -180,14 +182,14 @@ function gh(args) {
  * Uploads a verified store as a GitHub release asset and pins it in the lock file.
  * Re-publishing the same file reuses its release. Committing the lock publishes it.
  */
-export function publishStore(file, { data = join(root, 'data'), repo = REPOSITORY, lock = LOCK_FILE, run = gh } = {}) {
+export function publishStore(file, { data, repo = REPOSITORY, lock = LOCK_FILE, run = gh } = {}) {
   const store = openReliabilityStore(file);
   if (!store) throw new Error(`${file} is not a readable reliability store.`);
   const build = store.build;
   const coverage = store.manifest('timing');
   store.close();
-  // While the JSON artifacts are still committed, only a store built from them can be published.
-  if (existsSync(join(data, 'reliability.json'))) verifyStore(file, readSources(data));
+  // With the export at hand, re-check that the file still matches it exactly.
+  if (data) verifyStore(file, readSources(data));
 
   const sha256 = createHash('sha256').update(readFileSync(file)).digest('hex');
   const tag = `reliability-${sha256.slice(0, 16)}`;
@@ -226,7 +228,8 @@ function option(args, name, fallback) {
 
 export function main(args = process.argv.slice(2)) {
   const [command, ...rest] = args;
-  const data = option(rest, '--data', join(root, 'data'));
+  const data = option(rest, '--data', undefined);
+  if ((command === 'build' || command === 'verify') && !data) throw new Error(`${command} needs --data DIR (the analysis export).`);
   if (command === 'build') {
     const out = option(rest, '--out', join(root, '.reliability'));
     if (rest.length) throw new Error(`Unknown arguments: ${rest.join(' ')}`);
@@ -239,7 +242,7 @@ export function main(args = process.argv.slice(2)) {
     verifyStore(rest[0], readSources(data));
     console.log(JSON.stringify({ verified: rest[0] }));
   } else {
-    throw new Error('Use: build [--data DIR] [--out DIR] | verify FILE [--data DIR] | publish FILE [--repo OWNER/REPO]');
+    throw new Error('Use: build --data DIR [--out DIR] | verify FILE --data DIR | publish FILE [--data DIR] [--repo OWNER/REPO]');
   }
 }
 

@@ -1,7 +1,7 @@
 // Downloads the reliability store pinned in reliability-store.lock.json and checks
 // its SHA-256. Dependency-free so the Docker runtime stage can run it:
 //   node scripts/fetch-reliability-store.mjs [--lock FILE] [--out FILE]
-// Without a lock file nothing is pinned yet, so it exits successfully.
+// The backend serves reliability only from this file, so a missing lock is an error.
 import { createHash } from 'node:crypto';
 import { createReadStream, existsSync, mkdirSync, readFileSync, renameSync, rmSync, createWriteStream } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -27,7 +27,7 @@ export async function fileSha256(path) {
 }
 
 export async function fetchStore(lockPath = LOCK_FILE, out = STORE_FILE, download = fetch) {
-  if (!existsSync(lockPath)) return { status: 'not_pinned' };
+  if (!existsSync(lockPath)) throw new Error(`No reliability store is pinned: ${lockPath} is missing.`);
   const lock = readLock(lockPath);
   if (existsSync(out) && await fileSha256(out) === lock.sha256) return { status: 'present', file: out, sha256: lock.sha256 };
   mkdirSync(dirname(out), { recursive: true });

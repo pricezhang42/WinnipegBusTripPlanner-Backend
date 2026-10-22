@@ -1,5 +1,4 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { reliabilityStore } from './reliabilityStore.js';
 
 export type DestinationRide = {
@@ -69,10 +68,7 @@ export function checkDestinationLookup(data: any): DestinationLookup | undefined
   return data;
 }
 
-const defaultPath = fileURLToPath(new URL('../data/reliability-destinations.json', import.meta.url));
-const lookup = reliabilityStore === undefined
-  ? loadDestinationLookup(process.env.RELIABILITY_DESTINATIONS_PATH ?? defaultPath)
-  : reliabilityStore ? checkDestinationLookup(reliabilityStore.manifest('destinations')) : undefined;
+const lookup = reliabilityStore ? checkDestinationLookup(reliabilityStore.manifest('destinations')) : undefined;
 
 /** Variant IDs select reviewed historical names; display text guards against a reused/stale ID. */
 export function resolveDestination(ride: DestinationRide, data: DestinationLookup | null | undefined = lookup): DestinationResolution {

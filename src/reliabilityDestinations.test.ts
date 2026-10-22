@@ -3,15 +3,17 @@ import assert from 'node:assert/strict';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { reliabilityStore } from './reliabilityStore.js';
 import {
-  createDestinationLookup, loadDestinationLookup, resolveDestination,
+  checkDestinationLookup, createDestinationLookup, loadDestinationLookup, resolveDestination,
   type DestinationRide,
 } from './reliabilityDestinations.js';
 import { boardingContext, enrichPlans, reliabilityForRide } from './reliability.js';
 
 const fixtures: Array<DestinationRide & { destination: string }> = JSON.parse(readFileSync(
   new URL('./fixtures/reliability-destination-names.json', import.meta.url), 'utf8'));
-const lookup = loadDestinationLookup(new URL('../data/reliability-destinations.json', import.meta.url).pathname)!;
+// The pinned store's lookup: run `node scripts/fetch-reliability-store.mjs` first.
+const lookup = checkDestinationLookup(reliabilityStore?.manifest('destinations'))!;
 const ride678 = fixtures.find(ride => ride.variant?.key === '678-0-F')!;
 
 test('all 185 audited variants resolve to their same-route canonical historical names', () => {

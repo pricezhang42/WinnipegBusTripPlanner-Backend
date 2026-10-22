@@ -14,7 +14,6 @@
     "refresh:destinations": "node --import tsx scripts/refresh-reliability-destinations.mjs",
     "check:reliability": "node scripts/check-reliability.mjs",
     "reliability:store": "node --import tsx scripts/reliability-store.mjs",
-    "reliability:parity": "node --import tsx scripts/reliability-store-parity.mjs",
     "reliability:store:test": "node --import tsx --test scripts/reliability-store.test.mjs",
     "check:saved-items": "node scripts/check-saved-items.mjs",
     "db": "node scripts/database/cli.mjs",

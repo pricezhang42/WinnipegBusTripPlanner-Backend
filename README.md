@@ -37,7 +37,7 @@ to independent timing and report readers. The timing reader has no pass-up
 policy dependency; the legacy nested category is attached only at the API
 boundary for older clients. Both timing and report evidence match exact route, boarding stop,
 normalized destination, weekday/weekend and even starting hour; seasons are pooled.
-Variant IDs are resolved through `data/reliability-destinations.json`, a reviewed
+Variant IDs are resolved through the store's destination lookup, a reviewed
 same-route lookup generated from official variant metadata and validated against
 historical destination keys. This handles mismatched display prefixes and missing
 or additional branch text without fuzzy matching or stripping every `via` suffix.
@@ -89,9 +89,8 @@ in the evidence for auditing; category agreement is not required.
 feed the new report category. Existing departure statistics remain unchanged.
 
 The installed evidence covers 72 routes and 93,609 groups: 70,428 Low, 161 Medium,
-35 High, 22,985 Unknown. The artifact cutoff remains September 24, 2026. Complete
-report manifests and route shards are included in `data/`; hosted deployment is
-separate from this code/artifact update.
+35 High, 22,985 Unknown. The artifact cutoff remains September 24, 2026. The
+evidence ships in the pinned reliability store (see below).
 
 Timing reasons: `data_unavailable`, `route_without_history`,
 `boarding_context_missing`, `data_outdated`, `historical_date_unsupported`,
@@ -101,30 +100,32 @@ also uses `incompatible_report_evidence`, `source_mismatch` and
 Trip dates on/before the cutoff are unsupported; artifact age and trip horizon
 must be at most 30 days. The current holiday calendar supports 2026 only.
 
-Artifacts default to `data/reliability.json`, `data/passup-risk.json` and
-`data/passup-report-counts.json`. Override these with `RELIABILITY_DATA_PATH`,
-`PASSUP_RISK_DATA_PATH` and `PASSUP_REPORT_DATA_PATH`. Install each manifest with
-all referenced route shards, preserving relative paths, and restart the process:
-manifests and shard caches do not reload automatically. Report evidence requires
-schema 3, `stop-report-counts-v1`, `nearest-stop-report-time-v1`, the documented
-time bases, `labelStatus: approved`, the exact supported policy definition and a
-departure-source hash matching timing when timing provides one. Missing report
-files produce unavailable evidence and an Unknown report category.
+### Reliability store
 
-### SQLite reliability store
+All reliability evidence (departure timing, pass-up report counts, legacy pass-up
+risk and destination aliases) is served from one versioned SQLite file,
+`reliability/reliability.sqlite` (`RELIABILITY_STORE_PATH` overrides). The JSON
+artifacts are no longer in this repository: they are the analysis export the store
+is built from. One file per build means a deployment cannot mix dataset versions. A
+store that is missing, corrupt or of another schema version makes every ride's
+evidence `data_unavailable`; plans are still returned. The file is opened once at
+startup; replace it and restart.
 
-The same datasets can be served from one versioned SQLite file instead of the JSON
-manifests and shards (issue #8). Set `RELIABILITY_STORE_PATH` to the file; when it
-is set, the JSON paths above are ignored. Departures, report counts, legacy risk and
-destination aliases are all in that one file, so a deployment cannot mix versions.
-A store that is missing, corrupt or of another schema version makes every ride's
-evidence `data_unavailable` (the plan itself is still returned); it never falls back
-to JSON.
+Report evidence requires schema 3, `stop-report-counts-v1`,
+`nearest-stop-report-time-v1`, the documented time bases, `labelStatus: approved`,
+the exact supported policy definition and a departure-source hash matching timing.
+
+#### Building
+
+`DIR` is the analysis export: the three manifests (`reliability.json`,
+`passup-report-counts.json`, `passup-risk.json`) with their route directories,
+`reliability-destinations.json` and the four build audits
+(`reliability.report.json`, `passup-report-counts.report.json`,
+`passup-risk.report.json`, `passup-policy-report.json`).
 
 ```bash
-npm run reliability:store -- build            # data/ -> .reliability/reliability-<sha256>.sqlite
-npm run reliability:store -- verify FILE      # every group in FILE equals data/
-npm run reliability:parity -- FILE            # API output, ride by ride, JSON vs FILE
+npm run reliability:store -- build --data DIR        # -> .reliability/reliability-<sha16>.sqlite
+npm run reliability:store -- verify FILE --data DIR  # every group in FILE equals DIR
 ```
 
 `build` validates every manifest with the backend's own loaders, rejects datasets
@@ -133,51 +134,44 @@ with different departure-source hashes, writes typed tables
 boarding stop, destination, day type and window start hour), then re-reads every
 group and requires an exact match before naming the file by its SHA-256. The same
 inputs produce the same file on the same Node/SQLite version; across machines the
-file hash can differ, so `build.inputSha256` identifies the data. `meta` holds each manifest without groups,
-the destination lookup, the four build audits as `audit:<file>` (provenance only;
-the build fails if one is missing) and `build` (`inputSha256` and row counts). Requires Node
-22.13 or later (`node:sqlite`; Node prints an experimental-feature warning).
+file hash can differ, so `build.inputSha256` identifies the data. `meta` holds each
+manifest without groups, the destination lookup, the build audits as
+`audit:<file>` (provenance only; the build fails if one is missing) and `build`
+(`inputSha256` and row counts). Requires Node 22.13 or later (`node:sqlite`; Node
+prints an experimental-feature warning).
 
-#### Publishing, deploying and rolling back a store
+#### Publishing, deploying and rolling back
 
-Store files live in GitHub Releases on this repository, not in git. The committed
+Store files live in GitHub Releases on this repository. The committed
 `reliability-store.lock.json` pins one by SHA-256 and download URL.
 
 ```bash
-npm run reliability:store -- build
-npm run reliability:store -- publish .reliability/reliability-<sha>.sqlite   # the file build printed; needs gh auth
+npm run reliability:store -- build --data DIR
+npm run reliability:store -- publish .reliability/reliability-<sha16>.sqlite --data DIR   # needs gh auth
 git add reliability-store.lock.json   # commit and open a PR: merging it publishes
 ```
 
-`publish` re-verifies the file against `data/` (while the JSON is still committed),
-creates release `reliability-<sha16>` with the file as its asset (re-running reuses
-it; it is never marked as the latest release) and rewrites the lock. The Docker build
-runs `scripts/fetch-reliability-store.mjs`, which downloads the pinned file to
-`/app/reliability/reliability.sqlite` and fails the build on any hash mismatch; with
-no lock file it does nothing. The store is served only on servers whose profile sets
-`<SERVER>_RELIABILITY_STORE_PATH=/app/reliability/reliability.sqlite`, staged by
-`npm run deploy`. To roll back, revert the lock commit and redeploy (every earlier
-release stays downloadable); while the JSON is still bundled, removing that setting
-and running `fly secrets unset RELIABILITY_STORE_PATH --app <app>` (deploys stage
-settings as Fly secrets, which a later deploy does not remove) returns the server to
-the JSON artifacts. Locally,
-`node scripts/fetch-reliability-store.mjs` puts the pinned file at
-`reliability/reliability.sqlite`.
+`publish` re-verifies the file against `DIR` when given, creates release
+`reliability-<sha16>` with the file as its asset (re-running reuses it; it is never
+marked as the latest release) and rewrites the lock. The Docker build runs
+`scripts/fetch-reliability-store.mjs`, which downloads the pinned file to
+`/app/reliability/reliability.sqlite` and fails on a missing lock or any hash
+mismatch. To roll back, revert the lock commit and redeploy; every earlier release
+stays downloadable. Locally, run `node scripts/fetch-reliability-store.mjs` once
+(and after each lock change) before `npm run dev` or the tests.
 
-`/healthz` reports the source in use: `{"source":"json"}`, or
-`{"source":"store","status":"ready","inputSha256":…}` (`"unavailable"` when the
-configured file failed to open). `npm run check:reliability -- --base-url URL
---expect-store <inputSha256 from the lock>` fails unless that exact build is served.
+`/healthz` reports `{"source":"store","status":"ready","inputSha256":…}`, or
+`"status":"unavailable"` when the file failed to open. `npm run check:reliability --
+--base-url URL --expect-store <inputSha256 from the lock>` fails unless that exact
+build is served.
 
-QA with a local backend (production is untouched):
+QA with a local backend:
 
 ```bash
-node scripts/fetch-reliability-store.mjs        # downloads the pinned store
-# .env.local: LOCAL_RELIABILITY_STORE_PATH=<absolute path>/reliability/reliability.sqlite
+node scripts/fetch-reliability-store.mjs
 npm run dev -- --server local --database qa1
 # second terminal
 npm run check:reliability -- --base-url http://localhost:18787 --expect-store <inputSha256>
-npm run reliability:parity -- reliability/reliability.sqlite
 npm run db -- test --database qa1 --api local
 ```
 
@@ -224,11 +218,11 @@ regardless of successful name resolution.
 To refresh in a development checkout with installed dependencies:
 
 ```bash
-npm run refresh:destinations
+npm run refresh:destinations -- --data DIR
 ```
 
-The command uses the local `WT_API_KEY` and the configured timing/report manifests
-(`RELIABILITY_DATA_PATH`, `PASSUP_REPORT_DATA_PATH`, or their defaults in `data/`).
+The command uses the local `WT_API_KEY` and the timing/report manifests in the
+analysis export `DIR`, and writes `DIR/reliability-destinations.json`.
 It reads declared variants from the Routes API, fetches default and long-usage variant
 names with three route workers, filters wildcard siblings by exact declared ID,
 and queries exact IDs when wildcard results omit them. Missing canonical names
@@ -241,10 +235,9 @@ are not logged.
 Review the resulting file and rerun tests before shipping it. Refresh alongside
 historical artifacts and when route/variant definitions change; the source hash
 records the departure data used for validation. It does not extend that data's
-freshness cutoff. `RELIABILITY_DESTINATIONS_PATH` overrides the lookup location.
-The server loads it once at startup and makes no destination-metadata calls per
-ride; restart/redeploy after replacing it. The refresh tool runs in the checkout,
-not the production image, which needs only the prebuilt lookup in `data/`.
+freshness cutoff. The lookup is built into the reliability store; the server reads
+it once at startup and makes no destination-metadata calls per ride. The refresh
+tool runs in the checkout, not the production image.
 
 Regression example: October 19 at 16:40, Westbrook → Thatcher, route 678 boarding
 60185 resolves to `freedman terminal` and returns 37 observations/11 dates,

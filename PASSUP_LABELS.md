@@ -25,7 +25,7 @@ python3 -m unittest discover -s src -p 'test_passup_policy.py'
 python3 -m unittest discover -s src -p 'test_audit_passups.py'
 ```
 
-Copy `passup-risk.json` and `passup-risk.report.json` into the backend's `data/` directory, alongside `reliability.json`. Restart the backend. Docker already includes `data/`. `PASSUP_RISK_DATA_PATH` can override the risk artifact location. The backend requires the cutoff and departure-source SHA-256 to match the timing artifact. The existing trip-date, freshness, direction and sample checks still apply, and the risk manifest's `grouping` must match. Missing or incompatible risk data gives Unknown without removing departure timing.
+Keep `passup-risk.json`, its route directory and `passup-risk.report.json` in the same export as `reliability.json`, then build and publish the reliability store from it (backend README, "Reliability store"). The backend requires the cutoff and departure-source SHA-256 to match the timing artifact. The existing trip-date, freshness, direction and sample checks still apply, and the risk manifest's `grouping` must match. Missing or incompatible risk data gives Unknown without removing departure timing.
 
 ## Evidence and policy
 
