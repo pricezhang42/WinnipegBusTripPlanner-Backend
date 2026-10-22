@@ -1,16 +1,13 @@
+import { isCalendarDate, serviceDayStatus, SERVICE_CALENDAR } from './serviceCalendar.js';
+
+export { isCalendarDate } from './serviceCalendar.js';
+
 /** Historical grouping uses Winnipeg wall-clock dates, including offset-free API times. */
 export const WINNIPEG_TIME_ZONE = 'America/Winnipeg';
 export const GROUP_WINDOW_HOURS = 2;
 export const GROUP_WINDOW_MINUTES = GROUP_WINDOW_HOURS * 60;
 const DAY_MILLISECONDS = 24 * 60 * 60 * 1000;
 const MAX_HISTORY_AGE_DAYS = 30;
-
-// Keep the current supported calendar explicit; extending it is tracked separately.
-const SUPPORTED_YEAR = '2026';
-const HOLIDAYS = new Set([
-  '01-01', '02-16', '04-03', '05-18', '07-01', '08-03',
-  '09-07', '09-30', '10-12', '11-11', '12-25', '12-26',
-]);
 
 export type DateUnavailableReason =
   | 'data_unavailable'
@@ -21,12 +18,6 @@ export type DateUnavailableReason =
 /** Round 13:59 down to the 12:00–13:59 group. */
 export function binStartHour(hour: number): number {
   return hour - hour % GROUP_WINDOW_HOURS;
-}
-
-export function isCalendarDate(value: unknown): value is string {
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = new Date(`${value}T00:00:00Z`);
-  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 export function winnipegTime(value: string) {
@@ -58,7 +49,9 @@ export function winnipegTime(value: string) {
 }
 
 /** Reject stale/future-leaking history before attempting a group lookup. */
-export function dateUnavailableReason(coverageEnd: string, tripDate: string, now: Date): DateUnavailableReason | undefined {
+export function dateUnavailableReason(
+  coverageEnd: string, tripDate: string, now: Date, calendar = SERVICE_CALENDAR,
+): DateUnavailableReason | undefined {
   if (!isCalendarDate(coverageEnd) || !isCalendarDate(tripDate) || !Number.isFinite(now.getTime())) {
     return 'data_unavailable';
   }
@@ -69,8 +62,7 @@ export function dateUnavailableReason(coverageEnd: string, tripDate: string, now
     return 'data_outdated';
   }
   if (tripHorizonDays <= 0) return 'historical_date_unsupported';
-  if (!tripDate.startsWith(`${SUPPORTED_YEAR}-`) || HOLIDAYS.has(tripDate.slice(5))) {
-    return 'holiday_calendar_unsupported';
-  }
+  // Holidays, observed days and dates the calendar does not cover all fail closed.
+  if (serviceDayStatus(tripDate, calendar) !== 'ordinary') return 'holiday_calendar_unsupported';
   return undefined;
 }
