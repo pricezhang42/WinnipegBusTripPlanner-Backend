@@ -1,0 +1,14 @@
+{
+  "storeSchemaVersion": 1,
+  "sha256": "b0de7d0cfc884c54f28551db2cbc4ef54c031c7cb7a00aa620cece95df86510f",
+  "inputSha256": "3e4a7cbf924f105043ee0a79098005296a52f37d84a14919fab7a58a2a044f24",
+  "coverageStart": "2025-07-01",
+  "coverageEnd": "2026-09-24",
+  "counts": {
+    "destinations": 185,
+    "timing": 83568,
+    "reports": 93609,
+    "legacy": 70572
+  },
+  "url": "https://github.com/pricezhang42/WinnipegBusTripPlanner-Backend/releases/download/reliability-b0de7d0cfc884c54/reliability-b0de7d0cfc884c54.sqlite"
+}
