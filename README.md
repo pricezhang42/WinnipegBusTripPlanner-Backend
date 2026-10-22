@@ -134,7 +134,8 @@ boarding stop, destination, day type and window start hour), then re-reads every
 group and requires an exact match before naming the file by its SHA-256. The same
 inputs produce the same file on the same Node/SQLite version; across machines the
 file hash can differ, so `build.inputSha256` identifies the data. `meta` holds each manifest without groups,
-the destination lookup and `build` (`inputSha256` and row counts). Requires Node
+the destination lookup, the four build audits as `audit:<file>` (provenance only;
+the build fails if one is missing) and `build` (`inputSha256` and row counts). Requires Node
 22.13 or later (`node:sqlite`; Node prints an experimental-feature warning).
 
 #### Publishing, deploying and rolling back a store
