@@ -16,6 +16,11 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=builder /app/dist ./dist
 COPY data ./data
+# The reliability store pinned by the lock (if any), checked against its SHA-256.
+# It is used only where RELIABILITY_STORE_PATH=/app/reliability/reliability.sqlite.
+COPY scripts/fetch-reliability-store.mjs ./scripts/
+COPY package.json reliability-store.lock.jso[n] ./
+RUN node scripts/fetch-reliability-store.mjs
 
 # Non-root
 RUN addgroup -S app && adduser -S app -G app
