@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildStore, readSources, verifyStore } from './reliability-store.mjs';
+import { buildStore, publishStore, readSources, verifyStore } from './reliability-store.mjs';
+import { fetchStore } from './fetch-reliability-store.mjs';
 import { openReliabilityStore } from '../src/reliabilityStore.ts';
 import { reliabilityForRide, storeArtifact } from '../src/reliability.ts';
 import { reportCountsForGroup, storeReportArtifact } from '../src/passupReports.ts';
@@ -105,3 +106,36 @@ test('mixed sources, unknown fields and tampered files are rejected', () => with
   assert.equal(openReliabilityStore(built.file), undefined);
   assert.equal(openReliabilityStore(join(directory, 'missing.sqlite')), undefined);
 }));
+
+test('publishing pins the release asset, and fetching checks its hash', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'reliability-publish-'));
+  try {
+    fixture(join(directory, 'data'));
+    const built = buildStore(join(directory, 'data'), join(directory, 'out'));
+    const calls = [];
+    const run = args => {
+      calls.push(args.slice(0, 2));
+      return args[1] === 'view' ? { ok: false, stdout: '', stderr: 'release not found' } : { ok: true, stdout: '', stderr: '' };
+    };
+    const lock = join(directory, 'reliability-store.lock.json');
+    const pinned = publishStore(built.file, { data: join(directory, 'data'), repo: 'owner/repo', lock, run });
+    assert.deepEqual(calls, [['release', 'view'], ['release', 'create']]);
+    assert.equal(pinned.sha256, built.sha256);
+    assert.equal(pinned.url, `https://github.com/owner/repo/releases/download/reliability-${built.sha256.slice(0, 16)}/reliability-${built.sha256.slice(0, 16)}.sqlite`);
+    assert.deepEqual(JSON.parse(readFileSync(lock, 'utf8')), pinned);
+
+    const bytes = readFileSync(built.file);
+    const download = async () => new Response(bytes);
+    const out = join(directory, 'app/reliability/reliability.sqlite');
+    assert.equal((await fetchStore(lock, out, download)).status, 'downloaded');
+    assert.equal((await fetchStore(lock, out, async () => { throw new Error('should not download'); })).status, 'present');
+    assert.equal(openReliabilityStore(out)?.build.inputSha256, built.inputSha256);
+
+    rmSync(out);
+    await assert.rejects(fetchStore(lock, out, async () => new Response(bytes.subarray(1))), /lock expects/);
+    assert.equal(existsSync(out), false);
+    assert.equal((await fetchStore(join(directory, 'missing.lock.json'), out, download)).status, 'not_pinned');
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});

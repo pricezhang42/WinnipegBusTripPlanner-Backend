@@ -132,9 +132,36 @@ with different departure-source hashes, writes typed tables
 (`departure_groups`, `passup_report_groups`, `passup_legacy_groups`, keyed by route,
 boarding stop, destination, day type and window start hour), then re-reads every
 group and requires an exact match before naming the file by its SHA-256. The same
-inputs always produce the same file. `meta` holds each manifest without groups,
+inputs produce the same file on the same Node/SQLite version; across machines the
+file hash can differ, so `build.inputSha256` identifies the data. `meta` holds each manifest without groups,
 the destination lookup and `build` (`inputSha256` and row counts). Requires Node
 22.13 or later (`node:sqlite`; Node prints an experimental-feature warning).
+
+#### Publishing, deploying and rolling back a store
+
+Store files live in GitHub Releases on this repository, not in git. The committed
+`reliability-store.lock.json` pins one by SHA-256 and download URL.
+
+```bash
+npm run reliability:store -- build
+npm run reliability:store -- publish .reliability/reliability-<sha>.sqlite   # the file build printed; needs gh auth
+git add reliability-store.lock.json   # commit and open a PR: merging it publishes
+```
+
+`publish` re-verifies the file against `data/` (while the JSON is still committed),
+creates release `reliability-<sha16>` with the file as its asset (re-running reuses
+it; it is never marked as the latest release) and rewrites the lock. The Docker build
+runs `scripts/fetch-reliability-store.mjs`, which downloads the pinned file to
+`/app/reliability/reliability.sqlite` and fails the build on any hash mismatch; with
+no lock file it does nothing. The store is served only on servers whose profile sets
+`<SERVER>_RELIABILITY_STORE_PATH=/app/reliability/reliability.sqlite`, staged by
+`npm run deploy`. To roll back, revert the lock commit and redeploy (every earlier
+release stays downloadable); while the JSON is still bundled, removing that setting
+and running `fly secrets unset RELIABILITY_STORE_PATH --app <app>` (deploys stage
+settings as Fly secrets, which a later deploy does not remove) returns the server to
+the JSON artifacts. Locally,
+`node scripts/fetch-reliability-store.mjs` puts the pinned file at
+`reliability/reliability.sqlite`.
 
 Data builds and audits belong to the
 [analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).

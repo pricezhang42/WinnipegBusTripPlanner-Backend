@@ -2,10 +2,12 @@
 // Run with tsx so the backend's own artifact validators are reused:
 //   npm run reliability:store -- build [--data data] [--out .reliability]
 //   npm run reliability:store -- verify FILE [--data data]
+//   npm run reliability:store -- publish FILE [--data data] [--repo OWNER/REPO]
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, renameSync, rmSync, existsSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, readFileSync, renameSync, rmSync, existsSync, writeFileSync } from 'node:fs';
 import { isDeepStrictEqual } from 'node:util';
-import { dirname, join, relative, resolve, sep } from 'node:path';
+import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { loadArtifact } from '../src/reliability.ts';
@@ -17,6 +19,8 @@ import {
 } from '../src/reliabilityStore.ts';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+const LOCK_FILE = join(root, 'reliability-store.lock.json');
+const REPOSITORY = 'pricezhang42/WinnipegBusTripPlanner-Backend';
 const FILES = {
   timing: ['reliability.json', loadArtifact],
   reports: ['passup-report-counts.json', loadReportArtifact],
@@ -154,6 +158,51 @@ export function verifyStore(file, sources) {
   }
 }
 
+function gh(args) {
+  const result = spawnSync('gh', args, { cwd: root, encoding: 'utf8' });
+  if (result.error) throw new Error('GitHub CLI (gh) is required to publish.');
+  return { ok: result.status === 0, stdout: result.stdout, stderr: result.stderr };
+}
+
+/**
+ * Uploads a verified store as a GitHub release asset and pins it in the lock file.
+ * Re-publishing the same file reuses its release. Committing the lock publishes it.
+ */
+export function publishStore(file, { data = join(root, 'data'), repo = REPOSITORY, lock = LOCK_FILE, run = gh } = {}) {
+  const store = openReliabilityStore(file);
+  if (!store) throw new Error(`${file} is not a readable reliability store.`);
+  const build = store.build;
+  const coverage = store.manifest('timing');
+  store.close();
+  // While the JSON artifacts are still committed, only a store built from them can be published.
+  if (existsSync(join(data, 'reliability.json'))) verifyStore(file, readSources(data));
+
+  const sha256 = createHash('sha256').update(readFileSync(file)).digest('hex');
+  const tag = `reliability-${sha256.slice(0, 16)}`;
+  const asset = `${tag}.sqlite`;
+  if (basename(file) !== asset) throw new Error(`Expected the file built by this tool, named ${asset}.`);
+  const existing = run(['release', 'view', tag, '--repo', repo, '--json', 'assets']);
+  if (!existing.ok) {
+    const notes = [
+      `Reliability store, departures ${coverage?.coverageStart} to ${coverage?.coverageEnd}.`,
+      `SHA-256 ${sha256}`, `Input SHA-256 ${build.inputSha256}`, `Rows ${JSON.stringify(build.counts)}`,
+    ].join('\n\n');
+    const created = run(['release', 'create', tag, file, '--repo', repo, '--title', `Reliability store ${sha256.slice(0, 16)}`,
+      '--notes', notes, '--latest=false']);
+    if (!created.ok) throw new Error(`Could not create release ${tag}: ${created.stderr.trim()}`);
+  } else if (!JSON.parse(existing.stdout).assets?.some(item => item.name === asset)) {
+    const uploaded = run(['release', 'upload', tag, file, '--repo', repo]);
+    if (!uploaded.ok) throw new Error(`Could not upload ${asset}: ${uploaded.stderr.trim()}`);
+  }
+  const pinned = {
+    storeSchemaVersion: build.storeSchemaVersion, sha256, inputSha256: build.inputSha256,
+    coverageStart: coverage?.coverageStart, coverageEnd: coverage?.coverageEnd, counts: build.counts,
+    url: `https://github.com/${repo}/releases/download/${tag}/${asset}`,
+  };
+  writeFileSync(lock, `${JSON.stringify(pinned, null, 2)}\n`);
+  return pinned;
+}
+
 function option(args, name, fallback) {
   const index = args.indexOf(name);
   if (index === -1) return fallback;
@@ -170,11 +219,15 @@ export function main(args = process.argv.slice(2)) {
     const out = option(rest, '--out', join(root, '.reliability'));
     if (rest.length) throw new Error(`Unknown arguments: ${rest.join(' ')}`);
     console.log(JSON.stringify(buildStore(data, out), null, 2));
+  } else if (command === 'publish') {
+    const repo = option(rest, '--repo', REPOSITORY);
+    if (rest.length !== 1) throw new Error('Use: publish FILE [--data DIR] [--repo OWNER/REPO]');
+    console.log(JSON.stringify(publishStore(resolve(rest[0]), { data, repo }), null, 2));
   } else if (command === 'verify' && rest.length === 1) {
     verifyStore(rest[0], readSources(data));
     console.log(JSON.stringify({ verified: rest[0] }));
   } else {
-    throw new Error('Use: build [--data DIR] [--out DIR] | verify FILE [--data DIR]');
+    throw new Error('Use: build [--data DIR] [--out DIR] | verify FILE [--data DIR] | publish FILE [--repo OWNER/REPO]');
   }
 }
 

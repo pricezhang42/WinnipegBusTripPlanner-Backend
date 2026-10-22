@@ -9,6 +9,8 @@ on:
       - 'scripts/connections*'
       - 'scripts/run.mjs'
       - 'scripts/reliability-store*'
+      - 'scripts/fetch-reliability-store.mjs'
+      - 'Dockerfile'
       - 'src/**'
       - '.github/workflows/database-tools.yml'
   push:
@@ -21,6 +23,8 @@ on:
       - 'scripts/connections*'
       - 'scripts/run.mjs'
       - 'scripts/reliability-store*'
+      - 'scripts/fetch-reliability-store.mjs'
+      - 'Dockerfile'
       - 'src/**'
       - '.github/workflows/database-tools.yml'
 permissions:
