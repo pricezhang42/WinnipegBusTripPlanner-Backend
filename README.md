@@ -132,7 +132,8 @@ with different departure-source hashes, writes typed tables
 (`departure_groups`, `passup_report_groups`, `passup_legacy_groups`, keyed by route,
 boarding stop, destination, day type and window start hour), then re-reads every
 group and requires an exact match before naming the file by its SHA-256. The same
-inputs always produce the same file. `meta` holds each manifest without groups,
+inputs produce the same file on the same Node/SQLite version; across machines the
+file hash can differ, so `build.inputSha256` identifies the data. `meta` holds each manifest without groups,
 the destination lookup and `build` (`inputSha256` and row counts). Requires Node
 22.13 or later (`node:sqlite`; Node prints an experimental-feature warning).
 
@@ -143,7 +144,7 @@ Store files live in GitHub Releases on this repository, not in git. The committe
 
 ```bash
 npm run reliability:store -- build
-npm run reliability:store -- publish .reliability/reliability-<sha>.sqlite   # needs gh auth
+npm run reliability:store -- publish .reliability/reliability-<sha>.sqlite   # the file build printed; needs gh auth
 git add reliability-store.lock.json   # commit and open a PR: merging it publishes
 ```
 
