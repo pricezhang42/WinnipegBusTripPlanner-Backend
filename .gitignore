@@ -11,3 +11,4 @@ dist/
 supabase/.temp/
 supabase/.branches/
 /prod-ca-2021*.crt
+.reliability/

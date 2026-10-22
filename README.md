@@ -111,6 +111,31 @@ time bases, `labelStatus: approved`, the exact supported policy definition and a
 departure-source hash matching timing when timing provides one. Missing report
 files produce unavailable evidence and an Unknown report category.
 
+### SQLite reliability store
+
+The same datasets can be served from one versioned SQLite file instead of the JSON
+manifests and shards (issue #8). Set `RELIABILITY_STORE_PATH` to the file; when it
+is set, the JSON paths above are ignored. Departures, report counts, legacy risk and
+destination aliases are all in that one file, so a deployment cannot mix versions.
+A store that is missing, corrupt or of another schema version makes every ride's
+evidence `data_unavailable` (the plan itself is still returned); it never falls back
+to JSON.
+
+```bash
+npm run reliability:store -- build            # data/ -> .reliability/reliability-<sha256>.sqlite
+npm run reliability:store -- verify FILE      # every group in FILE equals data/
+npm run reliability:parity -- FILE            # API output, ride by ride, JSON vs FILE
+```
+
+`build` validates every manifest with the backend's own loaders, rejects datasets
+with different departure-source hashes, writes typed tables
+(`departure_groups`, `passup_report_groups`, `passup_legacy_groups`, keyed by route,
+boarding stop, destination, day type and window start hour), then re-reads every
+group and requires an exact match before naming the file by its SHA-256. The same
+inputs always produce the same file. `meta` holds each manifest without groups,
+the destination lookup and `build` (`inputSha256` and row counts). Requires Node
+22.13 or later (`node:sqlite`; Node prints an experimental-feature warning).
+
 Data builds and audits belong to the
 [analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).
 No database migration is needed. Check with `npm run build` and

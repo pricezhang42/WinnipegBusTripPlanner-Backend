@@ -1,7 +1,8 @@
 import { dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
+import { artifactGroup, GROUPING, type Sharded } from './artifactGroups.js';
+import { reliabilityStore, type ReliabilityStore } from './reliabilityStore.js';
 
 /** Deployed visit-based categories. Report-count schema 3 is handled separately. */
 export const POLICY_VERSION = 'reported-pattern-v2';
@@ -34,18 +35,29 @@ const MATCHING_PROFILES = ['60m_120s', '100m_180s', '150m_300s'];
 
 export function loadRisk(path: string): RiskArtifact | undefined {
   try {
-    const value = JSON.parse(readFileSync(path, 'utf8'));
-    if (![1, 2].includes(value?.schemaVersion) || value.policy?.version !== POLICY_VERSION) return undefined;
-    if (value.schemaVersion === 2 && (!value.routeFiles || typeof value.routeFiles !== 'object')) return undefined;
-    if (!value.groups || typeof value.sources?.departures?.sha256 !== 'string') return undefined;
-    return { ...value, rootDirectory: dirname(path) };
+    const value = checkRisk(JSON.parse(readFileSync(path, 'utf8')));
+    return value && { ...value, rootDirectory: dirname(path) };
   } catch {
     return undefined;
   }
 }
 
+export function storeRisk(store: ReliabilityStore | null): RiskArtifact | undefined {
+  const value = store && checkRisk(store.manifest('legacy'));
+  return value ? { ...value, groups: {}, lookup: store.lookup<Evidence>('legacy') } : undefined;
+}
+
+function checkRisk(value: any): RiskArtifact | undefined {
+  if (![1, 2].includes(value?.schemaVersion) || value.policy?.version !== POLICY_VERSION) return undefined;
+  if (value.schemaVersion === 2 && (!value.routeFiles || typeof value.routeFiles !== 'object')) return undefined;
+  if (!value.groups || typeof value.sources?.departures?.sha256 !== 'string') return undefined;
+  return value;
+}
+
 const defaultPath = fileURLToPath(new URL('../data/passup-risk.json', import.meta.url));
-const artifact = loadRisk(process.env.PASSUP_RISK_DATA_PATH ?? defaultPath);
+const artifact = reliabilityStore === undefined
+  ? loadRisk(process.env.PASSUP_RISK_DATA_PATH ?? defaultPath)
+  : storeRisk(reliabilityStore);
 
 function validEvidence(evidence: Evidence | undefined, cutoff: string): evidence is Evidence {
   if (!evidence || !['low', 'medium', 'high'].includes(evidence.level)) return false;
@@ -81,7 +93,7 @@ export function passupRisk(key: string, cutoff: string, departureHash?: string, 
   } catch {
     route = ''; // Inline artifacts do not need a route shard to resolve the key.
   }
-  const evidence = artifactGroups(data, route)[key];
+  const evidence = artifactGroup(data, route, key);
   if (!validEvidence(evidence, cutoff)) return unknown;
   for (const name of MATCHING_PROFILES) {
     const profile = evidence.profiles?.[name];
