@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { reliabilityStore } from './reliabilityStore.js';
 
 export type DestinationRide = {
   route?: { key?: string | number; name?: string };
@@ -47,26 +48,31 @@ export function exactDisplayDestination(ride: DestinationRide): string | undefin
 
 export function loadDestinationLookup(path: string): DestinationLookup | undefined {
   try {
-    const data = JSON.parse(readFileSync(path, 'utf8'));
-    if (data?.schemaVersion !== 1 || typeof data.generatedAt !== 'string' || !Number.isFinite(Date.parse(data.generatedAt))) return undefined;
-    if (typeof data.historySourceSha256 !== 'string' || !data.historySourceSha256) return undefined;
-    if (!data.variants || typeof data.variants !== 'object' || Array.isArray(data.variants)) return undefined;
-    for (const [key, value] of Object.entries(data.variants)) {
-      const entry = value as DestinationEntry;
-      if (!entry || typeof entry.route !== 'string' || !entry.route || !key.startsWith(`${entry.route}-`)) return undefined;
-      if (typeof entry.destination !== 'string' || !entry.destination || entry.destination !== normalizeDestinationName(entry.destination)) return undefined;
-      if (!Array.isArray(entry.displayNames) || !entry.displayNames.length || !entry.displayNames.every(name =>
-        typeof name === 'string' && name.length > 0 && name === normalizeDestinationName(name))) return undefined;
-      if (!['variant-api', 'exact-display-fallback'].includes(entry.source)) return undefined;
-    }
-    return data;
+    return checkDestinationLookup(JSON.parse(readFileSync(path, 'utf8')));
   } catch {
     return undefined;
   }
 }
 
+export function checkDestinationLookup(data: any): DestinationLookup | undefined {
+  if (data?.schemaVersion !== 1 || typeof data.generatedAt !== 'string' || !Number.isFinite(Date.parse(data.generatedAt))) return undefined;
+  if (typeof data.historySourceSha256 !== 'string' || !data.historySourceSha256) return undefined;
+  if (!data.variants || typeof data.variants !== 'object' || Array.isArray(data.variants)) return undefined;
+  for (const [key, value] of Object.entries(data.variants)) {
+    const entry = value as DestinationEntry;
+    if (!entry || typeof entry.route !== 'string' || !entry.route || !key.startsWith(`${entry.route}-`)) return undefined;
+    if (typeof entry.destination !== 'string' || !entry.destination || entry.destination !== normalizeDestinationName(entry.destination)) return undefined;
+    if (!Array.isArray(entry.displayNames) || !entry.displayNames.length || !entry.displayNames.every(name =>
+      typeof name === 'string' && name.length > 0 && name === normalizeDestinationName(name))) return undefined;
+    if (!['variant-api', 'exact-display-fallback'].includes(entry.source)) return undefined;
+  }
+  return data;
+}
+
 const defaultPath = fileURLToPath(new URL('../data/reliability-destinations.json', import.meta.url));
-const lookup = loadDestinationLookup(process.env.RELIABILITY_DESTINATIONS_PATH ?? defaultPath);
+const lookup = reliabilityStore === undefined
+  ? loadDestinationLookup(process.env.RELIABILITY_DESTINATIONS_PATH ?? defaultPath)
+  : reliabilityStore ? checkDestinationLookup(reliabilityStore.manifest('destinations')) : undefined;
 
 /** Variant IDs select reviewed historical names; display text guards against a reused/stale ID. */
 export function resolveDestination(ride: DestinationRide, data: DestinationLookup | null | undefined = lookup): DestinationResolution {

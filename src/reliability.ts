@@ -2,7 +2,8 @@ import { dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolveDestination, type DestinationUnavailableReason } from './reliabilityDestinations.js';
-import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
+import { artifactGroup, GROUPING, type Sharded } from './artifactGroups.js';
+import { reliabilityStore, type ReliabilityStore } from './reliabilityStore.js';
 import { passupRisk as legacyPassupRisk } from './passupRisk.js';
 import { reportRisk, unknownReportRisk } from './passupReportRisk.js';
 import { reportCountsForGroup, type ReportArtifact } from './passupReports.js';
@@ -72,23 +73,34 @@ function unavailable(reason: TimingUnavailableReason) {
 
 export function loadArtifact(path: string): Artifact | undefined {
   try {
-    const data = JSON.parse(readFileSync(path, 'utf8'));
-    if (!data || ![1, 2].includes(data.schemaVersion) || !Array.isArray(data.routes)) return undefined;
-    if (!data.routes.every((route: unknown) => typeof route === 'string')) return undefined;
-    if (!data.groups || typeof data.groups !== 'object' || Array.isArray(data.groups)) return undefined;
-    if (!isCalendarDate(data.coverageEnd)) return undefined;
-    if (data.schemaVersion === 2 && (!data.routeFiles || typeof data.routeFiles !== 'object' || Array.isArray(data.routeFiles))) {
-      return undefined;
-    }
-    return { ...data, rootDirectory: dirname(path) };
+    const data = checkArtifact(JSON.parse(readFileSync(path, 'utf8')));
+    return data && { ...data, rootDirectory: dirname(path) };
   } catch {
     return undefined;
   }
 }
 
+export function storeArtifact(store: ReliabilityStore | null): Artifact | undefined {
+  const data = store && checkArtifact(store.manifest('timing'));
+  return data ? { ...data, groups: {}, lookup: store.lookup<Statistics>('timing') } : undefined;
+}
+
+function checkArtifact(data: any): Artifact | undefined {
+  if (!data || ![1, 2].includes(data.schemaVersion) || !Array.isArray(data.routes)) return undefined;
+  if (!data.routes.every((route: unknown) => typeof route === 'string')) return undefined;
+  if (!data.groups || typeof data.groups !== 'object' || Array.isArray(data.groups)) return undefined;
+  if (!isCalendarDate(data.coverageEnd)) return undefined;
+  if (data.schemaVersion === 2 && (!data.routeFiles || typeof data.routeFiles !== 'object' || Array.isArray(data.routeFiles))) {
+    return undefined;
+  }
+  return data;
+}
+
 const defaultArtifactPath = fileURLToPath(new URL('../data/reliability.json', import.meta.url));
 // Manifests are loaded at startup; deployments must replace a complete artifact set and restart.
-const artifact = loadArtifact(process.env.RELIABILITY_DATA_PATH ?? defaultArtifactPath);
+const artifact = reliabilityStore === undefined
+  ? loadArtifact(process.env.RELIABILITY_DATA_PATH ?? defaultArtifactPath)
+  : storeArtifact(reliabilityStore);
 
 type ContextResolution =
   | { status: 'resolved'; context: BoardingContext }
@@ -155,7 +167,7 @@ function timingForContext(ride: Ride, resolved: ContextResolution, data: Artifac
   const dateReason = dateUnavailableReason(data.coverageEnd, context.date, now);
   if (dateReason) return unavailable(dateReason);
 
-  const stats = artifactGroups(data, context.route)[context.groupKey];
+  const stats = artifactGroup(data, context.route, context.groupKey);
   if (!stats) return unavailable('insufficient_comparable_history');
   if (!validStatistics(stats) || stats.coverageEnd >= context.date) return unavailable('data_unavailable');
 

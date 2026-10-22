@@ -2,7 +2,8 @@ import { REPORT_POLICY } from './passupReportRisk.js';
 import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { artifactGroups, GROUPING, type Sharded } from './artifactGroups.js';
+import { artifactGroup, GROUPING, type Sharded } from './artifactGroups.js';
+import { reliabilityStore, type ReliabilityStore } from './reliabilityStore.js';
 import { dateUnavailableReason, isCalendarDate } from './reliabilityTime.js';
 
 const EVIDENCE_VERSION = 'stop-report-counts-v1';
@@ -47,24 +48,35 @@ function hasApprovedPolicy(data: { labelStatus?: unknown; policy?: unknown }): b
 
 export function loadReportArtifact(path: string): ReportArtifact | undefined {
   try {
-    const data = JSON.parse(readFileSync(path, 'utf8'));
-    if (data?.schemaVersion !== 3 || data.grouping !== GROUPING || data.groupWindowMinutes !== 120) return undefined;
-    if (data.evidenceVersion !== EVIDENCE_VERSION || data.passupMatchingMethod !== MATCHING_METHOD) return undefined;
-    if (data.evidenceUnit !== 'unique-report-id' || data.groupTimeBasis !== 'reported-local-time') return undefined;
-    if (data.referenceTimeBasis !== 'scheduled-local-time' || !hasApprovedPolicy(data)) return undefined;
-    if (!isCalendarDate(data.coverageStart) || !isCalendarDate(data.coverageEnd) || data.coverageStart > data.coverageEnd) return undefined;
-    if (!Array.isArray(data.routes) || !data.routes.every((route: unknown) => typeof route === 'string')) return undefined;
-    if (!data.groups || typeof data.groups !== 'object' || Array.isArray(data.groups)) return undefined;
-    if (!data.routeFiles || typeof data.routeFiles !== 'object' || Array.isArray(data.routeFiles)) return undefined;
-    if (typeof data.sources?.departures?.sha256 !== 'string' || !data.sources.departures.sha256) return undefined;
-    return { ...data, rootDirectory: dirname(path) };
+    const data = checkReportArtifact(JSON.parse(readFileSync(path, 'utf8')));
+    return data && { ...data, rootDirectory: dirname(path) };
   } catch {
     return undefined;
   }
 }
 
+export function storeReportArtifact(store: ReliabilityStore | null): ReportArtifact | undefined {
+  const data = store && checkReportArtifact(store.manifest('reports'));
+  return data ? { ...data, groups: {}, lookup: store.lookup<ReportEvidence>('reports') } : undefined;
+}
+
+function checkReportArtifact(data: any): ReportArtifact | undefined {
+  if (data?.schemaVersion !== 3 || data.grouping !== GROUPING || data.groupWindowMinutes !== 120) return undefined;
+  if (data.evidenceVersion !== EVIDENCE_VERSION || data.passupMatchingMethod !== MATCHING_METHOD) return undefined;
+  if (data.evidenceUnit !== 'unique-report-id' || data.groupTimeBasis !== 'reported-local-time') return undefined;
+  if (data.referenceTimeBasis !== 'scheduled-local-time' || !hasApprovedPolicy(data)) return undefined;
+  if (!isCalendarDate(data.coverageStart) || !isCalendarDate(data.coverageEnd) || data.coverageStart > data.coverageEnd) return undefined;
+  if (!Array.isArray(data.routes) || !data.routes.every((route: unknown) => typeof route === 'string')) return undefined;
+  if (!data.groups || typeof data.groups !== 'object' || Array.isArray(data.groups)) return undefined;
+  if (!data.routeFiles || typeof data.routeFiles !== 'object' || Array.isArray(data.routeFiles)) return undefined;
+  if (typeof data.sources?.departures?.sha256 !== 'string' || !data.sources.departures.sha256) return undefined;
+  return data;
+}
+
 const defaultPath = fileURLToPath(new URL('../data/passup-report-counts.json', import.meta.url));
-const artifact = loadReportArtifact(process.env.PASSUP_REPORT_DATA_PATH ?? defaultPath);
+const artifact = reliabilityStore === undefined
+  ? loadReportArtifact(process.env.PASSUP_REPORT_DATA_PATH ?? defaultPath)
+  : storeReportArtifact(reliabilityStore);
 
 function isCount(value: unknown): value is number {
   return Number.isInteger(value) && (value as number) >= 0;
@@ -129,7 +141,7 @@ export function reportCountsForGroup(
     return unavailable('boarding_context_missing');
   }
   if (!data.routes.includes(route)) return unavailable('route_without_history');
-  const evidence = artifactGroups(data, route)[groupKey];
+  const evidence = artifactGroup(data, route, groupKey);
   if (!evidence) return unavailable('report_group_without_history');
   if (!validEvidence(evidence, data.coverageEnd)) return unavailable('data_unavailable');
 

@@ -52,6 +52,7 @@ const managedFields = [
   'DATABASE_URL', 'DATABASE_CA_FILE', 'DATABASE_PASSWORD', 'API_URL', 'BACKEND_URL',
   'FLY_APP', 'PORT', 'CORS_ORIGINS', 'MAPBOX_TOKEN', 'WT_API_KEY', 'GTFS_REFRESH_HOURS',
   'RELIABILITY_DATA_PATH', 'RELIABILITY_DESTINATIONS_PATH', 'PASSUP_RISK_DATA_PATH', 'PASSUP_REPORT_DATA_PATH',
+  'RELIABILITY_STORE_PATH',
 ];
 export function cleanEnvironment(env) {
   return Object.fromEntries(Object.entries(env).filter(([name]) => {

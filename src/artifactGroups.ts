@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
 // Must match the history builder's manifest; older one-hour or seasonal keys are never read.
 export const GROUPING = 'route-stop-destination-daytype-2hour-v1';
-export type Sharded<T> = { groups: Record<string, T>; routeFiles?: Record<string, string>; rootDirectory?: string };
+export type Sharded<T> = {
+  groups: Record<string, T>; routeFiles?: Record<string, string>; rootDirectory?: string;
+  // Set by the SQLite store; JSON artifacts read inline groups or route shards instead.
+  lookup?: (route: string, key: string) => T | undefined;
+};
 // Limit memory independently of the number of years and routes in the export.
 const cache = new Map<string, { groups: Record<string, unknown>; bytes: number }>();
 const MAX_BYTES = 12 * 1024 * 1024;
@@ -26,4 +30,11 @@ export function artifactGroups<T>(data: Sharded<T>, route: string): Record<strin
     }
     return value.groups;
   } catch { return {}; }
+}
+
+/** One group by exact key, from the SQLite store when present. */
+export function artifactGroup<T>(data: Sharded<T>, route: string, key: string): T | undefined {
+  if (data.lookup) return data.lookup(route, key);
+  const groups = artifactGroups(data, route);
+  return Object.hasOwn(groups, key) ? groups[key] : undefined;
 }

@@ -4,7 +4,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { selection, localSettings, value, publicSupabase, cleanEnvironment } from './connections.mjs';
 const root = new URL('../', import.meta.url);
 const runtimeFields = ['PORT', 'CORS_ORIGINS', 'MAPBOX_TOKEN', 'WT_API_KEY', 'GTFS_REFRESH_HOURS',
-  'RELIABILITY_DATA_PATH', 'PASSUP_RISK_DATA_PATH', 'PASSUP_REPORT_DATA_PATH', 'RELIABILITY_DESTINATIONS_PATH'];
+  'RELIABILITY_DATA_PATH', 'PASSUP_RISK_DATA_PATH', 'PASSUP_REPORT_DATA_PATH', 'RELIABILITY_DESTINATIONS_PATH',
+  'RELIABILITY_STORE_PATH'];
 const serverFields = [...runtimeFields, 'FLY_APP', 'API_URL'];
 export function backendPlan(args, settings, inherited = process.env, registry) {
   const [command, ...flags] = args;
