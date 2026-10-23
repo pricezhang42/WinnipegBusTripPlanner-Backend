@@ -1,7 +1,7 @@
 {
   "storeSchemaVersion": 1,
-  "sha256": "b0de7d0cfc884c54f28551db2cbc4ef54c031c7cb7a00aa620cece95df86510f",
-  "inputSha256": "3e4a7cbf924f105043ee0a79098005296a52f37d84a14919fab7a58a2a044f24",
+  "sha256": "6e05e06ab8739733117d27b2774a391af3f9dbb77a306c5d6716d2f11dafa90b",
+  "inputSha256": "3b86eb01f8145611c63ec567426694cfbd6c962cdb5da4c1e0d581e57f175b27",
   "coverageStart": "2025-07-01",
   "coverageEnd": "2026-09-24",
   "counts": {
@@ -10,5 +10,5 @@
     "reports": 93609,
     "legacy": 70572
   },
-  "url": "https://github.com/pricezhang42/WinnipegBusTripPlanner-Backend/releases/download/reliability-b0de7d0cfc884c54/reliability-b0de7d0cfc884c54.sqlite"
+  "url": "https://github.com/pricezhang42/WinnipegBusTripPlanner-Backend/releases/download/reliability-6e05e06ab8739733/reliability-6e05e06ab8739733.sqlite"
 }
