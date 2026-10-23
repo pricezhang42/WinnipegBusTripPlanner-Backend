@@ -22,7 +22,7 @@ python3 src/export_reliability.py --departures Recent_Transit_On-Time_Performanc
 python3 -m unittest discover -s src -p 'test_export_reliability.py'
 ```
 
-Copy the generated JSON to the backend's `data/reliability.json`, restart/redeploy the backend, and retain the `.report.json` audit with the export. No raw CSV is shipped to the phone or server. The backend loads once at startup; `RELIABILITY_DATA_PATH` can override its location. Docker includes `data/`. No database migration is required.
+Build the backend's reliability store from the export (`npm run reliability:store -- build --data DIR`), publish it and commit the updated lock; see the backend README's "Reliability store" section. The `.report.json` audits are stored inside the store. No raw CSV is shipped to the phone or server. No database migration is required.
 
 Group identity (initial release) was exact route, boarding stop, normalized destination, calendar weekday/weekend, season and Winnipeg local one-hour bin; the current release drops season and uses two-hour windows (see top). Normalization trims, lowercases and removes leading “to ”; API variant names also remove the exact route display-name prefix before “to ”; unmapped destination names remain unavailable. Summer is June–August, winter November–March, remaining months transition. At least 30 observations on 5 dates are required; there is no cross-stop, direction, seasonal or route fallback. Source service days inconsistent with the calendar are excluded. The backend conservatively excludes listed 2026 holidays and other calendar years; refresh this calendar for future releases.
 

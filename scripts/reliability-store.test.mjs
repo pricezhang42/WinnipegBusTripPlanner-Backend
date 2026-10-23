@@ -140,7 +140,7 @@ test('publishing pins the release asset, and fetching checks its hash', async ()
     rmSync(out);
     await assert.rejects(fetchStore(lock, out, async () => new Response(bytes.subarray(1))), /lock expects/);
     assert.equal(existsSync(out), false);
-    assert.equal((await fetchStore(join(directory, 'missing.lock.json'), out, download)).status, 'not_pinned');
+    await assert.rejects(fetchStore(join(directory, 'missing.lock.json'), out, download), /No reliability store is pinned/);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

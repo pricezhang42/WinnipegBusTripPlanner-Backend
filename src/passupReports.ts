@@ -1,7 +1,5 @@
 import { REPORT_POLICY } from './passupReportRisk.js';
 import { readFileSync } from 'node:fs';
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { artifactGroup, GROUPING, type Sharded } from './artifactGroups.js';
 import { reliabilityStore, type ReliabilityStore } from './reliabilityStore.js';
 import { dateUnavailableReason, isCalendarDate } from './reliabilityTime.js';
@@ -48,8 +46,7 @@ function hasApprovedPolicy(data: { labelStatus?: unknown; policy?: unknown }): b
 
 export function loadReportArtifact(path: string): ReportArtifact | undefined {
   try {
-    const data = checkReportArtifact(JSON.parse(readFileSync(path, 'utf8')));
-    return data && { ...data, rootDirectory: dirname(path) };
+    return checkReportArtifact(JSON.parse(readFileSync(path, 'utf8')));
   } catch {
     return undefined;
   }
@@ -73,10 +70,7 @@ function checkReportArtifact(data: any): ReportArtifact | undefined {
   return data;
 }
 
-const defaultPath = fileURLToPath(new URL('../data/passup-report-counts.json', import.meta.url));
-const artifact = reliabilityStore === undefined
-  ? loadReportArtifact(process.env.PASSUP_REPORT_DATA_PATH ?? defaultPath)
-  : storeReportArtifact(reliabilityStore);
+const artifact = storeReportArtifact(reliabilityStore);
 
 function isCount(value: unknown): value is number {
   return Number.isInteger(value) && (value as number) >= 0;

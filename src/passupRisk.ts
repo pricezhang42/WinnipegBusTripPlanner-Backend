@@ -1,6 +1,4 @@
-import { dirname } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
 import { artifactGroup, GROUPING, type Sharded } from './artifactGroups.js';
 import { reliabilityStore, type ReliabilityStore } from './reliabilityStore.js';
 
@@ -35,8 +33,7 @@ const MATCHING_PROFILES = ['60m_120s', '100m_180s', '150m_300s'];
 
 export function loadRisk(path: string): RiskArtifact | undefined {
   try {
-    const value = checkRisk(JSON.parse(readFileSync(path, 'utf8')));
-    return value && { ...value, rootDirectory: dirname(path) };
+    return checkRisk(JSON.parse(readFileSync(path, 'utf8')));
   } catch {
     return undefined;
   }
@@ -54,10 +51,7 @@ function checkRisk(value: any): RiskArtifact | undefined {
   return value;
 }
 
-const defaultPath = fileURLToPath(new URL('../data/passup-risk.json', import.meta.url));
-const artifact = reliabilityStore === undefined
-  ? loadRisk(process.env.PASSUP_RISK_DATA_PATH ?? defaultPath)
-  : storeRisk(reliabilityStore);
+const artifact = storeRisk(reliabilityStore);
 
 function validEvidence(evidence: Evidence | undefined, cutoff: string): evidence is Evidence {
   if (!evidence || !['low', 'medium', 'high'].includes(evidence.level)) return false;

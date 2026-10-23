@@ -1,38 +1,38 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { artifactGroups } from './artifactGroups.js';
-import { loadArtifact } from './reliability.js';
-import { loadReportArtifact, reportCountsForGroup, type ReportEvidence } from './passupReports.js';
+import { reliabilityStore } from './reliabilityStore.js';
+import { storeArtifact } from './reliability.js';
+import { reportCountsForGroup, storeReportArtifact } from './passupReports.js';
 import { REPORT_POLICY, reportRisk } from './passupReportRisk.js';
 
-test('shipped report shards match the analysis policy audit and timing source', () => {
-  const dataPath = (name: string) => fileURLToPath(new URL(`../data/${name}`, import.meta.url));
-  const data = loadReportArtifact(dataPath('passup-report-counts.json'));
-  const timing = loadArtifact(dataPath('reliability.json'));
-  const audit = JSON.parse(readFileSync(dataPath('passup-policy-report.json'), 'utf8'));
+// Uses the pinned store: run `node scripts/fetch-reliability-store.mjs` first.
+test('pinned report evidence matches the analysis policy audit and timing source', () => {
+  assert.ok(reliabilityStore, 'reliability/reliability.sqlite is missing or unreadable');
+  const data = storeReportArtifact(reliabilityStore);
+  const timing = storeArtifact(reliabilityStore);
+  const audit = reliabilityStore.manifest('audit:passup-policy-report.json') as
+    { policy: unknown; groups: number; labelCounts: Record<string, number> } | undefined;
   assert.ok(data);
   assert.ok(timing);
+  assert.ok(audit, 'store has no policy audit');
   assert.deepEqual(data.policy, REPORT_POLICY);
   assert.deepEqual(audit.policy, REPORT_POLICY);
   assert.equal(data.coverageEnd, timing.coverageEnd);
+  const routes = new Set(data.routes);
   const counts = { low: 0, medium: 0, high: 0, unknown: 0 };
   let total = 0;
-  for (const route of data.routes) {
-    const groups: Record<string, ReportEvidence> = artifactGroups(data, route);
-    assert.ok(Object.keys(groups).length > 0, `Missing/empty report shard for ${route}`);
-    for (const key of Object.keys(groups)) {
-      const dayType = JSON.parse(key)[3];
-      const tripDate = dayType === 'weekend' ? '2026-09-26' : '2026-09-25';
-      const evidence = reportCountsForGroup(key, tripDate, timing.sources?.departures?.sha256,
-        new Date('2026-09-25'), data);
-      assert.equal(evidence.status, 'available', key);
-      if (evidence.status !== 'available') continue;
-      counts[reportRisk(evidence).level]++;
-      total++;
-    }
+  for (const key of reliabilityStore.keys('reports')) {
+    const [route, , , dayType] = JSON.parse(key);
+    routes.delete(route);
+    const tripDate = dayType === 'weekend' ? '2026-09-26' : '2026-09-25';
+    const evidence = reportCountsForGroup(key, tripDate, timing.sources?.departures?.sha256,
+      new Date('2026-09-25'), data);
+    assert.equal(evidence.status, 'available', key);
+    if (evidence.status !== 'available') continue;
+    counts[reportRisk(evidence).level]++;
+    total++;
   }
+  assert.deepEqual([...routes], [], 'routes without report groups');
   assert.equal(total, audit.groups);
   assert.deepEqual(counts, audit.labelCounts);
 });

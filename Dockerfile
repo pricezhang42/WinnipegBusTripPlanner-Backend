@@ -15,11 +15,10 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=builder /app/dist ./dist
-COPY data ./data
-# The reliability store pinned by the lock (if any), checked against its SHA-256.
-# It is used only where RELIABILITY_STORE_PATH=/app/reliability/reliability.sqlite.
+# The reliability store pinned by the lock, checked against its SHA-256. The backend
+# reads it from /app/reliability/reliability.sqlite (RELIABILITY_STORE_PATH overrides).
 COPY scripts/fetch-reliability-store.mjs ./scripts/
-COPY package.json reliability-store.lock.jso[n] ./
+COPY reliability-store.lock.json ./
 RUN node scripts/fetch-reliability-store.mjs
 
 # Non-root

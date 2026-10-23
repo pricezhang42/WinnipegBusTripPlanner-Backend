@@ -30,12 +30,14 @@ python3 -m venv .venv
 
 Keep the working database outside version control; it occupies several GB. ZIPs are streamed through one temporary extracted CSV at a time. DuckDB has a 1 GB memory budget and two worker threads. `--skip-import` can repeat export after a completed import; it uses the existing database and `source-report.json`, so do not use it for new or changed departure inputs. Rebuild normally when sources change. Raw files are never edited.
 
-Copy the following output set together into the backend's `data/` directory and restart the backend:
+The backend no longer bundles these files. Keep the complete output set together in one export directory and build the backend's reliability store from it (backend README, "Reliability store"):
 
 - `reliability.json`, `reliability.report.json`, and the complete `reliability-routes/` directory
+- `passup-report-counts.json`, `passup-report-counts.report.json`, `passup-policy-report.json`, and the complete `passup-report-routes/` directory
 - `passup-risk.json`, `passup-risk.report.json`, and the complete `passup-risk-routes/` directory
+- `reliability-destinations.json` (refresh with `npm run refresh:destinations -- --data DIR`)
 
-Schema 2 manifests reference per-route files. The backend supports the old schema as well, lazily reads only the routes needed by a request, and bounds its file cache to four entries / 12 MB of serialized data. Missing files fail open to unavailable timing or Unknown risk. Docker includes the full `data/` tree. The two manifests must have the same departure-source bundle fingerprint and coverage cutoff.
+The store build reads every route file and rejects missing or malformed shards, mismatched departure-source fingerprints or coverage cutoffs, and missing audits.
 
 ## Cleaning and comparability
 

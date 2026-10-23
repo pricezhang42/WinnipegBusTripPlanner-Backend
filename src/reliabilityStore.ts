@@ -1,4 +1,5 @@
 import { DatabaseSync, type StatementSync } from 'node:sqlite';
+import { fileURLToPath } from 'node:url';
 
 // One SQLite file holds a complete build: departures, report counts, legacy risk
 // and destinations together, so a deployment can never mix dataset versions.
@@ -119,6 +120,8 @@ export type ReliabilityStore = {
   build: StoreBuild;
   manifest(name: StoreManifest): Record<string, unknown> | undefined;
   lookup<T>(dataset: StoreDataset): (route: string, key: string) => T | undefined;
+  /** Every group key of a dataset, for audits and tests; runtime uses exact lookups only. */
+  keys(dataset: StoreDataset): string[];
   close(): void;
 };
 
@@ -159,6 +162,8 @@ export function openReliabilityStore(path: string): ReliabilityStore | undefined
         return value && typeof value === 'object' && !Array.isArray(value) ? value : undefined;
       },
       lookup: <T>(dataset: StoreDataset) => (route: string, key: string) => lookupGroup<T>(selects[dataset], dataset, route, key),
+      keys: dataset => (database.prepare(`SELECT ${KEY_COLUMNS.join(', ')} FROM ${STORE_TABLES[dataset].table}`).all() as
+        Record<string, unknown>[]).map(row => JSON.stringify(KEY_COLUMNS.map(name => row[name]))),
       close: () => database.close(),
     };
   } catch {
@@ -174,20 +179,20 @@ function lookupGroup<T>(select: StatementSync, dataset: StoreDataset, route: str
   return row ? decodeGroup(dataset, row) as T : undefined;
 }
 
-function configuredStore(): ReliabilityStore | null | undefined {
-  const path = process.env.RELIABILITY_STORE_PATH;
-  if (!path) return undefined;
-  const store = openReliabilityStore(path);
+// The Docker build and `node scripts/fetch-reliability-store.mjs` put the pinned store here.
+const DEFAULT_STORE_PATH = fileURLToPath(new URL('../reliability/reliability.sqlite', import.meta.url));
+
+function configuredStore(): ReliabilityStore | null {
+  const store = openReliabilityStore(process.env.RELIABILITY_STORE_PATH || DEFAULT_STORE_PATH);
   if (!store) console.warn('[reliability] store unavailable; reliability evidence will be reported as unavailable');
   return store ?? null;
 }
 
-/** undefined: JSON artifacts are used. null: a store was configured but failed, so evidence is unavailable. */
+/** null: the store failed to open, so every ride's evidence is unavailable. */
 export const reliabilityStore = configuredStore();
 
 /** Which reliability source this process serves, for /healthz and deployment checks. */
 export function reliabilitySource() {
-  if (reliabilityStore === undefined) return { source: 'json' as const };
   if (!reliabilityStore) return { source: 'store' as const, status: 'unavailable' as const };
   return { source: 'store' as const, status: 'ready' as const, inputSha256: reliabilityStore.build.inputSha256 };
 }
