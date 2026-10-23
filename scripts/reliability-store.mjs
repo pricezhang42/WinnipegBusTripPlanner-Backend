@@ -27,6 +27,10 @@ const FILES = {
   legacy: ['passup-risk.json', loadRisk],
 };
 const DESTINATIONS = 'reliability-destinations.json';
+// Build audits travel with the data they describe; they are provenance, never read at runtime.
+export const AUDITS = [
+  'reliability.report.json', 'passup-report-counts.report.json', 'passup-risk.report.json', 'passup-policy-report.json',
+];
 
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -71,6 +75,10 @@ export function readSources(dataDirectory) {
   const destinationsPath = join(directory, DESTINATIONS);
   const destinations = read(destinationsPath);
   if (!loadDestinationLookup(destinationsPath)) throw new Error(`${DESTINATIONS} failed backend validation.`);
+  const audits = Object.fromEntries(AUDITS.map(file => {
+    if (!existsSync(join(directory, file))) throw new Error(`Missing build audit ${file}.`);
+    return [file, read(join(directory, file))];
+  }));
 
   // Everything in one store must describe the same departure history.
   const hash = datasets.timing.manifest.sources?.departures?.sha256;
@@ -82,7 +90,7 @@ export function readSources(dataDirectory) {
 
   inputs.sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
   const inputSha256 = sha256(inputs.map(([file, hash]) => `${hash}  ${file}\n`).join(''));
-  return { datasets, destinations, inputSha256 };
+  return { datasets, destinations, audits, inputSha256 };
 }
 
 export function buildStore(dataDirectory, outDirectory) {
@@ -105,6 +113,7 @@ export function buildStore(dataDirectory, outDirectory) {
       counts[name] = groups.size;
     }
     meta.run('destinations', JSON.stringify(sources.destinations));
+    for (const [file, audit] of Object.entries(sources.audits)) meta.run(`audit:${file}`, JSON.stringify(audit));
     meta.run('build', JSON.stringify({ storeSchemaVersion: STORE_SCHEMA_VERSION, inputSha256: sources.inputSha256, counts }));
     db.exec('COMMIT');
     db.exec('VACUUM');
@@ -135,6 +144,9 @@ export function verifyStore(file, sources) {
   try {
     if (store.build.inputSha256 !== sources.inputSha256) throw new Error('Store was built from different inputs.');
     if (!isDeepStrictEqual(store.manifest('destinations'), sources.destinations)) throw new Error('Destination lookup differs.');
+    for (const [file, audit] of Object.entries(sources.audits)) {
+      if (!isDeepStrictEqual(store.manifest(`audit:${file}`), audit)) throw new Error(`Audit ${file} differs.`);
+    }
     for (const name of STORE_DATASETS) {
       const { manifest, groups } = sources.datasets[name];
       if (!isDeepStrictEqual(store.manifest(name), manifest)) throw new Error(`${name} manifest differs.`);
