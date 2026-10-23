@@ -3,6 +3,8 @@ import { parseArgs } from 'node:util';
 // Read-only deployment check using the documented Westbrook → Thatcher trip.
 const { values } = parseArgs({ options: {
   'base-url': { type: 'string', default: 'http://localhost:8787' },
+  // Fail unless the backend serves this store build (its inputSha256 from the lock file).
+  'expect-store': { type: 'string' },
   date: { type: 'string', default: new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Winnipeg', year: 'numeric', month: '2-digit', day: '2-digit',
   }).format(new Date()) },
@@ -19,6 +21,9 @@ async function main() {
   const base = new URL(values['base-url']);
   const health = await getJson(new URL('/healthz', base));
   if (health.ok !== true) throw new Error('Backend health check failed');
+  if (values['expect-store'] && (health.reliability?.status !== 'ready' || health.reliability.inputSha256 !== values['expect-store'])) {
+    throw new Error(`Backend reliability source is ${JSON.stringify(health.reliability)}, not store ${values['expect-store']}`);
+  }
   const url = new URL('/api/plans', base);
   for (const [name, value] of Object.entries({
     origin: 'geo/49.89523,-97.134455', destination: 'geo/49.816532,-97.144433',
@@ -43,7 +48,7 @@ async function main() {
       throw new Error(`Route ${route}: unavailable report evidence has no reason`);
     }
   }
-  console.log(JSON.stringify({ backend: base.origin, date: values.date, time: values.time,
+  console.log(JSON.stringify({ backend: base.origin, reliability: health.reliability, date: values.date, time: values.time,
     plans: data.plans.length, rides: rides.length,
     timingAvailable: rides.filter(ride => ride.reliability.status === 'available').length,
     reportEvidenceAvailable: rides.filter(ride => ride.passupReports.status === 'available').length,

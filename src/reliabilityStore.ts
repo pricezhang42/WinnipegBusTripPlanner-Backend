@@ -184,3 +184,10 @@ function configuredStore(): ReliabilityStore | null | undefined {
 
 /** undefined: JSON artifacts are used. null: a store was configured but failed, so evidence is unavailable. */
 export const reliabilityStore = configuredStore();
+
+/** Which reliability source this process serves, for /healthz and deployment checks. */
+export function reliabilitySource() {
+  if (reliabilityStore === undefined) return { source: 'json' as const };
+  if (!reliabilityStore) return { source: 'store' as const, status: 'unavailable' as const };
+  return { source: 'store' as const, status: 'ready' as const, inputSha256: reliabilityStore.build.inputSha256 };
+}

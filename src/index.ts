@@ -7,6 +7,7 @@ import { plansRoute } from './routes/plans.js';
 import { routeShapeRoute } from './routes/routeShape.js';
 import { createSavedItemsRoute } from './routes/savedItems.js';
 import { startGtfsRefreshLoop } from './gtfs/loader.js';
+import { reliabilitySource } from './reliabilityStore.js';
 
 const app = new Hono();
 
@@ -16,7 +17,7 @@ app.use('*', (c, next) => c.req.path.startsWith('/api/me') ? next() : logger()(c
 app.use('/api/*', apiCors());
 
 app.get('/', (c) => c.text('BusTripPlanner backend — see /api/*'));
-app.get('/healthz', (c) => c.json({ ok: true, uptime: process.uptime() }));
+app.get('/healthz', (c) => c.json({ ok: true, uptime: process.uptime(), reliability: reliabilitySource() }));
 
 app.route('/api/me', createSavedItemsRoute());
 app.route('/api/geocode', geocodeRoute);

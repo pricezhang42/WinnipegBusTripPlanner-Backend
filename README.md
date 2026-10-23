@@ -163,6 +163,23 @@ the JSON artifacts. Locally,
 `node scripts/fetch-reliability-store.mjs` puts the pinned file at
 `reliability/reliability.sqlite`.
 
+`/healthz` reports the source in use: `{"source":"json"}`, or
+`{"source":"store","status":"ready","inputSha256":…}` (`"unavailable"` when the
+configured file failed to open). `npm run check:reliability -- --base-url URL
+--expect-store <inputSha256 from the lock>` fails unless that exact build is served.
+
+QA with a local backend (production is untouched):
+
+```bash
+node scripts/fetch-reliability-store.mjs        # downloads the pinned store
+# .env.local: LOCAL_RELIABILITY_STORE_PATH=<absolute path>/reliability/reliability.sqlite
+npm run dev -- --server local --database qa1
+# second terminal
+npm run check:reliability -- --base-url http://localhost:18787 --expect-store <inputSha256>
+npm run reliability:parity -- reliability/reliability.sqlite
+npm run db -- test --database qa1 --api local
+```
+
 Data builds and audits belong to the
 [analysis repository](https://github.com/pricezhang42/Winnipeg-Transit-Data-Analysis/blob/main/HISTORICAL_DATA.md).
 No database migration is needed. Check with `npm run build` and
