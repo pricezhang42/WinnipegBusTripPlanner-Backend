@@ -97,8 +97,9 @@ Timing reasons: `data_unavailable`, `route_without_history`,
 `holiday_calendar_unsupported`, `insufficient_comparable_history`. Report evidence
 also uses `incompatible_report_evidence`, `source_mismatch` and
 `report_group_without_history`. Either enrichment can fail without blocking plans.
-Trip dates on/before the cutoff are unsupported; artifact age and trip horizon
-must be at most 30 days. The current holiday calendar supports 2026 only.
+Trip dates on/before the cutoff are unsupported. The 30-day artifact-age and
+trip-horizon limits are lifted for now (#21), so stale data still serves until the
+next refresh. The current holiday calendar supports 2026 only.
 
 ### Reliability store
 

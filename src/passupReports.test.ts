@@ -72,7 +72,8 @@ test('rejects incompatible identity, source mismatch, malformed evidence and uns
   ]) assert.equal(read(fixture(changes)).status, 'unavailable', JSON.stringify(changes));
   assert.deepEqual(read(fixture(), '2026-09-24'), { status: 'unavailable', reason: 'historical_date_unsupported' });
   assert.deepEqual(read(fixture(), '2026-09-30'), { status: 'unavailable', reason: 'holiday_calendar_unsupported' });
-  assert.deepEqual(read(fixture(), '2026-10-25'), { status: 'unavailable', reason: 'data_outdated' });
+  // Trip-horizon limit lifted (Backend #21).
+  assert.notEqual((read(fixture(), '2026-10-25') as { reason?: string }).reason, 'data_outdated');
 });
 
 test('validates versioned manifests; ignores undeclared top-level response fields', () => {

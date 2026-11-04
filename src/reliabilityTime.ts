@@ -3,7 +3,8 @@ export const WINNIPEG_TIME_ZONE = 'America/Winnipeg';
 export const GROUP_WINDOW_HOURS = 2;
 export const GROUP_WINDOW_MINUTES = GROUP_WINDOW_HOURS * 60;
 const DAY_MILLISECONDS = 24 * 60 * 60 * 1000;
-const MAX_HISTORY_AGE_DAYS = 30;
+// The 30-day artifact-age and trip-horizon limits are lifted until the data is
+// refreshed (Backend #21). Stale data still serves; restore the limit after a refresh.
 
 // Keep the current supported calendar explicit; extending it is tracked separately.
 const SUPPORTED_YEAR = '2026';
@@ -57,7 +58,7 @@ export function winnipegTime(value: string) {
   return { date, month: calendarDate.getUTCMonth() + 1, weekend: weekday === 0 || weekday === 6, hour };
 }
 
-/** Reject stale/future-leaking history before attempting a group lookup. */
+/** Reject future-leaking history before attempting a group lookup. */
 export function dateUnavailableReason(coverageEnd: string, tripDate: string, now: Date): DateUnavailableReason | undefined {
   if (!isCalendarDate(coverageEnd) || !isCalendarDate(tripDate) || !Number.isFinite(now.getTime())) {
     return 'data_unavailable';
@@ -65,9 +66,8 @@ export function dateUnavailableReason(coverageEnd: string, tripDate: string, now
   const cutoff = Date.parse(coverageEnd);
   const ageDays = (now.getTime() - cutoff) / DAY_MILLISECONDS;
   const tripHorizonDays = (Date.parse(tripDate) - cutoff) / DAY_MILLISECONDS;
-  if (ageDays > MAX_HISTORY_AGE_DAYS || ageDays < 0 || tripHorizonDays > MAX_HISTORY_AGE_DAYS) {
-    return 'data_outdated';
-  }
+  // An artifact whose coverage ends in the future is still rejected.
+  if (ageDays < 0) return 'data_outdated';
   if (tripHorizonDays <= 0) return 'historical_date_unsupported';
   if (!tripDate.startsWith(`${SUPPORTED_YEAR}-`) || HOLIDAYS.has(tripDate.slice(5))) {
     return 'holiday_calendar_unsupported';
