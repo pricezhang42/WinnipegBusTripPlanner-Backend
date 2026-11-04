@@ -17,10 +17,11 @@ test('exact match, Winnipeg conversion and adjacent boarding', () => {
   assert.equal(reliabilityForRide(ride, { ...previous, type: 'ride' }, data, now).status, 'unavailable');
 });
 test('no direction, weekend, holiday, stale or future leakage fallback', () => {
-  for (const changed of [ { variant: { name: 'St. Norbert' } }, { times: { start: '2026-09-26T13:00:00' } }, { times: { start: '2026-09-30T13:00:00' } }, { times: { start: '2026-09-24T13:00:00' } }, { times: { start: '2026-12-01T13:00:00' } } ]) {
+  for (const changed of [ { variant: { name: 'St. Norbert' } }, { times: { start: '2026-09-26T13:00:00' } }, { times: { start: '2026-09-30T13:00:00' } }, { times: { start: '2026-09-24T13:00:00' } }, { times: { start: '2027-01-05T13:00:00' } } ]) {
     assert.equal(reliabilityForRide({ ...ride, ...changed }, previous, data, now).status, 'unavailable');
   }
-  assert.equal(reliabilityForRide(ride, previous, data, new Date('2026-11-01')).status, 'unavailable');
+  // Age limit lifted (Backend #21): stale data still serves.
+  assert.equal(reliabilityForRide(ride, previous, data, new Date('2026-11-01')).status, 'available');
 });
 test('real API variant prefix maps only the matching route name', () => {
   const actual = { ...ride, route: { key: 'BLUE', name: 'Route BLUE' }, variant: { name: 'BLUE to Downtown' } };

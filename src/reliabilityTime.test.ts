@@ -11,13 +11,13 @@ test('Winnipeg conversion respects midnight, daylight-saving offsets and repeate
   assert.equal(winnipegTime('2026-09-25T24:00:00'), undefined);
 });
 
-test('cutoff and 30-day limits are explicit and inclusive at the boundary', () => {
+test('cutoff is explicit; artifact age and trip horizon are not limited', () => {
   const cutoff = '2026-09-24';
   const now = new Date('2026-09-25T00:00:00Z');
   assert.equal(dateUnavailableReason(cutoff, cutoff, now), 'historical_date_unsupported');
   assert.equal(dateUnavailableReason(cutoff, '2026-10-24', now), undefined);
-  assert.equal(dateUnavailableReason(cutoff, '2026-10-25', now), 'data_outdated');
-  assert.equal(dateUnavailableReason(cutoff, '2026-10-24', new Date('2026-10-24T00:00:00Z')), undefined);
-  assert.equal(dateUnavailableReason(cutoff, '2026-10-24', new Date('2026-10-24T00:00:00.001Z')), 'data_outdated');
+  assert.equal(dateUnavailableReason(cutoff, '2026-10-25', now), undefined);
+  assert.equal(dateUnavailableReason(cutoff, '2026-12-01', new Date('2026-11-04T12:00:00Z')), undefined);
+  assert.equal(dateUnavailableReason(cutoff, '2026-10-24', new Date('2026-09-23T23:59:59Z')), 'data_outdated');
   assert.equal(dateUnavailableReason(cutoff, '2026-09-25', new Date('invalid')), 'data_unavailable');
 });
