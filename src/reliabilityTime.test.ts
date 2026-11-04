@@ -7,7 +7,8 @@ test('Winnipeg conversion respects midnight, daylight-saving offsets and repeate
   assert.equal(winnipegTime('2026-01-10T06:00:00Z')?.date, '2026-01-10');
   assert.equal(winnipegTime('2026-03-08T07:59:00Z')?.hour, 1);
   assert.equal(winnipegTime('2026-03-08T08:00:00Z')?.hour, 3);
-  assert.deepEqual(winnipegTime('2026-11-01T01:30:00-05:00'), winnipegTime('2026-11-01T01:30:00-06:00'));
+  // Use 2025's fall-back: tzdata 2026e keeps Winnipeg on CDT from November 2026, so 2026-11-01 has no repeated hour.
+  assert.deepEqual(winnipegTime('2025-11-02T01:30:00-05:00'), winnipegTime('2025-11-02T01:30:00-06:00'));
   assert.equal(winnipegTime('2026-09-25T24:00:00'), undefined);
 });
 
